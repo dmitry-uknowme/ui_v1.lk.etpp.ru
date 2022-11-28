@@ -17,9 +17,14 @@ import {
   Input,
   Animation,
   SelectPicker,
+  Header,
 } from "rsuite";
 import React, { useEffect, useState } from "react";
 import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
+import { useQuery } from "react-query";
+import fetchPurchasePlans from "../../services/api/fetchPurchasePlans";
+import fetchPurchasePlan from "../../services/api/fetchPurchasePlan";
+import fetchSession from "../../services/api/fetchSession";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -45,38 +50,52 @@ const { ArrayType, NumberType, StringType } = Schema.Types;
 const model = Schema.Model({
   is_via_plan: StringType().isRequired("Поле обязательно для заполнения"),
   procedure_title: StringType().isRequired("Поле обязательно для заполнения"),
-  skills: ArrayType()
-    .minLength(2, "Please select at least 2 types of Skills.")
-    .isRequired("This field is required."),
-  status: ArrayType()
-    .minLength(2, "Please select at least 2 types of Status.")
-    .isRequired("This field is required."),
-  level: NumberType().min(5, "This field must be greater than 5"),
 });
 
-const Step1 = () => {
+const Step1 = ({ onNext, onPrevious }) => {
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
     is_via_plan: "false",
+    purchase_plan_id: "",
     procedure_title: "",
-    options: [
-      "rnp_requirement_option",
-      "smb_participant_option",
-      "subcontractor_option",
-    ],
+    procedure_section: "SECTION_FZ_223",
+    procedure_method: "AUCTION",
+    options: ["rnp_requirement_option"],
   });
-
-  const [selectedPlanPositions, setSelectedPlanPositions] = useState([]);
 
   const isViaPlan = formValue.is_via_plan === "true";
 
-  const handleSubmit = () => {
-    if (!formRef.current.check()) {
-      toaster.push(<Message type="error">Error</Message>);
-      return;
+  const purchasePlansQuery = useQuery(
+    ["purchasePlans", isViaPlan],
+    async () => {
+      const result = await fetchPurchasePlans();
+      if (isViaPlan) {
+        setFormValue((state) => ({ ...state, purchase_plan_id: result[0].id }));
+      }
+
+      return result;
     }
-    toaster.push(<Message type="success">Success</Message>);
+  );
+
+  const sessionQuery = useQuery("session", fetchSession);
+
+  // const purchasePlanQuery = useQuery(
+  //   ["purchasePlan", formValue.purchase_plan_id, isViaPlan],
+  //   () =>
+  //     formValue.purchase_plan_id.trim().length &&
+  //     fetchPurchasePlan(formValue.purchase_plan_id)
+  // );
+
+  const [selectedPlanPositions, setSelectedPlanPositions] = useState([]);
+
+  const handleSubmit = () => {
+    onNext();
+    // if (!formRef.current.check()) {
+    //   toaster.push(<Message type="error">Error</Message>);
+    //   return;
+    // }
+    // toaster.push(<Message type="success">Success</Message>);
   };
 
   useEffect(() => {
@@ -109,18 +128,62 @@ const Step1 = () => {
           </Radio>
           <Radio value={"false"}>Заполнение сведений вручную</Radio>
         </Field>
-        <Field
-          name="purchase_plan_id"
-          label="Выберите план закупки"
-          accepter={SelectPicker}
-          error={formError.purchase_plan_id}
-          data={[
-            { label: "План закупки (2023)", value: "321" },
-            { label: "План закупки (2022)", value: "123" },
-          ]}
-        ></Field>
+
+        <Animation.Collapse in={!isViaPlan} timeout={500}>
+          <Panel style={{ padding: "0" }}>
+            <Field
+              name="procedure_section"
+              label="Выберите секцию размещения"
+              accepter={SelectPicker}
+              error={formError.procedure_section}
+              data={[
+                { value: "SECTION_FZ_223", label: "223-ФЗ" },
+                {
+                  value: "SECTION_COMMERCIAL_PROCEDURES",
+                  label: "Коммерческие процедуры",
+                },
+              ]}
+              placeholder="Выберите"
+            />
+            <Field
+              name="procedure_method"
+              label="Выберите способ проведения"
+              accepter={SelectPicker}
+              error={formError.procedure_section}
+              data={[
+                { value: "AUCTION", label: "Аукцион" },
+                { value: "COMPETITIVE_SELECTION", label: "Конкурентный отбор" },
+              ]}
+              placeholder="Выберите"
+            />
+          </Panel>
+        </Animation.Collapse>
         <Animation.Collapse in={isViaPlan}>
-          <Panel>
+          <Panel style={{ padding: "0" }}>
+            <Field
+              name="purchase_plan_id"
+              label="Выберите план закупки"
+              accepter={SelectPicker}
+              error={formError.purchase_plan_id}
+              data={
+                purchasePlansQuery?.data?.length
+                  ? purchasePlansQuery.data.map((plan) => ({
+                      value: plan.id,
+                      label: `План закупки (${plan.reporting_year})`,
+                    }))
+                  : []
+              }
+              loading={purchasePlansQuery.isLoading}
+              placeholder="Выберите"
+            />
+            <Header>
+              {purchasePlansQuery?.data?.length &&
+                "План закупки (" +
+                  purchasePlansQuery.data.find(
+                    (item) => item.id === formValue.purchase_plan_id
+                  )?.reporting_year +
+                  ")"}
+            </Header>
             <PurchasePlanTable
               selectedItems={selectedPlanPositions}
               setSelectedItems={setSelectedPlanPositions}
@@ -154,6 +217,7 @@ const Step1 = () => {
           </Checkbox>
         </Field>
         <Form.Group>
+          <Button onClick={onPrevious}>Назад</Button>
           <Button appearance="primary" onClick={handleSubmit}>
             Далее
           </Button>

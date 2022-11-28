@@ -14,10 +14,12 @@ const PurchasePlanTable = (props) => {
         {
           key: "number",
           label: "Номер позиции в плане",
+          width: 120,
         },
         {
           key: "title",
           label: "Предмет договора (лота)",
+          width: 200,
         },
         {
           key: "planned_public_date",

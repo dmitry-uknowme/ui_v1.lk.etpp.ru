@@ -3,6 +3,10 @@ import { Button, ButtonGroup, Panel, Placeholder, Steps } from "rsuite";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
 import Step1 from "./Steps/Step1";
+import Step2 from "./Steps/Step2";
+import Step3 from "./Steps/Step3";
+import Step4 from "./Steps/Step4";
+import Step6 from "./Steps/Step6";
 
 function App() {
   const [step, setStep] = React.useState(0);
@@ -12,7 +16,8 @@ function App() {
 
   const onNext = () => onChange(step + 1);
   const onPrevious = () => onChange(step - 1);
-
+  const Stepper = [Step1, Step2, Step3, Step4, Step4, Step6];
+  const CurrentStep = Stepper[step];
   return (
     <div>
       {/* <div className="container-fluid"> */}
@@ -29,18 +34,18 @@ function App() {
         </div>
         <div className="col-md-9">
           <hr />
-          <Panel header={`Step: ${step + 1}`}>
-            <Step1 />
+          <Panel header={`Шаг: ${step + 1}`}>
+            {<CurrentStep onNext={onNext} onPrevious={onPrevious} />}
           </Panel>
           <hr />
-          <ButtonGroup>
+          {/* <ButtonGroup>
             <Button onClick={onPrevious} disabled={step === 0}>
-              Previous
+              Назад
             </Button>
-            <Button onClick={onNext} disabled={step === 5}>
-              Next
+            <Button appearance="primary" onClick={onNext} disabled={step === 5}>
+              Далее
             </Button>
-          </ButtonGroup>
+          </ButtonGroup> */}
         </div>
       </div>
       {/* </div> */}
