@@ -24,12 +24,36 @@ function App() {
       <div className="row">
         <div className="col-md-3">
           <Steps current={step} vertical>
-            <Steps.Item title="Основные сведения процедуры" />
-            <Steps.Item title="Настройки хода процедуры" />
-            <Steps.Item title="Сроки и порядок проведения" />
-            <Steps.Item title="Лоты" />
-            <Steps.Item title="Ответственные и приглашенные" />
-            <Steps.Item title="Документация" />
+            <Steps.Item
+              title="Основные сведения процедуры"
+              style={{ cursor: "pointer" }}
+              onClick={() => onChange(0)}
+            />
+            <Steps.Item
+              title="Настройки хода процедуры"
+              style={{ cursor: "pointer" }}
+              onClick={() => onChange(1)}
+            />
+            <Steps.Item
+              title="Сроки и порядок проведения"
+              style={{ cursor: "pointer" }}
+              onClick={() => onChange(2)}
+            />
+            <Steps.Item
+              title="Лоты"
+              style={{ cursor: "pointer" }}
+              onClick={() => onChange(3)}
+            />
+            <Steps.Item
+              title="Ответственные и приглашенные"
+              style={{ cursor: "pointer" }}
+              onClick={() => onChange(4)}
+            />
+            <Steps.Item
+              title="Документация"
+              style={{ cursor: "pointer" }}
+              onClick={() => onChange(5)}
+            />
           </Steps>
         </div>
         <div className="col-md-9">
