@@ -69,23 +69,23 @@ const Step1 = ({ onNext, onPrevious }) => {
   const purchasePlansQuery = useQuery(
     ["purchasePlans", isViaPlan],
     async () => {
-      const result = await fetchPurchasePlans();
       if (isViaPlan) {
+        const result = await fetchPurchasePlans();
         setFormValue((state) => ({ ...state, purchase_plan_id: result[0].id }));
+        return result;
       }
-
-      return result;
     }
   );
 
   const sessionQuery = useQuery("session", fetchSession);
 
-  // const purchasePlanQuery = useQuery(
-  //   ["purchasePlan", formValue.purchase_plan_id, isViaPlan],
-  //   () =>
-  //     formValue.purchase_plan_id.trim().length &&
-  //     fetchPurchasePlan(formValue.purchase_plan_id)
-  // );
+  const purchasePlanQuery = useQuery(
+    ["purchasePlan", formValue.purchase_plan_id],
+    async () =>
+      isViaPlan &&
+      formValue.purchase_plan_id.trim().length &&
+      (await fetchPurchasePlan(formValue.purchase_plan_id))
+  );
 
   const [selectedPlanPositions, setSelectedPlanPositions] = useState([]);
 
@@ -108,7 +108,7 @@ const Step1 = ({ onNext, onPrevious }) => {
   }, [selectedPlanPositions]);
 
   return (
-    <div className="col-md-8">
+    <div className="col-md-12">
       <Form
         ref={formRef}
         onChange={setFormValue}
@@ -185,6 +185,8 @@ const Step1 = ({ onNext, onPrevious }) => {
                   ")"}
             </Header>
             <PurchasePlanTable
+              data={purchasePlanQuery?.data?.positions}
+              isLoading={purchasePlanQuery?.isLoading}
               selectedItems={selectedPlanPositions}
               setSelectedItems={setSelectedPlanPositions}
             />
