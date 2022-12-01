@@ -22,12 +22,17 @@ import {
   InputGroup,
   Uploader,
 } from "rsuite";
+import "../../../public/new_cryptopro/signlib";
 import React, { useEffect, useState } from "react";
 import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
+import MaskedInput from "react-text-mask";
+import createNumberMask from "text-mask-addons/dist/createNumberMask";
 import fetchPurchasePlans from "../../services/api/fetchPurchasePlans";
 import fetchPurchasePlan from "../../services/api/fetchPurchasePlan";
 import fetchSession from "../../services/api/fetchSession";
+import toBase64 from "../../utils/toBase64";
+import axios from "axios";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -56,6 +61,20 @@ const model = Schema.Model({
 });
 
 const Step6 = ({ onNext, onPrevious }) => {
+  const currencyMask = createNumberMask({
+    prefix: "",
+    suffix: "RUB",
+    includeThousandsSeparator: true,
+    thousandsSeparatorSymbol: " ",
+    allowDecimal: true,
+    decimalSymbol: ".",
+    decimalLimit: 2, // how many digits allowed after the decimal
+    // integerLimit: 7, // limit length of integer numbers
+    allowNegative: false,
+    allowLeadingZeroes: false,
+    requireDecimal: true,
+  });
+
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
@@ -66,18 +85,6 @@ const Step6 = ({ onNext, onPrevious }) => {
   });
 
   const isViaPlan = formValue.is_via_plan === "true";
-
-  const purchasePlansQuery = useQuery(
-    ["purchasePlans", isViaPlan],
-    async () => {
-      const result = await fetchPurchasePlans();
-      if (isViaPlan) {
-        setFormValue((state) => ({ ...state, purchase_plan_id: result[0].id }));
-      }
-
-      return result;
-    }
-  );
 
   const sessionQuery = useQuery("session", fetchSession);
 
@@ -99,15 +106,6 @@ const Step6 = ({ onNext, onPrevious }) => {
     // toaster.push(<Message type="success">Success</Message>);
   };
 
-  useEffect(() => {
-    if (selectedPlanPositions.length) {
-      setFormValue((state) => ({
-        ...state,
-        procedure_title: selectedPlanPositions[0].title,
-      }));
-    }
-  }, [selectedPlanPositions]);
-
   return (
     <div className="col-md-8">
       <Form
@@ -117,8 +115,41 @@ const Step6 = ({ onNext, onPrevious }) => {
         formValue={formValue}
         model={model}
       >
+        <MaskedInput mask={currencyMask} />
         <Panel header="Документы процедуры">
           <Uploader
+            action=""
+            autoUpload={false}
+            onUpload={(event) => {
+              console.log("on uploadddd", event);
+            }}
+            // onProgress={(event) => console.log("on progress", event)}
+            onChange={async (files) => {
+              console.log("on changeee", files);
+              const formData = new FormData();
+              const filesToServer = await Promise.all(
+                files.map(async (file, number) => {
+                  const base64content = await toBase64(file.blobFile);
+                  formData.append(number.toString());
+                  // return {
+                  //   file,
+                  //   base64content,
+                  // };
+                  // window.signlib
+                  //   .hashFile(file.blobFile)
+                  //   .then((res) => console.log("resss", res))
+                  //   .catch((err) => console.log("errr", err));
+                })
+              );
+              console.log("uploaddedd", formData);
+              await axios.post("http://223.etpp.loc/hash", {
+                headers: {
+                  "Content-Type": `multipart/form-data`,
+                },
+                // withCredentials: true,
+                data: formData,
+              });
+            }}
             // action="//jsonplaceholder.typicode.com/posts/"
             draggable
             multiple

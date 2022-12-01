@@ -6,22 +6,28 @@ specifiers:
   '@vitejs/plugin-react': ^2.2.0
   axios: ^1.2.0
   bootstrap: ^5.2.3
+  jquery: ^3.6.1
   react: ^18.2.0
   react-dom: ^18.2.0
   react-json-tree: ^0.17.0
   react-query: ^3.39.2
+  react-text-mask: ^5.5.0
   rsuite: ^5.23.0
+  text-mask-addons: ^3.8.0
   typescript: ^4.6.4
   vite: ^3.2.3
 
 dependencies:
   axios: 1.2.0
   bootstrap: 5.2.3
+  jquery: 3.6.1
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-json-tree: 0.17.0_fan5qbzahqtxlm5dzefqlqx5ia
   react-query: 3.39.2_biqbaboplfbrettd7655fr4n2y
+  react-text-mask: 5.5.0_react@18.2.0
   rsuite: 5.23.0_biqbaboplfbrettd7655fr4n2y
+  text-mask-addons: 3.8.0
 
 devDependencies:
   '@types/react': 18.0.25
@@ -916,6 +922,10 @@ packages:
       has: 1.0.3
     dev: true
 
+  /jquery/3.6.1:
+    resolution: {integrity: sha512-opJeO4nCucVnsjiXOE+/PcCgYw9Gwpvs/a6B1LL/lQhwWwpbVEVYDZ1FokFr8PRc7ghYlrFPuyHuiiDNTQxmcw==}
+    dev: false
+
   /js-sha3/0.8.0:
     resolution: {integrity: sha512-gF1cRrHhIzNfToc802P800N8PpXS+evLLXfsVpowqmAFR9uwbi89WvXg2QspOmXL8QL86J4T1EpFu+yUkwJY3Q==}
     dev: false
@@ -1128,6 +1138,15 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /react-text-mask/5.5.0_react@18.2.0:
+    resolution: {integrity: sha512-SLJlJQxa0uonMXsnXRpv5abIepGmHz77ylQcra0GNd7Jtk4Wj2Mtp85uGQHv1avba2uI8ZvRpIEQPpJKsqRGYw==}
+    peerDependencies:
+      react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      prop-types: 15.8.1
+      react: 18.2.0
+    dev: false
+
   /react-window/1.8.8_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-D4IiBeRtGXziZ1n0XklnFGu7h9gU684zepqyKzgPNzrsrk7xOCxni+TCckjg2Nr/DiaEEGVVmnhYSlT2rB47dQ==}
     engines: {node: '>8.0.0'}
@@ -1267,6 +1286,10 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
     dev: true
+
+  /text-mask-addons/3.8.0:
+    resolution: {integrity: sha512-VSZSdc/tKn4zGxgpJ+uNBzoW1t472AoAFIlbw1K7hSNXz0DfSBYDJNRxLqgxOfWw1BY2z6DQpm7g0sYZn5qLpg==}
+    dev: false
 
   /to-fast-properties/2.0.0:
     resolution: {integrity: sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==}
