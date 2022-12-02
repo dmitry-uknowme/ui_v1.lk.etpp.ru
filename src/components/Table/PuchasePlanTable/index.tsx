@@ -2,7 +2,7 @@ import { Checkbox } from "rsuite";
 import Table from "..";
 
 const PurchasePlanTable = (props) => {
-  console.log("dddddd", props);
+  // console.log("dddddd", props);
   return (
     <Table
       dataColumns={[

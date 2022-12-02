@@ -7,6 +7,7 @@ import Step2 from "./Steps/Step2";
 import Step3 from "./Steps/Step3";
 import Step4 from "./Steps/Step4";
 import Step6 from "./Steps/Step6";
+import Step5 from "./Steps/Step5";
 
 function App() {
   const [step, setStep] = React.useState(0);
@@ -16,7 +17,7 @@ function App() {
 
   const onNext = () => onChange(step + 1);
   const onPrevious = () => onChange(step - 1);
-  const Stepper = [Step1, Step2, Step3, Step4, Step4, Step6];
+  const Stepper = [Step1, Step2, Step3, Step4, Step5, Step6];
   const CurrentStep = Stepper[step];
   return (
     <div>

@@ -130,25 +130,59 @@ const Step6 = ({ onNext, onPrevious }) => {
               const filesToServer = await Promise.all(
                 files.map(async (file, number) => {
                   const base64content = await toBase64(file.blobFile);
-                  formData.append(number.toString());
+                  // formData.append(number.toString());
                   // return {
                   //   file,
                   //   base64content,
                   // };
+                  var CADESCOM_HASH_ALGORITHM_CP_GOST_3411 = 100;
+                  var CADESCOM_BASE64_TO_BINARY = 1;
+                  window.cadesplugin.async_spawn(function* (args) {
+                    // Создаем объект CAdESCOM.HashedData
+                    var oHashedData = yield cadesplugin.CreateObjectAsync(
+                      "CAdESCOM.HashedData"
+                    );
+
+                    // Алгоритм хэширования нужно указать до того, как будут переданы данные
+                    yield oHashedData.propset_Algorithm(
+                      CADESCOM_HASH_ALGORITHM_CP_GOST_3411
+                    );
+
+                    // Указываем кодировку данных
+                    // Кодировка должна быть указана до того, как будут переданы сами данные
+                    yield oHashedData.propset_DataEncoding(
+                      CADESCOM_BASE64_TO_BINARY
+                    );
+
+                    // Предварительно закодированные в BASE64 бинарные данные
+                    // В данном случае закодирован файл со строкой "Some Data."
+                    var dataInBase64 = toBase64(file.blobFile);
+
+                    // Передаем данные
+                    yield oHashedData.Hash(dataInBase64);
+
+                    // Получаем хэш-значение
+                    var sHashValue = yield oHashedData.Value;
+                    // Это значение будет совпадать с вычисленным при помощи, например,
+                    // утилиты cryptcp от тех же исходных _бинарных_ данных.
+                    // В данном случае - от файла со строкой "Some Data."
+                    console.log("hashhhhhhh", sHashValue);
+                    // document.getElementById("hashVal").innerHTML = sHashValue;
+                  });
                   // window.signlib
                   //   .hashFile(file.blobFile)
                   //   .then((res) => console.log("resss", res))
                   //   .catch((err) => console.log("errr", err));
                 })
               );
-              console.log("uploaddedd", formData);
-              await axios.post("http://223.etpp.loc/hash", {
-                headers: {
-                  "Content-Type": `multipart/form-data`,
-                },
-                // withCredentials: true,
-                data: formData,
-              });
+              // console.log("uploaddedd", formData);
+              // await axios.post("http://223.etpp.loc/hash", {
+              //   headers: {
+              //     "Content-Type": `multipart/form-data`,
+              //   },
+              //   // withCredentials: true,
+              //   data: formData,
+              // });
             }}
             // action="//jsonplaceholder.typicode.com/posts/"
             draggable

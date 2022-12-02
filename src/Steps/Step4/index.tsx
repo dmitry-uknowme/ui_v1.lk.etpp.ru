@@ -43,7 +43,7 @@ const Field = React.forwardRef((props, ref) => {
         errorMessage={error}
         {...rest}
       />
-      <Form.HelpText>{message}</Form.HelpText>
+      {message && <Form.HelpText></Form.HelpText>}
     </Form.Group>
   );
 });
@@ -62,6 +62,8 @@ const Step4 = ({ onNext, onPrevious }) => {
     lot_title: "",
     lot_currency: "RUB",
     nds_type: "NO_NDS",
+    provision_bid_type: "WITHOUT_COLLATERAL",
+    provision_contract_type: "NOT_SPECIFIED",
   });
 
   const isViaPlan = formValue.is_via_plan === "true";
@@ -79,13 +81,8 @@ const Step4 = ({ onNext, onPrevious }) => {
   );
 
   const sessionQuery = useQuery("session", fetchSession);
-
-  // const purchasePlanQuery = useQuery(
-  //   ["purchasePlan", formValue.purchase_plan_id, isViaPlan],
-  //   () =>
-  //     formValue.purchase_plan_id.trim().length &&
-  //     fetchPurchasePlan(formValue.purchase_plan_id)
-  // );
+  const isBidProvisionSpecified =
+    formValue.provision_bid_type !== "WITHOUT_COLLATERAL";
 
   const [selectedPlanPositions, setSelectedPlanPositions] = useState([]);
 
@@ -108,7 +105,7 @@ const Step4 = ({ onNext, onPrevious }) => {
   }, [selectedPlanPositions]);
 
   return (
-    <div className="col-md-8">
+    <div className="col-md-9">
       <Form
         ref={formRef}
         onChange={setFormValue}
@@ -162,22 +159,94 @@ const Step4 = ({ onNext, onPrevious }) => {
         />
         <Panel header="Обеспечение заявки">
           <Field
-            name="provision_bid_option"
-            accepter={CheckboxGroup}
-            error={formError.provision_bid_option}
+            name="provision_bid_type"
+            label="Вид обеспечения заявки"
+            placeholder="Выберите"
+            accepter={SelectPicker}
+            error={formError.provision_bid_type}
+            data={[
+              { value: "WITHOUT_COLLATERAL", label: "Без обеспечения" },
+              {
+                value: "PERCENTAGE_AMOUNT",
+                label:
+                  "Процент от НМЦ (с внесением д/с на эл. площадку или банковская гарантия на эл. площадку)",
+              },
+              {
+                value: "FIXED_AMOUNT",
+                label:
+                  "Фиксированная сумма (с внесением д/с на эл. площадку или банковская гарантия)",
+              },
+              {
+                value: "ACCORDING_DOCUMENTATION",
+                label: "В соответствии с документацией",
+              },
+            ]}
           >
-            <Checkbox value={"ON"}>Установлено</Checkbox>
+            <Checkbox value={"ON"}>Без обеспечения</Checkbox>
           </Field>
+
+          <Animation.Collapse in={isBidProvisionSpecified}>
+            <Stack spacing={10}>
+              {/* <div className="col-md-6"> */}
+              <Field
+                name="provision_bid_percent"
+                label="Размер обеспечения заявки, %"
+                accepter={Input}
+              />
+              {/* </div> */}
+              {/* <div className="col-md-6"> */}
+              <Field
+                name="provision_bid_amount"
+                label="Размер обеспечения заявки, руб"
+                accepter={Input}
+              />
+              {/* </div> */}
+            </Stack>
+          </Animation.Collapse>
         </Panel>
 
         <Panel header="Обеспечение исполнения договора">
-          <Field
+          {/* <Field
             name="provision_contract_option"
             accepter={CheckboxGroup}
             error={formError.provision_contract_option}
           >
             <Checkbox value={"ON"}>Установлено</Checkbox>
-          </Field>
+          </Field> */}
+          <Field
+            name="provision_contract_type"
+            label="Тип обеспечения исполнения договора"
+            accepter={SelectPicker}
+            error={formError.provision_contract_type}
+            data={[
+              { value: "NOT_SPECIFIED", label: "Не установлено" },
+              { value: "FROM_START_PRICE", label: "От начальной цены лота" },
+              { value: "FROM_CONTRACT_PRICE", label: "От цены договора" },
+            ]}
+            placeholder="Выберите"
+          />
+          <Stack spacing={10}>
+            <Field
+              name="provision_contract_percent"
+              label="Размер обеспечения исполнения договора, %"
+              accepter={Input}
+            />
+            <Field
+              name="provision_contract_amount"
+              label="Размер обеспечения исполнения договора, руб"
+              accepter={Input}
+            />
+          </Stack>
+          {/* <Field
+            label="Размер обеспечения исполнения договора от"
+            accepter={RadioGroup}
+            error={formError.provision_contract_type}
+            inline
+            name="provision_contract_type"
+          >
+            <Radio value={"FROM_START_PRICE"}>От начальной цены лота</Radio>
+            <Radio value={"FROM_CONTRACT_PRICE"}>От цены договора</Radio>
+          </Field> */}
         </Panel>
 
         <Form.Group>
