@@ -36,7 +36,7 @@ const CompactCell = (props) => {
   );
 };
 const CompactHeaderCell = (props) => (
-  <HeaderCell {...props} style={{ padding: 4 }} />
+  <HeaderCell {...props} style={{ padding: 4 }} resizable />
 );
 
 const Table: React.FC<TableProps> = ({
@@ -59,6 +59,7 @@ const Table: React.FC<TableProps> = ({
       cellBordered
       headerHeight={30}
       rowHeight={30}
+      wordWrap="break-word"
     >
       {dataColumns.map((column) => {
         const { key, label, ...rest } = column;

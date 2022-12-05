@@ -17,22 +17,35 @@ const PurchasePlanTable = (props) => {
           label: "Номер позиции в плане",
           width: 120,
         },
-        // {
-        //   key: "title",
-        //   label: "Предмет договора (лота)",
-        //   width: 200,
-        // },
+        {
+          key: "contract_subject",
+          label: "Предмет договора (лота)",
+          width: 200,
+        },
         // {
         //   key: "planned_public_date",
         //   label: "Планируемая дата размещения извещения о закупке",
         // },
         {
-          key: "section_item",
+          key: "purchase_method_name",
           label: "Способ закупки",
+          width: 250,
         },
         {
           key: "maximum_contract_price",
           label: "Начальная (максимальная) цена договора (цена лота)",
+        },
+        {
+          key: "purchase_planned_date",
+          label: "Планируемая дата размещения",
+        },
+        {
+          key: "contract_end_date",
+          label: "Срок истечения договора",
+        },
+        {
+          key: "status",
+          label: "Статус",
         },
       ]}
       // data={[

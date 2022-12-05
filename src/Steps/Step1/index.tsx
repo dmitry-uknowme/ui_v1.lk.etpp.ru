@@ -19,12 +19,14 @@ import {
   SelectPicker,
   Header,
 } from "rsuite";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
 import fetchPurchasePlans from "../../services/api/fetchPurchasePlans";
 import fetchPurchasePlan from "../../services/api/fetchPurchasePlan";
 import fetchSession from "../../services/api/fetchSession";
+import FormContext from "../../context/multiStepForm/context";
+import createProcedureViaPurchasePlan from "../../services/api/createProcedureViaPurchasePlan";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -53,11 +55,19 @@ const model = Schema.Model({
 });
 
 const Step1 = ({ onNext, onPrevious }) => {
+  const {
+    formValues: formGlobalValues,
+    setFormValues: setFormGlobalValues,
+    serverData: formGlobalServerData,
+    setServerData: setFormGlobalServerData,
+  } = useContext(FormContext);
+
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
     is_via_plan: "false",
     purchase_plan_id: "",
+    purchase_method_id: "",
     procedure_title: "",
     procedure_section: "SECTION_FZ_223",
     procedure_method: "AUCTION",
@@ -89,9 +99,26 @@ const Step1 = ({ onNext, onPrevious }) => {
 
   const [selectedPlanPositions, setSelectedPlanPositions] = useState([]);
 
-  const handleSubmit = () => {
-    onNext();
+  const handleSubmit = async () => {
+    const session = formGlobalServerData.session;
+    if (!session) {
+      return toaster.push(
+        <Message type="error">Пользователь не авторизован</Message>
+      );
+    }
+    const profileId = session.profile_id;
+    const planPositionId = formValue.purchase_method_id;
+    await createProcedureViaPurchasePlan(
+      { profileId, planPositionId },
+      (err) => {
+        return toaster.push(
+          <Message type="error">{JSON.stringify(err)}</Message>
+        );
+      }
+    );
+    // onNext();
     // if (!formRef.current.check()) {
+    //   await createProcedureViaPurchasePlan(formValue.);
     //   toaster.push(<Message type="error">Error</Message>);
     //   return;
     // }
@@ -103,6 +130,7 @@ const Step1 = ({ onNext, onPrevious }) => {
       setFormValue((state) => ({
         ...state,
         procedure_title: selectedPlanPositions[0].title,
+        purchase_method_id: selectedPlanPositions[0].id,
       }));
     }
   }, [selectedPlanPositions]);

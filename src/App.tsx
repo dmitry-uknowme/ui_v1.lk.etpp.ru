@@ -8,6 +8,7 @@ import Step3 from "./Steps/Step3";
 import Step4 from "./Steps/Step4";
 import Step6 from "./Steps/Step6";
 import Step5 from "./Steps/Step5";
+import FormContextProvider from "./context/multiStepForm/provider";
 
 function App() {
   const [step, setStep] = React.useState(0);
@@ -59,9 +60,11 @@ function App() {
         </div>
         <div className="col-md-9">
           <hr />
-          <Panel header={`Шаг: ${step + 1}`}>
-            {<CurrentStep onNext={onNext} onPrevious={onPrevious} />}
-          </Panel>
+          <FormContextProvider>
+            <Panel header={`Шаг: ${step + 1}`}>
+              {<CurrentStep onNext={onNext} onPrevious={onPrevious} />}
+            </Panel>
+          </FormContextProvider>
           <hr />
           {/* <ButtonGroup>
             <Button onClick={onPrevious} disabled={step === 0}>

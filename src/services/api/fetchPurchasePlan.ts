@@ -14,7 +14,7 @@ export interface IPurchasePlanPosition {
 const fetchPurchasePlan = async (planId: string) => {
   const form = new FormData();
   const { data } = await axios.get(
-    `http://localhost:8001/api/v1/purchase/plans/${planId}/get`,
+    `http://localhost:8000/api/v1/purchase/plans/${planId}/get`,
     {
       data: form,
       headers: {
