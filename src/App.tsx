@@ -47,7 +47,8 @@ function App() {
               onClick={() => onChange(3)}
             />
             <Steps.Item
-              title="Ответственные и приглашенные"
+              title="Ответственные"
+              // title="Ответственные и приглашенные"
               style={{ cursor: "pointer" }}
               onClick={() => onChange(4)}
             />

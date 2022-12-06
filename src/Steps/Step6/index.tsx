@@ -23,7 +23,7 @@ import {
   Uploader,
 } from "rsuite";
 import "../../../public/new_cryptopro/signlib";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
 import MaskedInput from "react-text-mask";
@@ -33,6 +33,7 @@ import fetchPurchasePlan from "../../services/api/fetchPurchasePlan";
 import fetchSession from "../../services/api/fetchSession";
 import toBase64 from "../../utils/toBase64";
 import axios from "axios";
+import MultiStepFormContext from "../../context/multiStepForm/context";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -61,6 +62,15 @@ const model = Schema.Model({
 });
 
 const Step6 = ({ onNext, onPrevious }) => {
+  const {
+    formValues: formGlobalValues,
+    setFormValues: setFormGlobalValues,
+    serverData: formGlobalServerData,
+    setServerData: setFormGlobalServerData,
+  } = useContext(MultiStepFormContext);
+
+  console.log("procedureeee", formGlobalValues);
+
   const currencyMask = createNumberMask({
     prefix: "",
     suffix: "RUB",
@@ -95,8 +105,6 @@ const Step6 = ({ onNext, onPrevious }) => {
   //     fetchPurchasePlan(formValue.purchase_plan_id)
   // );
 
-  const [selectedPlanPositions, setSelectedPlanPositions] = useState([]);
-
   const handleSubmit = () => {
     onNext();
     // if (!formRef.current.check()) {
@@ -126,63 +134,20 @@ const Step6 = ({ onNext, onPrevious }) => {
             // onProgress={(event) => console.log("on progress", event)}
             onChange={async (files) => {
               console.log("on changeee", files);
-              const formData = new FormData();
-              const filesToServer = await Promise.all(
-                files.map(async (file, number) => {
-                  const base64content = await toBase64(file.blobFile);
-                  // formData.append(number.toString());
-                  // return {
-                  //   file,
-                  //   base64content,
-                  // };
-                  var CADESCOM_HASH_ALGORITHM_CP_GOST_3411 = 100;
-                  var CADESCOM_BASE64_TO_BINARY = 1;
-                  window.cadesplugin.async_spawn(function* (args) {
-                    // Создаем объект CAdESCOM.HashedData
-                    var oHashedData = yield cadesplugin.CreateObjectAsync(
-                      "CAdESCOM.HashedData"
-                    );
-
-                    // Алгоритм хэширования нужно указать до того, как будут переданы данные
-                    yield oHashedData.propset_Algorithm(
-                      CADESCOM_HASH_ALGORITHM_CP_GOST_3411
-                    );
-
-                    // Указываем кодировку данных
-                    // Кодировка должна быть указана до того, как будут переданы сами данные
-                    yield oHashedData.propset_DataEncoding(
-                      CADESCOM_BASE64_TO_BINARY
-                    );
-
-                    // Предварительно закодированные в BASE64 бинарные данные
-                    // В данном случае закодирован файл со строкой "Some Data."
-                    var dataInBase64 = toBase64(file.blobFile);
-
-                    // Передаем данные
-                    yield oHashedData.Hash(dataInBase64);
-
-                    // Получаем хэш-значение
-                    var sHashValue = yield oHashedData.Value;
-                    // Это значение будет совпадать с вычисленным при помощи, например,
-                    // утилиты cryptcp от тех же исходных _бинарных_ данных.
-                    // В данном случае - от файла со строкой "Some Data."
-                    console.log("hashhhhhhh", sHashValue);
-                    // document.getElementById("hashVal").innerHTML = sHashValue;
-                  });
-                  // window.signlib
-                  //   .hashFile(file.blobFile)
-                  //   .then((res) => console.log("resss", res))
-                  //   .catch((err) => console.log("errr", err));
+              axios({
+                method: "post",
+                url: "http://localhost:8001/api",
+                // data: bodyFormData,
+                headers: { "Content-Type": "multipart/form-data" },
+              })
+                .then(function (response) {
+                  //handle success
+                  console.log(response);
                 })
-              );
-              // console.log("uploaddedd", formData);
-              // await axios.post("http://223.etpp.loc/hash", {
-              //   headers: {
-              //     "Content-Type": `multipart/form-data`,
-              //   },
-              //   // withCredentials: true,
-              //   data: formData,
-              // });
+                .catch(function (response) {
+                  //handle error
+                  console.log(response);
+                });
             }}
             // action="//jsonplaceholder.typicode.com/posts/"
             draggable

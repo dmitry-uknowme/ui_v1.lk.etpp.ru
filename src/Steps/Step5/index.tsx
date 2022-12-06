@@ -29,6 +29,7 @@ import fetchPurchasePlan from "../../services/api/fetchPurchasePlan";
 import fetchSession from "../../services/api/fetchSession";
 import MultiStepFormContext from "../../context/multiStepForm/context";
 import fetchProfileOrganizations from "../../services/api/fetchProfileOrganizations";
+import axios from "axios";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -64,12 +65,14 @@ const Step5 = ({ onNext, onPrevious }) => {
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
 
+  console.log("procedureee 5", formGlobalValues);
+
   const session = formGlobalServerData.session;
   const profileId = formGlobalServerData?.session?.profile_id;
 
   const profileOrganizationsQuery = useQuery(
     [
-      "purchasePlan",
+      "profileOrganizations",
       formGlobalServerData?.session && formGlobalServerData.session.profileId,
     ],
     async () => {
@@ -88,7 +91,31 @@ const Step5 = ({ onNext, onPrevious }) => {
   const [formValue, setFormValue] = React.useState({
     isOrganizerEqualsCustomer: [],
     organizer_id: "",
+    organizer_org_full_name: "This field is",
+    organizer_org_short_name: "This field is",
+    organizer_org_inn: "This field is",
+    organizer_org_kpp: "This field is",
+    organizer_org_ogrn: "This field is",
+    organizer_org_legal_address: "This field is",
+    organizer_org_fact_address: "This field is",
+    organizer_representative_surname: "This field is",
+    organizer_representative_name: "This field is",
+    organizer_representative_lastname: "This field is",
+    organizer_representative_phone: "This field is",
+    organizer_representative_email: "This field is",
     customer_id: "",
+    customer_org_full_name: "This field is",
+    customer_org_short_name: "This field is",
+    customer_org_inn: "This field is",
+    customer_org_kpp: "This field is",
+    customer_org_ogrn: "This field is",
+    customer_org_legal_address: "This field is",
+    customer_org_fact_address: "This field is",
+    customer_representative_surname: "This field is",
+    customer_representative_name: "This field is",
+    customer_representative_lastname: "This field is",
+    customer_representative_phone: "This field is",
+    customer_representative_email: "This field is",
   });
 
   const isOrganizerManualInput = formValue.organizer_id === "MANUAL_INPUT";
@@ -96,8 +123,102 @@ const Step5 = ({ onNext, onPrevious }) => {
   const isOrganizerEqualsCustomer =
     formValue.isOrganizerEqualsCustomer.includes("EQUAL");
 
-  const handleSubmit = () => {
-    onNext();
+  const handleSubmit = async () => {
+    setFormGlobalValues((state) => ({
+      ...state,
+      customer: {
+        ogrn: formValue.customer_org_ogrn,
+        first_name: formValue.customer_representative_name,
+        last_name: formValue.customer_representative_lastname,
+        middle_name: formValue.customer_representative_surname,
+        email: formValue.customer_representative_email,
+        phone: formValue.customer_representative_phone,
+        additional_phone: "This field is",
+        inn: formValue.customer_org_inn,
+        kpp: formValue.customer_org_kpp,
+        short_title: formValue.customer_org_short_name,
+        full_title: formValue.customer_org_full_name,
+        subject_type: "INDIVIDUAL_ENTREPRENEUR",
+        legal_address: {
+          index: formValue.customer_org_legal_address,
+          city: "This field is",
+          country: "This field is",
+          district: "This field is",
+          house: "This field is",
+          office: "This field is",
+          populated_area: "This field is",
+          region: "This field is",
+          street: "This field is",
+        },
+        fact_address: {
+          index: formValue.customer_org_fact_address,
+          city: "This field is",
+          country: "This field is",
+          district: "This field is",
+          house: "This field is",
+          office: "This field is",
+          populated_area: "This field is",
+          region: "This field is",
+          street: "This field is",
+        },
+      },
+      organizer: {
+        ogrn: formValue.organizer_org_ogrn,
+        first_name: formValue.organizer_representative_name,
+        last_name: formValue.organizer_representative_lastname,
+        middle_name: formValue.organizer_representative_surname,
+        email: formValue.organizer_representative_email,
+        phone: formValue.organizer_representative_phone,
+        additional_phone: "This field is",
+        inn: formValue.organizer_org_inn,
+        kpp: formValue.organizer_org_kpp,
+        short_title: formValue.organizer_org_short_name,
+        full_title: formValue.organizer_org_full_name,
+        subject_type: "INDIVIDUAL_ENTREPRENEUR",
+        legal_address: {
+          index: formValue.organizer_org_legal_address,
+          city: "This field is",
+          country: "This field is",
+          district: "This field is",
+          house: "This field is",
+          office: "This field is",
+          populated_area: "This field is",
+          region: "This field is",
+          street: "This field is",
+        },
+        fact_address: {
+          index: formValue.organizer_org_fact_address,
+          city: "This field is",
+          country: "This field is",
+          district: "This field is",
+          house: "This field is",
+          office: "This field is",
+          populated_area: "This field is",
+          region: "This field is",
+          street: "This field is",
+        },
+      },
+    }));
+    await fetch("http://localhost:8001/api/procedures/COMPETITIVE_SELECTION", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(formGlobalValues),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    // await axios.post(
+    //   "http://localhost:8001/api/procedures/COMPETITIVE_SELECTION",
+    //   {
+    //     data: formGlobalValues,
+    //     withCredentials: true,
+    //     headers: {
+    //       "Content-Type": `multipart/form-data`,
+    //     },
+    //   }
+    // );
+    //setTimeout(() => onNext(), 500);
     // if (!formRef.current.check()) {
     //   toaster.push(<Message type="error">Error</Message>);
     //   return;
@@ -351,7 +472,7 @@ const Step5 = ({ onNext, onPrevious }) => {
           </Panel>
         </div>
 
-        <Panel header="Приглашение участников">
+        {/* <Panel header="Приглашение участников">
           <Field
             name="provision_contract_option"
             accepter={CheckboxGroup}
@@ -359,7 +480,7 @@ const Step5 = ({ onNext, onPrevious }) => {
           >
             <Checkbox value={"ON"}>Установлено</Checkbox>
           </Field>
-        </Panel>
+        </Panel> */}
 
         <Form.Group>
           <Button onClick={onPrevious}>Назад</Button>

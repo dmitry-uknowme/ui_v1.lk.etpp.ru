@@ -62,46 +62,56 @@ const Step2 = ({ onNext, onPrevious }) => {
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
 
-  console.log("procedureeee", formGlobalServerData);
+  console.log("procedureee 2", formGlobalValues);
 
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
     accepting_bids_place: "ON_ETP",
-    contract_conclude_place: "ON_ETP",
-    participant_bid_type: "PRICE",
-    procedure_title: "",
-    procedure_section: "SECTION_FZ_223",
-    procedure_method: "AUCTION",
+    contract_conclude_type: "ON_SITE",
     options: ["rnp_requirement_option"],
   });
 
-  const isViaPlan = formValue.is_via_plan === "true";
-
-  const purchasePlansQuery = useQuery(
-    ["purchasePlans", isViaPlan],
-    async () => {
-      const result = await fetchPurchasePlans();
-      if (isViaPlan) {
-        setFormValue((state) => ({ ...state, purchase_plan_id: result[0].id }));
-      }
-
-      return result;
-    }
-  );
+  const isViaPlan = formGlobalServerData.isViaPlan;
 
   const sessionQuery = useQuery("session", fetchSession);
 
-  // const purchasePlanQuery = useQuery(
-  //   ["purchasePlan", formValue.purchase_plan_id, isViaPlan],
-  //   () =>
-  //     formValue.purchase_plan_id.trim().length &&
-  //     fetchPurchasePlan(formValue.purchase_plan_id)
-  // );
-
   const [selectedPlanPositions, setSelectedPlanPositions] = useState([]);
-
   const handleSubmit = () => {
+    const biddingPerPositionOption = formValue.options.includes(
+      "bidding_per_position_option"
+    );
+    const biddingPerUnitOption = formValue.options.includes(
+      "bidding_per_unit_option"
+    );
+    const reductionRatioOption = formValue.options.includes(
+      "reduction_ratio_option"
+    );
+    const protocolsCountMoreOption = formValue.options.includes(
+      "protocols_count_more_option"
+    );
+
+    const contractConcludeType = formValue.contract_conclude_type;
+
+    setFormGlobalValues((state) => ({
+      ...state,
+      bidding_per_unit: biddingPerUnitOption,
+      reduction_factor_purchase: reductionRatioOption,
+      reduction_factor_purchase_to: 1.0,
+      reduction_factor_purchase_from: 0.0,
+      more_than_one_protocol: protocolsCountMoreOption,
+      contract_type: contractConcludeType,
+      bid_part: "ONE",
+      cause_failed: null,
+      is_rebidding: true,
+      count_participant_ranked_lower_than_first: null,
+      criteria_evaluation: null,
+      currency: "RUB",
+      currency_rate: 1,
+      currency_rate_date: null,
+      platform: "SECTION_223_FZ",
+      contract_by_any_participant: true,
+    }));
     onNext();
     // if (!formRef.current.check()) {
     //   toaster.push(<Message type="error">Error</Message>);
@@ -130,16 +140,16 @@ const Step2 = ({ onNext, onPrevious }) => {
       >
         <Stack wrap spacing={50}>
           <Field
-            name="accepting_bids_place"
-            label="Прием заявок"
+            name="contract_conclude_type"
+            label="Форма заключения контракта"
             accepter={RadioGroup}
-            error={formError.accepting_bids_place}
+            error={formError.contract_conclude_type}
             inline
           >
-            <Radio value={"ON_ETP"}>На ЭТП</Radio>
-            <Radio value={"OUT_ETP"}>Вне ЭТП</Radio>
+            <Radio value={"ON_SITE"}>Электронная</Radio>
+            <Radio value={"ON_PAPER"}>Бумажная</Radio>
           </Field>
-          <Field
+          {/* <Field
             name="contract_conclude_place"
             label="Договор заключается"
             accepter={RadioGroup}
@@ -148,9 +158,9 @@ const Step2 = ({ onNext, onPrevious }) => {
           >
             <Radio value={"ON_ETP"}>На ЭТП</Radio>
             <Radio value={"OUT_ETP"}>Вне ЭТП</Radio>
-          </Field>
+          </Field> */}
         </Stack>
-        <Field
+        {/* <Field
           name="participant_bid_type"
           label="Тип предложения участников"
           accepter={RadioGroup}
@@ -160,7 +170,7 @@ const Step2 = ({ onNext, onPrevious }) => {
           <Radio value={"PRICE"}>Ценновое предложение</Radio>
           <Radio value={"REDUCTION_RATIO"}>Коэффициент снижения</Radio>
           <Radio value={"REDUCTION_PERCENT"}>Процент снижения</Radio>
-        </Field>
+        </Field> */}
 
         <Field
           name="options"
@@ -173,6 +183,9 @@ const Step2 = ({ onNext, onPrevious }) => {
           </Checkbox>
           <Checkbox value={"bidding_per_unit_option"}>
             Торги за единицу
+          </Checkbox>
+          <Checkbox value={"reduction_ratio_option"}>
+            Коэффициент снижения
           </Checkbox>
           <Checkbox value={"protocols_count_more_option"}>
             Количество публикуемых протоколов, согласно Положению Заказчика,

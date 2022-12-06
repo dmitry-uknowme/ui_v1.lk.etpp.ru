@@ -62,6 +62,8 @@ const Step1 = ({ onNext, onPrevious }) => {
     setServerData: setFormGlobalServerData,
   } = useContext(FormContext);
 
+  console.log("procedureee 1", formGlobalValues);
+
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
@@ -117,30 +119,45 @@ const Step1 = ({ onNext, onPrevious }) => {
       "subcontractor_option"
     );
 
+    setFormGlobalValues((state) => ({
+      ...state,
+      plan_position_id: planPositionId,
+      name: procedureTitle,
+      requirement_not_rnp: requirementRNPOption,
+      is_for_smb: smbOption,
+      is_subcontractor_requirement: subcontractorOption,
+      lots: [],
+    }));
+
+    setFormGlobalServerData((state) => ({
+      ...state,
+      isViaPlan,
+      purchasePlanId: formValue.purchase_plan_id,
+    }));
+
     if (!planPositionId) {
       return toaster.push(
         <Message type="error">Вы не выбрали позицию из плана закупок</Message>
       );
     }
 
-    const procedure = await createProcedureViaPurchasePlan(
-      {
-        profileId,
-        planPositionId,
-        procedureTitle,
-        requirementRNPOption,
-        smbOption,
-        subcontractorOption,
-      },
-      (err) => {
-        return toaster.push(
-          <Message type="error">{JSON.stringify(err)}</Message>
-        );
-      }
-    );
+    // const procedure = await createProcedureViaPurchasePlan(
+    //   {
+    //     profileId,
+    //     planPositionId,
+    //     procedureTitle,
+    //     requirementRNPOption,
+    //     smbOption,
+    //     subcontractorOption,
+    //   },
+    //   (err) => {
+    //     return toaster.push(
+    //       <Message type="error">{JSON.stringify(err)}</Message>
+    //     );
+    //   }
+    // );
 
-    setFormGlobalServerData((state) => ({ ...state, procedure: procedure }));
-    // onNext();
+    setTimeout(() => onNext(), 500);
     // if (!formRef.current.check()) {
     //   await createProcedureViaPurchasePlan(formValue.);
     //   toaster.push(<Message type="error">Error</Message>);
@@ -246,7 +263,7 @@ const Step1 = ({ onNext, onPrevious }) => {
         </Animation.Collapse>
         <Field
           name="procedure_title"
-          label="Наименование процедуры "
+          label="Наименование процедуры"
           accepter={Input}
           error={formError.procedure_title}
         />

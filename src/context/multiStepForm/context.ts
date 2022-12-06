@@ -6,9 +6,12 @@ export interface IMultiStepForm {
   serverData: {
     procedure?: IProcedure;
     session?: IAuthSession;
+    purchasePlan?: any;
+    isViaPlan?: boolean;
+    purchasePlanId?: string;
   };
-  formValues: { [key: string]: IProcedure };
-  formErrors: { [key: string]: IProcedure };
+  formValues: object;
+  formErrors: object;
 }
 
 export interface IMultiStepFormContext {
