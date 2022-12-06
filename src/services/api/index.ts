@@ -1,2 +1,2 @@
-export const API_URL = "http://223.etpp.loc/api";
-export const API_V1_URL = "http://223.etpp.loc/api/v1";
+export const API_URL = "http://localhost:8000/api";
+export const API_V1_URL = `${API_URL}/v1`;

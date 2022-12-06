@@ -21,12 +21,13 @@ import {
   Stack,
   InputGroup,
 } from "rsuite";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
 import fetchPurchasePlans from "../../services/api/fetchPurchasePlans";
 import fetchPurchasePlan from "../../services/api/fetchPurchasePlan";
 import fetchSession from "../../services/api/fetchSession";
+import MultiStepFormContext from "../../context/multiStepForm/context";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -55,12 +56,23 @@ const model = Schema.Model({
 });
 
 const Step4 = ({ onNext, onPrevious }) => {
+  const {
+    formValues: formGlobalValues,
+    setFormValues: setFormGlobalValues,
+    serverData: formGlobalServerData,
+    setServerData: setFormGlobalServerData,
+  } = useContext(MultiStepFormContext);
+
+  const serverProcedure = formGlobalServerData.procedure;
+
+  console.log("procedureee", formGlobalServerData.procedure);
+
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
-    lot_start_price: "",
-    lot_title: "",
-    lot_currency: "RUB",
+    lot_start_price: serverProcedure?.lots[0]?.price?.amount || "",
+    lot_title: serverProcedure?.title || "",
+    lot_currency: serverProcedure?.currency.value || "RUB",
     nds_type: "NO_NDS",
     provision_bid_type: "WITHOUT_COLLATERAL",
     provision_contract_type: "NOT_SPECIFIED",
@@ -125,14 +137,10 @@ const Step4 = ({ onNext, onPrevious }) => {
           <Field
             name="lot_start_price"
             label="Начальная (максимальная) цена"
-            accepter={InputGroup}
+            accepter={Input}
             error={formError.lot_start_price}
-          >
-            <Input />
+          />
 
-            {/* <Input /> */}
-            <InputGroup.Addon>.00</InputGroup.Addon>
-          </Field>
           <Field
             name="lot_currency"
             label="Валюта"

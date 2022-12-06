@@ -20,12 +20,13 @@ import {
   Header,
   Stack,
 } from "rsuite";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
 import fetchPurchasePlans from "../../services/api/fetchPurchasePlans";
 import fetchPurchasePlan from "../../services/api/fetchPurchasePlan";
 import fetchSession from "../../services/api/fetchSession";
+import MultiStepFormContext from "../../context/multiStepForm/context";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -54,6 +55,15 @@ const model = Schema.Model({
 });
 
 const Step2 = ({ onNext, onPrevious }) => {
+  const {
+    formValues: formGlobalValues,
+    setFormValues: setFormGlobalValues,
+    serverData: formGlobalServerData,
+    setServerData: setFormGlobalServerData,
+  } = useContext(MultiStepFormContext);
+
+  console.log("procedureeee", formGlobalServerData);
+
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({

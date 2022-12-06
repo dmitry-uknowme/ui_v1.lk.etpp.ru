@@ -1,13 +1,15 @@
 import axios from "axios";
-import { API_V1_URL } from ".";
+import { API_URL, API_V1_URL } from ".";
 import { IProcedure } from "../../types/procedure";
 
 export interface CreateProcedureViaPurchasePlanPayload {
   profileId: string;
   planPositionId: string;
+  procedureTitle?: string;
+  requirementRNPOption?: boolean;
+  smbOption?: boolean;
+  subcontractorOption?: boolean;
 }
-
-const API_URL = API_V1_URL;
 
 const createProcedureViaPurchasePlan = async (
   payload: CreateProcedureViaPurchasePlanPayload,

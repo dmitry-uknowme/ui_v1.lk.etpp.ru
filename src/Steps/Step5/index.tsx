@@ -21,12 +21,14 @@ import {
   Stack,
   InputGroup,
 } from "rsuite";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
 import fetchPurchasePlans from "../../services/api/fetchPurchasePlans";
 import fetchPurchasePlan from "../../services/api/fetchPurchasePlan";
 import fetchSession from "../../services/api/fetchSession";
+import MultiStepFormContext from "../../context/multiStepForm/context";
+import fetchProfileOrganizations from "../../services/api/fetchProfileOrganizations";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -55,17 +57,40 @@ const model = Schema.Model({
 });
 
 const Step5 = ({ onNext, onPrevious }) => {
+  const {
+    formValues: formGlobalValues,
+    setFormValues: setFormGlobalValues,
+    serverData: formGlobalServerData,
+    setServerData: setFormGlobalServerData,
+  } = useContext(MultiStepFormContext);
+
+  const session = formGlobalServerData.session;
+  const profileId = formGlobalServerData?.session?.profile_id;
+
+  const profileOrganizationsQuery = useQuery(
+    [
+      "purchasePlan",
+      formGlobalServerData?.session && formGlobalServerData.session.profileId,
+    ],
+    async () => {
+      const organizations = await fetchProfileOrganizations({ profileId });
+      setFormValue((state) => ({
+        ...state,
+        organizer_id: organizations.id,
+        customer_id: organizations.id,
+      }));
+      return organizations;
+    }
+  );
+
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
     isOrganizerEqualsCustomer: [],
-    lot_start_price: "",
-    lot_title: "",
-    lot_currency: "RUB",
-    nds_type: "NO_NDS",
+    organizer_id: "",
+    customer_id: "",
   });
 
-  const sessionQuery = useQuery("session", fetchSession);
   const isOrganizerManualInput = formValue.organizer_id === "MANUAL_INPUT";
   const isCustomerManualInput = formValue.customer_id === "MANUAL_INPUT";
   const isOrganizerEqualsCustomer =
@@ -111,14 +136,20 @@ const Step5 = ({ onNext, onPrevious }) => {
                 label="Выбрать из списка"
                 accepter={SelectPicker}
                 error={formError.procedure_section}
-                data={[
-                  { value: "SECTION_FZ_223", label: "223-ФЗ" },
-                  {
-                    value: "SECTION_COMMERCIAL_PROCEDURES",
-                    label: "Коммерческие процедуры",
-                  },
-                  { value: "MANUAL_INPUT", label: "Заполнить вручную" },
-                ]}
+                data={
+                  profileOrganizationsQuery.isError
+                    ? [{ label: "Заполнить вручную", value: "MANUAL_INPUT" }]
+                    : [
+                        {
+                          label:
+                            profileOrganizationsQuery?.data
+                              ?.short_title_organization,
+                          value: profileOrganizationsQuery?.data?.id,
+                        },
+                        { label: "Заполнить вручную", value: "MANUAL_INPUT" },
+                      ]
+                }
+                loading={profileOrganizationsQuery.isLoading}
                 placeholder="Выберите"
               />
               <Animation.Collapse in={isOrganizerManualInput} timeout={500}>
@@ -221,14 +252,19 @@ const Step5 = ({ onNext, onPrevious }) => {
                 label="Выбрать из списка"
                 accepter={SelectPicker}
                 error={formError.procedure_section}
-                data={[
-                  { value: "SECTION_FZ_223", label: "223-ФЗ" },
-                  {
-                    value: "SECTION_COMMERCIAL_PROCEDURES",
-                    label: "Коммерческие процедуры",
-                  },
-                  { value: "MANUAL_INPUT", label: "Заполнить вручную" },
-                ]}
+                data={
+                  profileOrganizationsQuery.isError
+                    ? [{ label: "Заполнить вручную", value: "MANUAL_INPUT" }]
+                    : [
+                        {
+                          label:
+                            profileOrganizationsQuery?.data
+                              ?.short_title_organization,
+                          value: profileOrganizationsQuery?.data?.id,
+                        },
+                        { label: "Заполнить вручную", value: "MANUAL_INPUT" },
+                      ]
+                }
                 placeholder="Выберите"
               />
               <Animation.Collapse in={isCustomerManualInput} timeout={500}>

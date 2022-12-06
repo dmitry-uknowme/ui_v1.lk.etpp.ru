@@ -50,10 +50,9 @@ const Table: React.FC<TableProps> = ({
   return (
     <BaseTable
       loading={isLoading}
-      height={300}
+      height={500}
       hover
       showHeader
-      autoHeight
       data={data}
       bordered
       cellBordered

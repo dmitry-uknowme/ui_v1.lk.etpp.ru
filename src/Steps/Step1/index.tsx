@@ -108,14 +108,38 @@ const Step1 = ({ onNext, onPrevious }) => {
     }
     const profileId = session.profile_id;
     const planPositionId = formValue.purchase_method_id;
-    await createProcedureViaPurchasePlan(
-      { profileId, planPositionId },
+    const procedureTitle = formValue.procedure_title;
+    const requirementRNPOption = formValue.options.includes(
+      "rnp_requirement_option"
+    );
+    const smbOption = formValue.options.includes("smb_participant_option");
+    const subcontractorOption = formValue.options.includes(
+      "subcontractor_option"
+    );
+
+    if (!planPositionId) {
+      return toaster.push(
+        <Message type="error">Вы не выбрали позицию из плана закупок</Message>
+      );
+    }
+
+    const procedure = await createProcedureViaPurchasePlan(
+      {
+        profileId,
+        planPositionId,
+        procedureTitle,
+        requirementRNPOption,
+        smbOption,
+        subcontractorOption,
+      },
       (err) => {
         return toaster.push(
           <Message type="error">{JSON.stringify(err)}</Message>
         );
       }
     );
+
+    setFormGlobalServerData((state) => ({ ...state, procedure: procedure }));
     // onNext();
     // if (!formRef.current.check()) {
     //   await createProcedureViaPurchasePlan(formValue.);
