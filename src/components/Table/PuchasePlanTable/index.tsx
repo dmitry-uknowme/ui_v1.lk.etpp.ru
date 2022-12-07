@@ -44,7 +44,7 @@ const PurchasePlanTable = (props) => {
           label: "Срок истечения договора",
         },
         {
-          key: "status",
+          key: "status_localized",
           label: "Статус",
         },
       ]}

@@ -1,4 +1,14 @@
-import { Form, Button, Schema, Panel, Uploader, Table, Header } from "rsuite";
+import {
+  Form,
+  Button,
+  Schema,
+  Panel,
+  Uploader,
+  Table,
+  Header,
+  toaster,
+  Message,
+} from "rsuite";
 import $ from "jquery";
 import "../../../public/new_cryptopro/signlib";
 import React, { useContext, useEffect, useState } from "react";
@@ -52,7 +62,11 @@ const Step6 = ({ onNext, onPrevious }) => {
 
   const procedure = formGlobalServerData.procedure;
   console.log("proceee 6", procedure);
-  const procedureId = procedure.id;
+  if (!procedure) {
+    toaster.push(<Message type="error">Извещение не создано </Message>);
+    return onPrevious();
+  }
+  const procedureId = procedure?.id;
 
   const currencyMask = createNumberMask({
     prefix: "",
@@ -91,7 +105,7 @@ const Step6 = ({ onNext, onPrevious }) => {
   const signDocument = () => {};
 
   const handleSubmit = () => {
-    onNext();
+    // onNext();
     // if (!formRef.current.check()) {
     //   toaster.push(<Message type="error">Error</Message>);
     //   return;

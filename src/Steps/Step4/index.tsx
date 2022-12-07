@@ -1,19 +1,9 @@
 import {
   Form,
   Button,
-  CheckboxGroup,
-  RadioGroup,
   Checkbox,
-  Radio,
   Schema,
-  CheckPicker,
-  InputNumber,
   Panel,
-  Slider,
-  DatePicker,
-  Message,
-  toaster,
-  FlexboxGrid,
   Input,
   Animation,
   SelectPicker,
@@ -22,6 +12,7 @@ import {
   InputGroup,
 } from "rsuite";
 import React, { useContext, useEffect, useState } from "react";
+
 import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
 import fetchPurchasePlans from "../../services/api/fetchPurchasePlans";
@@ -168,12 +159,6 @@ const Step4 = ({ onNext, onPrevious }) => {
           //TODO:da
           starting_price: `RUB ${parseFloat(formValue.lot_start_price) * 100}`,
           positions: [],
-          date_time: {
-            start_bids: "2022-12-04 12:12:12",
-            close_bids: "2022-12-04 12:12:12",
-            review_bids: "2022-12-04 12:12:12",
-            summing_up_end: "2022-12-04 12:12:12",
-          },
         },
       ],
     }));

@@ -83,6 +83,9 @@ const Step1 = ({ onNext, onPrevious }) => {
     async () => {
       if (isViaPlan) {
         const result = await fetchPurchasePlans();
+        if (!result?.length) {
+          return;
+        }
         setFormValue((state) => ({ ...state, purchase_plan_id: result[0].id }));
         return result;
       }
@@ -103,6 +106,7 @@ const Step1 = ({ onNext, onPrevious }) => {
 
   const handleSubmit = async () => {
     const session = formGlobalServerData.session;
+
     if (!session) {
       return toaster.push(
         <Message type="error">Пользователь не авторизован</Message>
@@ -254,7 +258,18 @@ const Step1 = ({ onNext, onPrevious }) => {
                   ")"}
             </Header>
             <PurchasePlanTable
-              data={purchasePlanQuery?.data?.positions}
+              data={purchasePlanQuery?.data?.positions?.map((position) => ({
+                ...position,
+                maximum_contract_price: position.maximum_contract_price
+                  ? (
+                      parseInt(
+                        position.maximum_contract_price
+                          .replaceAll("RUB", "")
+                          .replaceAll(/\s/g, "")
+                      ) / 100
+                    ).toFixed(2)
+                  : null,
+              }))}
               isLoading={purchasePlanQuery?.isLoading}
               selectedItems={selectedPlanPositions}
               setSelectedItems={setSelectedPlanPositions}

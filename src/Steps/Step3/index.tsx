@@ -21,6 +21,7 @@ import {
   Stack,
   InputGroup,
 } from "rsuite";
+import { format as formatDate } from "date-fns";
 import React, { useContext, useEffect, useState } from "react";
 import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
@@ -130,10 +131,22 @@ const Step3 = ({ onNext, onPrevious }) => {
           //TODO:da
           positions: [],
           date_time: {
-            start_bids: "2022-12-04 12:12:12",
-            close_bids: "2022-12-04 12:12:12",
-            review_bids: "2022-12-04 12:12:12",
-            summing_up_end: "2022-12-04 12:12:12",
+            start_bids: formatDate(
+              formValue.start_acceipting_bids_date,
+              "yyyy-MM-dd HH:mm:ss"
+            ),
+            close_bids: formatDate(
+              formValue.end_acceipting_bids_date,
+              "yyyy-MM-dd HH:mm:ss"
+            ),
+            review_bids: formatDate(
+              formValue.reviewing_bids_date,
+              "yyyy-MM-dd HH:mm:ss"
+            ),
+            summing_up_end: formatDate(
+              formValue.summing_up_bids_date,
+              "yyyy-MM-dd HH:mm:ss"
+            ),
           },
         },
       ],
