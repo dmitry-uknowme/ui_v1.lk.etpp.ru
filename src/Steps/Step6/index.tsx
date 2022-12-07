@@ -1,27 +1,5 @@
-import {
-  Form,
-  Button,
-  CheckboxGroup,
-  RadioGroup,
-  Checkbox,
-  Radio,
-  Schema,
-  CheckPicker,
-  InputNumber,
-  Panel,
-  Slider,
-  DatePicker,
-  Message,
-  toaster,
-  FlexboxGrid,
-  Input,
-  Animation,
-  SelectPicker,
-  Header,
-  Stack,
-  InputGroup,
-  Uploader,
-} from "rsuite";
+import { Form, Button, Schema, Panel, Uploader, Table, Header } from "rsuite";
+import $ from "jquery";
 import "../../../public/new_cryptopro/signlib";
 import React, { useContext, useEffect, useState } from "react";
 import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
@@ -34,6 +12,8 @@ import fetchSession from "../../services/api/fetchSession";
 import toBase64 from "../../utils/toBase64";
 import axios from "axios";
 import MultiStepFormContext from "../../context/multiStepForm/context";
+import uploadNoticeDocuments from "../../services/api/uploadNoticeDocuments";
+import { API_V1_URL } from "../../services/api";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -62,6 +42,7 @@ const model = Schema.Model({
 });
 
 const Step6 = ({ onNext, onPrevious }) => {
+  const [documents, setDocuments] = useState([]);
   const {
     formValues: formGlobalValues,
     setFormValues: setFormGlobalValues,
@@ -98,12 +79,16 @@ const Step6 = ({ onNext, onPrevious }) => {
 
   const sessionQuery = useQuery("session", fetchSession);
 
+  const noticeId = formGlobalServerData.noticeId;
+
   // const purchasePlanQuery = useQuery(
   //   ["purchasePlan", formValue.purchase_plan_id, isViaPlan],
   //   () =>
   //     formValue.purchase_plan_id.trim().length &&
   //     fetchPurchasePlan(formValue.purchase_plan_id)
   // );
+
+  const signDocument = () => {};
 
   const handleSubmit = () => {
     onNext();
@@ -114,6 +99,8 @@ const Step6 = ({ onNext, onPrevious }) => {
     // toaster.push(<Message type="success">Success</Message>);
   };
 
+  const { Column, HeaderCell, Cell } = Table;
+
   return (
     <div className="col-md-8">
       <Form
@@ -123,10 +110,52 @@ const Step6 = ({ onNext, onPrevious }) => {
         formValue={formValue}
         model={model}
       >
-        <MaskedInput mask={currencyMask} />
         <Panel header="Документы процедуры">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Наименование</th>
+                <th>Статус</th>
+              </tr>
+            </thead>
+            <tbody>
+              {documents.map((doc) => (
+                <tr>
+                  <td>{doc.file_real_name}</td>
+                  <td>
+                    {doc.status === "STATUS_NEW" ? (
+                      <Button appearance="primary" color="green">
+                        Подписать
+                      </Button>
+                    ) : (
+                      doc.status_localized
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {/* <Table data={documents}>
+            {Object.keys(documents).map((key) => (
+              <Column>
+                <HeaderCell>Наименование</HeaderCell>
+                <Cell dataKey={key} />
+              </Column>
+
+              //    <Column width={200}>
+              //   <HeaderCell>Наименование</HeaderCell>
+              //   <Cell dataKey="file_real_name" />
+              // </Column>
+
+              // <Column width={120}>
+              //   <HeaderCell>Статус</HeaderCell>
+              //   <Cell dataKey="status_localized"></Cell>
+              // </Column>
+            ))}
+          </Table> */}
           <Uploader
-            action=""
+            action={`${API_V1_URL}/notice/fcc5bf8d-aadf-4715-a155-303ed3d84b23/document/upload`}
+            // action={`${API_V1_URL}/notice/${noticeId}/document/upload`}
             autoUpload={false}
             onUpload={(event) => {
               console.log("on uploadddd", event);
@@ -134,22 +163,24 @@ const Step6 = ({ onNext, onPrevious }) => {
             // onProgress={(event) => console.log("on progress", event)}
             onChange={async (files) => {
               console.log("on changeee", files);
-              axios({
-                method: "post",
-                url: "http://localhost:8001/api",
-                // data: bodyFormData,
-                headers: { "Content-Type": "multipart/form-data" },
-              })
-                .then(function (response) {
-                  //handle success
-                  console.log(response);
-                })
-                .catch(function (response) {
-                  //handle error
-                  console.log(response);
-                });
+              const formData = new FormData();
+              formData.append("files[]", files[0].blobFile);
+              $.ajax({
+                url: `${API_V1_URL}/notice/fcc5bf8d-aadf-4715-a155-303ed3d84b23/document/upload`,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: "POST",
+                xhrFields: {
+                  withCredentials: true,
+                },
+                success: (response) => {
+                  console.log("resss", response);
+                  setDocuments((state) => [...state, ...response.files]);
+                },
+              });
             }}
-            // action="//jsonplaceholder.typicode.com/posts/"
             draggable
             multiple
           >
@@ -171,7 +202,7 @@ const Step6 = ({ onNext, onPrevious }) => {
         <Form.Group>
           <Button onClick={onPrevious}>Назад</Button>
           <Button appearance="primary" onClick={handleSubmit}>
-            Далее
+            Предпросмотр процедуры
           </Button>
         </Form.Group>
       </Form>

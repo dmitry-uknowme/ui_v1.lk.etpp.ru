@@ -30,6 +30,7 @@ import fetchSession from "../../services/api/fetchSession";
 import MultiStepFormContext from "../../context/multiStepForm/context";
 import fetchProfileOrganizations from "../../services/api/fetchProfileOrganizations";
 import axios from "axios";
+import createProcedure from "../../services/api/createProcedure";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -199,25 +200,22 @@ const Step5 = ({ onNext, onPrevious }) => {
         },
       },
     }));
-    await fetch("http://localhost:8001/api/procedures/COMPETITIVE_SELECTION", {
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify(formGlobalValues),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+    const procedure = await createProcedure(formGlobalValues, (err) => {
+      toaster.push(
+        <Message type="error">
+          Ошибка при создании процедуры {JSON.stringify(err)}
+        </Message>
+      );
     });
-    // await axios.post(
-    //   "http://localhost:8001/api/procedures/COMPETITIVE_SELECTION",
-    //   {
-    //     data: formGlobalValues,
-    //     withCredentials: true,
-    //     headers: {
-    //       "Content-Type": `multipart/form-data`,
-    //     },
-    //   }
-    // );
+
+    console.log("proceee", procedure);
+    if (procedure) {
+      toaster.push(<Message type="success">Процедура успешно создана</Message>);
+      const noticeId = procedure.notice_id;
+      setFormGlobalServerData((state) => ({ ...state, noticeId }));
+      onNext();
+    }
+
     //setTimeout(() => onNext(), 500);
     // if (!formRef.current.check()) {
     //   toaster.push(<Message type="error">Error</Message>);

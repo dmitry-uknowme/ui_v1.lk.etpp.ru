@@ -123,13 +123,11 @@ const Step3 = ({ onNext, onPrevious }) => {
       requirements_participant,
       provision_procurement_documentation,
       other_info_by_customer,
-      original_price: "RUB 229",
       lots: [
         ...formGlobalValues.lots,
         {
           name: formGlobalValues.name,
           //TODO:da
-          starting_price: "RUB 229",
           positions: [],
           date_time: {
             start_bids: "2022-12-04 12:12:12",
@@ -137,32 +135,6 @@ const Step3 = ({ onNext, onPrevious }) => {
             review_bids: "2022-12-04 12:12:12",
             summing_up_end: "2022-12-04 12:12:12",
           },
-          // date_time: {
-          //   start_bids:
-          //     formValue.start_acceipting_bids_date
-          //       .toLocaleDateString("ru-RU")
-          //       .replaceAll(".", "-") +
-          //     " " +
-          //     formValue.start_acceipting_bids_date.toLocaleTimeString("ru-RU"),
-          //   close_bids:
-          //     formValue.end_acceipting_bids_date
-          //       .toLocaleDateString("ru-RU")
-          //       .replaceAll(".", "-") +
-          //     " " +
-          //     formValue.end_acceipting_bids_date.toLocaleTimeString("ru-RU"),
-          //   review_bids:
-          //     formValue.reviewing_bids_date
-          //       .toLocaleDateString("ru-RU")
-          //       .replaceAll(".", "-") +
-          //     " " +
-          //     formValue.reviewing_bids_date.toLocaleTimeString("ru-RU"),
-          //   summing_up_end:
-          //     formValue.summing_up_bids_date
-          //       .toLocaleDateString("ru-RU")
-          //       .replaceAll(".", "-") +
-          //     " " +
-          //     formValue.summing_up_bids_date.toLocaleTimeString("ru-RU"),
-          // },
         },
       ],
     }));

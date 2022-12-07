@@ -145,21 +145,37 @@ const Step4 = ({ onNext, onPrevious }) => {
       ...state,
       provision_bid: {
         is_specified: isBidProvisionSpecified,
-        amount: "RUB" + " " + bidProvisionAmount.toString(),
-        percent: 1.5,
+        amount: `RUB ${parseFloat(bidProvisionAmount) * 100}`,
+        percent: parseFloat(bidProvisionPercent),
         // percent: parseFloat(parseFloat(bidProvisionPercent).toFixed(2)),
         // percent: bidProvisionPercent,
-        methods: [],
+        methods: [formValue.provision_bid_type],
         payment_return_deposit: null,
       },
       provision_contract: {
         is_specified: isContractProvisionSpecified,
         type: contractProvisionType,
-        amount: "RUB" + " " + contractProvisionAmount.toString(),
+        amount: `RUB ${parseFloat(contractProvisionAmount) * 100}`,
         // percent: parseFloat(contractProvisionPercent),
         // percent: contractProvisionPercent,
         payment_return_deposit: null,
       },
+      original_price: `RUB ${parseFloat(formValue.lot_start_price) * 100}`,
+      lots: [
+        {
+          ...formGlobalValues.lots[0],
+          name: formGlobalValues.name,
+          //TODO:da
+          starting_price: `RUB ${parseFloat(formValue.lot_start_price) * 100}`,
+          positions: [],
+          date_time: {
+            start_bids: "2022-12-04 12:12:12",
+            close_bids: "2022-12-04 12:12:12",
+            review_bids: "2022-12-04 12:12:12",
+            summing_up_end: "2022-12-04 12:12:12",
+          },
+        },
+      ],
     }));
     onNext();
     // if (!formRef.current.check()) {

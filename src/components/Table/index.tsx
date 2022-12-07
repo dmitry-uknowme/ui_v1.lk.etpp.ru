@@ -26,7 +26,6 @@ const CompactCell = (props) => {
               selected.find((item) => item.id === rowData.id) ? true : false
             }
             onChange={(value) => {
-              //   console.log("checkkkkkkkkk", rowData);
               setSelected([rowData]);
             }}
           />
