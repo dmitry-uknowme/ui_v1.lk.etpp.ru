@@ -50,7 +50,9 @@ const Step6 = ({ onNext, onPrevious }) => {
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
 
-  console.log("procedureeee", formGlobalValues);
+  const procedure = formGlobalServerData.procedure;
+  console.log("proceee 6", procedure);
+  const procedureId = procedure.id;
 
   const currencyMask = createNumberMask({
     prefix: "",
@@ -74,8 +76,6 @@ const Step6 = ({ onNext, onPrevious }) => {
     lot_currency: "RUB",
     nds_type: "NO_NDS",
   });
-
-  const isViaPlan = formValue.is_via_plan === "true";
 
   const sessionQuery = useQuery("session", fetchSession);
 
@@ -154,7 +154,7 @@ const Step6 = ({ onNext, onPrevious }) => {
             ))}
           </Table> */}
           <Uploader
-            action={`${API_V1_URL}/notice/fcc5bf8d-aadf-4715-a155-303ed3d84b23/document/upload`}
+            action={`${API_V1_URL}/notice/${noticeId}/document/upload`}
             // action={`${API_V1_URL}/notice/${noticeId}/document/upload`}
             autoUpload={false}
             onUpload={(event) => {
@@ -166,7 +166,7 @@ const Step6 = ({ onNext, onPrevious }) => {
               const formData = new FormData();
               formData.append("files[]", files[0].blobFile);
               $.ajax({
-                url: `${API_V1_URL}/notice/fcc5bf8d-aadf-4715-a155-303ed3d84b23/document/upload`,
+                url: `${API_V1_URL}/notice/${noticeId}/document/upload`,
                 data: formData,
                 cache: false,
                 contentType: false,
@@ -201,9 +201,9 @@ const Step6 = ({ onNext, onPrevious }) => {
 
         <Form.Group>
           <Button onClick={onPrevious}>Назад</Button>
-          <Button appearance="primary" onClick={handleSubmit}>
-            Предпросмотр процедуры
-          </Button>
+          <a href={`https://dev.223.etpp.ru/procedure/${procedureId}`}>
+            <Button appearance="primary">Предпросмотр процедуры</Button>
+          </a>
         </Form.Group>
       </Form>
     </div>

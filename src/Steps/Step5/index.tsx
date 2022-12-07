@@ -208,11 +208,10 @@ const Step5 = ({ onNext, onPrevious }) => {
       );
     });
 
-    console.log("proceee", procedure);
     if (procedure) {
       toaster.push(<Message type="success">Процедура успешно создана</Message>);
       const noticeId = procedure.notice_id;
-      setFormGlobalServerData((state) => ({ ...state, noticeId }));
+      setFormGlobalServerData((state) => ({ ...state, noticeId, procedure }));
       onNext();
     }
 
