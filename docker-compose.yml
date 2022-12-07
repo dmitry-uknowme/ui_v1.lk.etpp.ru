@@ -1,0 +1,16 @@
+version: '3.4'
+services:
+  ui:
+    build:
+      context: ./
+      target: dev
+    volumes:
+      - .:/app
+    command: yarn run dev
+    ports:
+      - "3010:3010"
+    environment:
+      NODE_ENV: development
+      DEBUG: nodejs-docker-express:*
+  
+  

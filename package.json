@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3060",
+    "container": "sudo docker-compose up --build -d ui",
+    "containers-start": "sudo docker-compose up --build -d",
+    "containers-stop": "sudo docker-compose down -v --remove-orphans",
+    "dev": "vite --port 3010 --host",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
