@@ -37,6 +37,10 @@ const createProcedure = async (
     // }
     return data;
   } catch (err) {
+    if (err.response.status === 400) {
+      return onError(err.response.data.errors);
+    }
+
     return onError(err);
   }
 };
