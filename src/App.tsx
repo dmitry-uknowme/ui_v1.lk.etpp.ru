@@ -9,6 +9,9 @@ import Step4 from "./Steps/Step4";
 import Step6 from "./Steps/Step6";
 import Step5 from "./Steps/Step5";
 import FormContextProvider from "./context/multiStepForm/provider";
+import "../public/new_cryptopro/signlib";
+
+window.signlib = signlib;
 
 function App() {
   const [step, setStep] = React.useState(0);

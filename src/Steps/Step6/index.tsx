@@ -10,7 +10,7 @@ import {
   Message,
 } from "rsuite";
 import $ from "jquery";
-import "../../../public/new_cryptopro/signlib";
+
 import React, { useContext, useEffect, useState } from "react";
 import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
@@ -24,6 +24,8 @@ import axios from "axios";
 import MultiStepFormContext from "../../context/multiStepForm/context";
 import uploadNoticeDocuments from "../../services/api/uploadNoticeDocuments";
 import { API_V1_URL } from "../../services/api";
+import fetchNoticeDocuments from "../../services/api/fetchNoticeDocuments";
+import sendSignedDocuments from "../../services/api/sendSignedDocument";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -61,6 +63,7 @@ const Step6 = ({ onNext, onPrevious }) => {
   } = useContext(MultiStepFormContext);
 
   const procedure = formGlobalServerData.procedure;
+  const cert_thumbprint = formGlobalServerData.session?.cert_thumbprint;
   console.log("proceee 6", procedure);
   if (!procedure) {
     toaster.push(<Message type="error">Извещение не создано </Message>);
@@ -95,6 +98,8 @@ const Step6 = ({ onNext, onPrevious }) => {
 
   const noticeId = formGlobalServerData.noticeId;
 
+  console.log("doccc", documents);
+
   // const purchasePlanQuery = useQuery(
   //   ["purchasePlan", formValue.purchase_plan_id, isViaPlan],
   //   () =>
@@ -102,7 +107,41 @@ const Step6 = ({ onNext, onPrevious }) => {
   //     fetchPurchasePlan(formValue.purchase_plan_id)
   // );
 
-  const signDocument = () => {};
+  const initDocuments = async () => {
+    const serverDocuments = await fetchNoticeDocuments({ noticeId });
+    setDocuments(serverDocuments);
+  };
+
+  const signDocument = async (document) => {
+    const signlib = window.signlib;
+    try {
+      const signData = await signlib.signStringHash(
+        document.file_hash,
+        cert_thumbprint
+      );
+      console.log("to signnnn", {
+        documents: [{ id: document.id, sign: signData.sign }],
+      });
+      await sendSignedDocuments({
+        documents: [{ id: document.id, sign: signData.sign }],
+      });
+      setDocuments((state) => [
+        ...state.map((doc) =>
+          doc.id === document.id
+            ? { ...doc, status_localized: "Подписан" }
+            : doc
+        ),
+      ]);
+
+      return toaster.push(
+        <Message type="success">Документ успешно подписан</Message>
+      );
+    } catch (err) {
+      return toaster.push(
+        <Message type="error">Ошибка при подписании документа</Message>
+      );
+    }
+  };
 
   const handleSubmit = () => {
     // onNext();
@@ -114,6 +153,10 @@ const Step6 = ({ onNext, onPrevious }) => {
   };
 
   const { Column, HeaderCell, Cell } = Table;
+
+  useEffect(() => {
+    initDocuments();
+  }, []);
 
   return (
     <div className="col-md-8">
@@ -133,20 +176,27 @@ const Step6 = ({ onNext, onPrevious }) => {
               </tr>
             </thead>
             <tbody>
-              {documents.map((doc) => (
-                <tr>
-                  <td>{doc.file_real_name}</td>
-                  <td>
-                    {doc.status === "STATUS_NEW" ? (
-                      <Button appearance="primary" color="green">
-                        Подписать
-                      </Button>
-                    ) : (
-                      doc.status_localized
-                    )}
-                  </td>
-                </tr>
-              ))}
+              {documents?.length
+                ? documents.map((doc) => (
+                    <tr>
+                      <td>{doc.file_real_name}</td>
+                      <td>
+                        {doc.status === "STATUS_NEW" ? (
+                          <Button
+                            appearance="primary"
+                            color="blue"
+                            size="xs"
+                            onClick={() => signDocument(doc)}
+                          >
+                            Подписать
+                          </Button>
+                        ) : (
+                          doc.status_localized
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                : null}
             </tbody>
           </table>
           {/* <Table data={documents}>

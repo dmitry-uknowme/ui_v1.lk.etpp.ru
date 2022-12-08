@@ -36,7 +36,7 @@ const PurchasePlanTable = (props) => {
           label: "Начальная (максимальная) цена договора (цена лота)",
         },
         {
-          key: "purchase_planned_date",
+          key: "planning_period_publication_at",
           label: "Планируемая дата размещения",
         },
         {

@@ -3,4 +3,6 @@ export interface IAuthSession {
   profile_id: string;
   email: string;
   role: string;
+  cert_thumbprint: string;
+  cert_status: string;
 }

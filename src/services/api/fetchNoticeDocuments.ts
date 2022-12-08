@@ -1,3 +1,4 @@
+import axios from "axios";
 import { API_V1_URL } from ".";
 
 interface FetchNoticeDocumentsPayload {
@@ -10,17 +11,17 @@ const fetchNoticeDocuments = async (
 ) => {
   const { noticeId } = payload;
   try {
-    const documentsResponse = await fetch(
+    const { data } = await axios.get(
       `${API_V1_URL}/notice/${noticeId}/documents`,
       {
-        method:"GET,
         headers: {
           Accept: "application/json",
         },
-        credentials: "include",
+        withCredentials: true,
       }
     );
-    return documentsResponse.json((res) => res.files);
+
+    return data.files;
   } catch (err) {
     return onError(err);
   }

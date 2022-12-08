@@ -1,3 +1,4 @@
+import axios from "axios";
 import { API_V1_URL } from ".";
 
 // interface CreateProcedurePayload {}
@@ -7,19 +8,34 @@ const createProcedure = async (
   onError: (...args: any) => any
 ) => {
   try {
-    const procedureResponse = await fetch(
+    const { data } = await axios.post(
       `${API_V1_URL}/procedures/COMPETITIVE_SELECTION`,
+      payload,
       {
-        method: "POST",
-        body: JSON.stringify(payload),
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        credentials: "include",
+        withCredentials: true,
       }
     );
-    return procedureResponse.json((res) => res.procedure);
+    // const procedureResponse = await fetch(
+    //   `${API_V1_URL}/procedures/COMPETITIVE_SELECTION`,
+    //   {
+    //     method: "POST",
+    //     body: JSON.stringify(payload),
+    //     headers: {
+    //       Accept: "application/json",
+    //       "Content-Type": "application/json",
+    //     },
+    //     credentials: "include",
+    //   }
+    // );
+    // console.log("procres", procedureResponse);
+    // if (procedureResponse.status !== 200 || procedureResponse.status !== 201) {
+    //   return onError(procedureResponse);
+    // }
+    return data;
   } catch (err) {
     return onError(err);
   }

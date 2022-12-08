@@ -200,18 +200,22 @@ const Step5 = ({ onNext, onPrevious }) => {
         },
       },
     }));
-    const procedure = await createProcedure(formGlobalValues, (err) => {
+    const procedureData = await createProcedure(formGlobalValues, (err) => {
       toaster.push(
         <Message type="error">
-          Ошибка при создании процедуры {JSON.stringify(err)}
+          Ошибка при создании процедуры {JSON.stringify(err, null, 2)}
         </Message>
       );
     });
 
-    if (procedure) {
+    if (procedureData) {
       toaster.push(<Message type="success">Процедура успешно создана</Message>);
-      const noticeId = procedure.notice_id;
-      setFormGlobalServerData((state) => ({ ...state, noticeId, procedure }));
+      const noticeId = procedureData.notice_id;
+      setFormGlobalServerData((state) => ({
+        ...state,
+        noticeId,
+        procedure: procedureData.procedure,
+      }));
       onNext();
     }
 

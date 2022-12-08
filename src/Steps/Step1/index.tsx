@@ -102,6 +102,10 @@ const Step1 = ({ onNext, onPrevious }) => {
       (await fetchPurchasePlan(formValue.purchase_plan_id))
   );
 
+  const currentPurchasePlan = purchasePlansQuery?.data?.find(
+    (item) => item.id === formValue.purchase_plan_id
+  );
+
   const [selectedPlanPositions, setSelectedPlanPositions] = useState([]);
 
   const handleSubmit = async () => {
@@ -174,7 +178,7 @@ const Step1 = ({ onNext, onPrevious }) => {
     if (selectedPlanPositions.length) {
       setFormValue((state) => ({
         ...state,
-        procedure_title: selectedPlanPositions[0].title,
+        procedure_title: selectedPlanPositions[0].contract_subject,
         purchase_method_id: selectedPlanPositions[0].id,
       }));
     }
@@ -242,7 +246,7 @@ const Step1 = ({ onNext, onPrevious }) => {
                 purchasePlansQuery?.data?.length
                   ? purchasePlansQuery.data.map((plan) => ({
                       value: plan.id,
-                      label: `План закупки (${plan.reporting_year})`,
+                      label: `План закупки №${plan.registration_number} (${plan.reporting_year})`,
                     }))
                   : []
               }
@@ -250,12 +254,8 @@ const Step1 = ({ onNext, onPrevious }) => {
               placeholder="Выберите"
             />
             <Header>
-              {purchasePlansQuery?.data?.length &&
-                "План закупки (" +
-                  purchasePlansQuery.data.find(
-                    (item) => item.id === formValue.purchase_plan_id
-                  )?.reporting_year +
-                  ")"}
+              {currentPurchasePlan &&
+                `План закупки  №${currentPurchasePlan.registration_number} (${currentPurchasePlan.reporting_year})`}
             </Header>
             <PurchasePlanTable
               data={purchasePlanQuery?.data?.positions?.map((position) => ({
@@ -269,6 +269,14 @@ const Step1 = ({ onNext, onPrevious }) => {
                       ) / 100
                     ).toFixed(2)
                   : null,
+                // status:
+                //   position.status === "STATUS_WAIT"
+                //     ? "Формируется"
+                //     : position.status === "STATUS_POSTED"
+                //     ? "Размещена"
+                //     : position.status === "STATUS_ANNULLED"
+                //     ? "Аннулирована"
+                //     : "Редактируется",
               }))}
               isLoading={purchasePlanQuery?.isLoading}
               selectedItems={selectedPlanPositions}
