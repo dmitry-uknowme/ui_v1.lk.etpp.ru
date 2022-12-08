@@ -125,8 +125,7 @@ const Step5 = ({ onNext, onPrevious }) => {
     formValue.isOrganizerEqualsCustomer.includes("EQUAL");
 
   const handleSubmit = async () => {
-    setFormGlobalValues((state) => ({
-      ...state,
+    const finalData = {
       customer: {
         ogrn: formValue.customer_org_ogrn,
         first_name: formValue.customer_representative_name,
@@ -199,14 +198,22 @@ const Step5 = ({ onNext, onPrevious }) => {
           street: "This field is",
         },
       },
+    };
+    setFormGlobalValues((state) => ({
+      ...state,
+      ...formGlobalValues,
+      ...finalData,
     }));
-    const procedureData = await createProcedure(formGlobalValues, (err) => {
-      toaster.push(
-        <Message type="error">
-          Ошибка при создании процедуры {JSON.stringify(err, null, 2)}
-        </Message>
-      );
-    });
+    const procedureData = await createProcedure(
+      { ...finalData, ...formGlobalValues },
+      (err) => {
+        toaster.push(
+          <Message type="error">
+            Ошибка при создании процедуры {JSON.stringify(err, null, 2)}
+          </Message>
+        );
+      }
+    );
 
     if (procedureData) {
       toaster.push(<Message type="success">Процедура успешно создана</Message>);

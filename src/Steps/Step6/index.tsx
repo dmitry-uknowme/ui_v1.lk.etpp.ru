@@ -128,7 +128,7 @@ const Step6 = ({ onNext, onPrevious }) => {
       setDocuments((state) => [
         ...state.map((doc) =>
           doc.id === document.id
-            ? { ...doc, status_localized: "Подписан" }
+            ? { ...doc, status_localized: "Подписан", status: "STATUS_SIGNED" }
             : doc
         ),
       ]);
