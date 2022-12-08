@@ -8,6 +8,7 @@ import {
   Header,
   toaster,
   Message,
+  Badge,
 } from "rsuite";
 import $ from "jquery";
 
@@ -69,7 +70,7 @@ const Step6 = ({ onNext, onPrevious }) => {
     toaster.push(<Message type="error">Извещение не создано </Message>);
     return onPrevious();
   }
-  const procedureId = procedure?.id;
+  const procedureId = procedure?.guid?.value;
 
   const currencyMask = createNumberMask({
     prefix: "",
@@ -191,7 +192,7 @@ const Step6 = ({ onNext, onPrevious }) => {
                             Подписать
                           </Button>
                         ) : (
-                          doc.status_localized
+                          <Badge color="green" content={doc.status_localized} />
                         )}
                       </td>
                     </tr>
