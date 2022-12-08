@@ -137,7 +137,7 @@ const Step4 = ({ onNext, onPrevious }) => {
       provision_bid: {
         is_specified: isBidProvisionSpecified,
         amount: `RUB ${parseFloat(bidProvisionAmount) * 100}`,
-        percent: parseFloat(bidProvisionPercent),
+        // percent: parseFloat(bidProvisionPercent),
         // percent: parseFloat(parseFloat(bidProvisionPercent).toFixed(2)),
         // percent: bidProvisionPercent,
         methods: [formValue.provision_bid_type],

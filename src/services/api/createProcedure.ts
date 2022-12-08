@@ -37,6 +37,7 @@ const createProcedure = async (
     // }
     return data;
   } catch (err) {
+    console.log("procedure eerrrrrrr",err)
     if (err.response.status === 400) {
       return onError(err.response.data.errors);
     }
