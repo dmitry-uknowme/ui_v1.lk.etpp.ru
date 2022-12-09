@@ -258,26 +258,28 @@ const Step1 = ({ onNext, onPrevious }) => {
                 `План закупки  №${currentPurchasePlan.registration_number} (${currentPurchasePlan.reporting_year})`}
             </Header>
             <PurchasePlanTable
-              data={purchasePlanQuery?.data?.positions?.map((position) => ({
-                ...position,
-                maximum_contract_price: position.maximum_contract_price
-                  ? (
-                      parseInt(
-                        position.maximum_contract_price
-                          .replaceAll("RUB", "")
-                          .replaceAll(/\s/g, "")
-                      ) / 100
-                    ).toFixed(2)
-                  : null,
-                // status:
-                //   position.status === "STATUS_WAIT"
-                //     ? "Формируется"
-                //     : position.status === "STATUS_POSTED"
-                //     ? "Размещена"
-                //     : position.status === "STATUS_ANNULLED"
-                //     ? "Аннулирована"
-                //     : "Редактируется",
-              }))}
+              data={purchasePlanQuery?.data?.positions
+                ?.map((position) => ({
+                  ...position,
+                  maximum_contract_price: position.maximum_contract_price
+                    ? (
+                        parseInt(
+                          position.maximum_contract_price
+                            .replaceAll("RUB", "")
+                            .replaceAll(/\s/g, "")
+                        ) / 100
+                      ).toFixed(2)
+                    : null,
+                  status:
+                    position.status === "STATUS_WAIT"
+                      ? "Формируется"
+                      : position.status === "STATUS_POSTED"
+                      ? "Размещена"
+                      : position.status === "STATUS_ANNULLED"
+                      ? "Аннулирована"
+                      : "Редактируется",
+                }))
+                .reverse()}
               isLoading={purchasePlanQuery?.isLoading}
               selectedItems={selectedPlanPositions}
               setSelectedItems={setSelectedPlanPositions}

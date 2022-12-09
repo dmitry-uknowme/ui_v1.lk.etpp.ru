@@ -31,6 +31,7 @@ import MultiStepFormContext from "../../context/multiStepForm/context";
 import fetchProfileOrganizations from "../../services/api/fetchProfileOrganizations";
 import axios from "axios";
 import createProcedure from "../../services/api/createProcedure";
+import fetchOrganizationEmployees from "../../services/api/fetchOrganizationEmployees";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -71,6 +72,40 @@ const Step5 = ({ onNext, onPrevious }) => {
   const session = formGlobalServerData.session;
   const profileId = formGlobalServerData?.session?.profile_id;
 
+  const formRef = React.useRef();
+  const [formError, setFormError] = React.useState({});
+  const [formValue, setFormValue] = React.useState({
+    isOrganizerEqualsCustomer: [],
+    organizer_id: "",
+    organizer_org_full_name: "This field is",
+    organizer_org_short_name: "This field is",
+    organizer_org_inn: "This field is",
+    organizer_org_kpp: "This field is",
+    organizer_org_ogrn: "This field is",
+    organizer_org_legal_address: "This field is",
+    organizer_org_fact_address: "This field is",
+    organizer_representative_id: "",
+    organizer_representative_surname: "This field is",
+    organizer_representative_name: "This field is",
+    organizer_representative_lastname: "This field is",
+    organizer_representative_phone: "This field is",
+    organizer_representative_email: "This field is",
+    customer_id: "",
+    customer_org_full_name: "This field is",
+    customer_org_short_name: "This field is",
+    customer_org_inn: "This field is",
+    customer_org_kpp: "This field is",
+    customer_org_ogrn: "This field is",
+    customer_org_legal_address: "This field is",
+    customer_org_fact_address: "This field is",
+    customer_representative_id: "",
+    customer_representative_surname: "This field is",
+    customer_representative_name: "This field is",
+    customer_representative_lastname: "This field is",
+    customer_representative_phone: "This field is",
+    customer_representative_email: "This field is",
+  });
+
   const profileOrganizationsQuery = useQuery(
     [
       "profileOrganizations",
@@ -87,40 +122,43 @@ const Step5 = ({ onNext, onPrevious }) => {
     }
   );
 
-  const formRef = React.useRef();
-  const [formError, setFormError] = React.useState({});
-  const [formValue, setFormValue] = React.useState({
-    isOrganizerEqualsCustomer: [],
-    organizer_id: "",
-    organizer_org_full_name: "This field is",
-    organizer_org_short_name: "This field is",
-    organizer_org_inn: "This field is",
-    organizer_org_kpp: "This field is",
-    organizer_org_ogrn: "This field is",
-    organizer_org_legal_address: "This field is",
-    organizer_org_fact_address: "This field is",
-    organizer_representative_surname: "This field is",
-    organizer_representative_name: "This field is",
-    organizer_representative_lastname: "This field is",
-    organizer_representative_phone: "This field is",
-    organizer_representative_email: "This field is",
-    customer_id: "",
-    customer_org_full_name: "This field is",
-    customer_org_short_name: "This field is",
-    customer_org_inn: "This field is",
-    customer_org_kpp: "This field is",
-    customer_org_ogrn: "This field is",
-    customer_org_legal_address: "This field is",
-    customer_org_fact_address: "This field is",
-    customer_representative_surname: "This field is",
-    customer_representative_name: "This field is",
-    customer_representative_lastname: "This field is",
-    customer_representative_phone: "This field is",
-    customer_representative_email: "This field is",
-  });
+  const organizerEmployeesQuery = useQuery(
+    ["organizerEmployees"],
+    async () => {
+      const employees = await fetchOrganizationEmployees(
+        formValue.organizer_id
+      );
+      if (employees?.length) {
+        setFormValue((state) => ({
+          ...state,
+          organizer_representative_id: employees[0].id,
+        }));
+      }
+      return employees;
+    },
+    {
+      enabled:
+        formValue.organizer_id.trim().length &&
+        formValue.organizer_id !== "MANUAL_INPUT"
+          ? true
+          : false,
+    }
+  );
+
+  console.log("emppppppppp", organizerEmployeesQuery);
+
+  const customerEmployeesQuery = useQuery(
+    ["customerEmployees", formValue.customer_id],
+    async () => await fetchOrganizationEmployees(formValue.customer_id)
+  );
 
   const isOrganizerManualInput = formValue.organizer_id === "MANUAL_INPUT";
+  const isSubOrganizerManualInput =
+    formValue.organizer_representative_id === "MANUAL_INPUT";
   const isCustomerManualInput = formValue.customer_id === "MANUAL_INPUT";
+  const isSubCustomerManualInput =
+    formValue.customer_representative_id === "MANUAL_INPUT";
+  formValue.customer_representative_id === "MANUAL_INPUT";
   const isOrganizerEqualsCustomer =
     formValue.isOrganizerEqualsCustomer.includes("EQUAL");
 
@@ -230,7 +268,7 @@ const Step5 = ({ onNext, onPrevious }) => {
             <Panel>
               <Field
                 name="organizer_id"
-                label="Выбрать из списка"
+                label="Организация"
                 accepter={SelectPicker}
                 error={formError.procedure_section}
                 data={
@@ -294,9 +332,33 @@ const Step5 = ({ onNext, onPrevious }) => {
                     error={formError.procedure_title}
                   />
                   <hr />
-                  <h4 style={{ fontSize: "0.9rem", marginBottom: "1.3rem" }}>
-                    Контактное лицо
-                  </h4>
+                </div>
+              </Animation.Collapse>
+              {/* <h4 style={{ fontSize: "0.9rem", marginBottom: "1.3rem" }}>
+                Контактное лицо
+              </h4> */}
+              <Field
+                name="organizer_representative_id"
+                label="Контактное лицо"
+                accepter={SelectPicker}
+                preventOverflow
+                error={formError.procedure_section}
+                data={
+                  organizerEmployeesQuery.isError
+                    ? [{ label: "Заполнить вручную", value: "MANUAL_INPUT" }]
+                    : [
+                        ...organizerEmployeesQuery?.data?.map((emp) => ({
+                          label: emp.user_name || "Сотрудник",
+                          value: emp.id,
+                        })),
+                        { label: "Заполнить вручную", value: "MANUAL_INPUT" },
+                      ]
+                }
+                loading={organizerEmployeesQuery.isLoading}
+                placeholder="Выберите"
+              />
+              <Animation.Collapse in={isSubOrganizerManualInput}>
+                <div>
                   <Field
                     name="organizer_representative_surname"
                     label="Фамилия"
