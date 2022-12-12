@@ -21,12 +21,12 @@ import {
   Stack,
 } from "rsuite";
 import React, { useContext, useEffect, useState } from "react";
-import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
+import PurchasePlanTable from "../../../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
-import fetchPurchasePlans from "../../services/api/fetchPurchasePlans";
-import fetchPurchasePlan from "../../services/api/fetchPurchasePlan";
-import fetchSession from "../../services/api/fetchSession";
-import MultiStepFormContext from "../../context/multiStepForm/context";
+import fetchPurchasePlans from "../../../../services/api/fetchPurchasePlans";
+import fetchPurchasePlan from "../../../../services/api/fetchPurchasePlan";
+import fetchSession from "../../../../services/api/fetchSession";
+import MultiStepFormContext from "../../../../context/multiStepForm/context";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;

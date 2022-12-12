@@ -1,82 +1,34 @@
 import React, { useContext, useState } from "react";
-import { Button, ButtonGroup, Panel, Placeholder, Steps } from "rsuite";
-import reactLogo from "./assets/react.svg";
 import "./App.css";
-import Step1 from "./Steps/Step1";
-import Step2 from "./Steps/Step2";
-import Step3 from "./Steps/Step3";
-import Step4 from "./Steps/Step4";
-import Step6 from "./Steps/Step6";
-import Step5 from "./Steps/Step5";
-import FormContextProvider from "./context/multiStepForm/provider";
+
 import "../public/new_cryptopro/signlib";
-import MultiStepFormContext from "./context/multiStepForm/context";
-import CurrentStep from "./Steps/CurrentStep";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ProcedureCreate, {
+  ProcedureFormActionVariants,
+} from "./pages/ProcedureForm";
+import ProcedureForm from "./pages/ProcedureForm";
 
 window.signlib = signlib;
 
-function App() {
-  const [step, setStep] = React.useState(0);
-  const onChange = (nextStep) => {
-    setStep(nextStep < 0 ? 0 : nextStep > 5 ? 5 : nextStep);
-  };
-
-  const onNext = () => onChange(step + 1);
-  const onPrevious = () => onChange(step - 1);
-
+const App = () => {
   return (
-    <div>
-      <FormContextProvider>
-        {/* <div className="container-fluid"> */}
-        <div className="row">
-          <div className="col-md-3">
-            <Steps current={step} vertical>
-              <Steps.Item
-                title="Основные сведения процедуры"
-                style={{ cursor: "pointer" }}
-                onClick={() => onChange(0)}
-              />
-              <Steps.Item
-                title="Настройки хода процедуры"
-                style={{ cursor: "pointer" }}
-                onClick={() => onChange(1)}
-              />
-              <Steps.Item
-                title="Сроки и порядок проведения"
-                style={{ cursor: "pointer" }}
-                onClick={() => onChange(2)}
-              />
-              <Steps.Item
-                title="Лоты"
-                style={{ cursor: "pointer" }}
-                onClick={() => onChange(3)}
-              />
-              <Steps.Item
-                title="Ответственные"
-                // title="Ответственные и приглашенные"
-                style={{ cursor: "pointer" }}
-                onClick={() => onChange(4)}
-              />
-              <Steps.Item
-                title="Документация"
-                style={{ cursor: "pointer" }}
-                onClick={() => onChange(5)}
-              />
-            </Steps>
-          </div>
-          <div className="col-md-9">
-            <hr />
-
-            {/* <Panel header={`Шаг: ${step + 1}`}> */}
-            {<CurrentStep />}
-            {/* </Panel> */}
-            <hr />
-          </div>
-        </div>
-      </FormContextProvider>
-      {/* </div> */}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          index
+          path="/procedure_create"
+          element={
+            <ProcedureForm action={ProcedureFormActionVariants.CREATE} />
+          }
+        />
+        <Route
+          index
+          path="/procedure_edit/:procedure_id"
+          element={<ProcedureForm action={ProcedureFormActionVariants.EDIT} />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;

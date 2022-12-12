@@ -11,11 +11,11 @@ import {
 } from "rsuite";
 import { add, format as formatDate } from "date-fns";
 import React, { useContext, useEffect, useState } from "react";
-import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
+import PurchasePlanTable from "../../../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
-import fetchPurchasePlan from "../../services/api/fetchPurchasePlan";
-import fetchSession from "../../services/api/fetchSession";
-import MultiStepFormContext from "../../context/multiStepForm/context";
+import fetchPurchasePlan from "../../../../services/api/fetchPurchasePlan";
+import fetchSession from "../../../../services/api/fetchSession";
+import MultiStepFormContext from "../../../../context/multiStepForm/context";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;

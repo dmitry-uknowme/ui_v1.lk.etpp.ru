@@ -15,18 +15,18 @@ import {
 } from "rsuite";
 import React, { useContext, useEffect, useState } from "react";
 
-import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
+import PurchasePlanTable from "../../../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
-import fetchPurchasePlans from "../../services/api/fetchPurchasePlans";
-import fetchPurchasePlan from "../../services/api/fetchPurchasePlan";
-import fetchSession from "../../services/api/fetchSession";
-import MultiStepFormContext from "../../context/multiStepForm/context";
-import fetchPurchasePlanPosition from "../../services/api/fetchPurchasePlanPosition";
-import useDebounce from "../../hooks/useDebounce";
+import fetchPurchasePlans from "../../../../services/api/fetchPurchasePlans";
+import fetchPurchasePlan from "../../../../services/api/fetchPurchasePlan";
+import fetchSession from "../../../../services/api/fetchSession";
+import MultiStepFormContext from "../../../../context/multiStepForm/context";
+import fetchPurchasePlanPosition from "../../../../services/api/fetchPurchasePlanPosition";
+import useDebounce from "../../../../hooks/useDebounce";
 import { Dinero, dinero } from "dinero.js";
 import { RUB } from "@dinero.js/currencies";
-import LotPositionsTable from "../../components/Table/LotPositionsTable";
-import Money, { parseCurrency } from "../../utils/money";
+import LotPositionsTable from "../../../../components/Table/LotPositionsTable";
+import Money, { parseCurrency } from "../../../../utils/money";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;

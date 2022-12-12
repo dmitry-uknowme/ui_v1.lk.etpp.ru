@@ -13,20 +13,20 @@ import {
 import $ from "jquery";
 
 import React, { useContext, useEffect, useState } from "react";
-import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
+import PurchasePlanTable from "../../../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
 import MaskedInput from "react-text-mask";
 import createNumberMask from "text-mask-addons/dist/createNumberMask";
-import fetchPurchasePlans from "../../services/api/fetchPurchasePlans";
-import fetchPurchasePlan from "../../services/api/fetchPurchasePlan";
-import fetchSession from "../../services/api/fetchSession";
-import toBase64 from "../../utils/toBase64";
+import fetchPurchasePlans from "../../../../services/api/fetchPurchasePlans";
+import fetchPurchasePlan from "../../../../services/api/fetchPurchasePlan";
+import fetchSession from "../../../../services/api/fetchSession";
+import toBase64 from "../../../../utils/toBase64";
 import axios from "axios";
-import MultiStepFormContext from "../../context/multiStepForm/context";
-import uploadNoticeDocuments from "../../services/api/uploadNoticeDocuments";
-import { API_V1_URL } from "../../services/api";
-import fetchNoticeDocuments from "../../services/api/fetchNoticeDocuments";
-import sendSignedDocuments from "../../services/api/sendSignedDocument";
+import MultiStepFormContext from "../../../../context/multiStepForm/context";
+import uploadNoticeDocuments from "../../../../services/api/uploadNoticeDocuments";
+import { API_V1_URL } from "../../../../services/api";
+import fetchNoticeDocuments from "../../../../services/api/fetchNoticeDocuments";
+import sendSignedDocuments from "../../../../services/api/sendSignedDocument";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -120,9 +120,7 @@ const Step6 = ({ onNext, onPrevious }) => {
         document.file_hash,
         cert_thumbprint
       );
-      console.log("to signnnn", {
-        documents: [{ id: document.id, sign: signData.sign }],
-      });
+
       await sendSignedDocuments({
         documents: [{ id: document.id, sign: signData.sign }],
       });

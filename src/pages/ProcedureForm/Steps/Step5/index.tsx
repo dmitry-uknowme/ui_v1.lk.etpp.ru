@@ -12,17 +12,17 @@ import {
   SelectPicker,
 } from "rsuite";
 import React, { useContext, useEffect, useState } from "react";
-import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
+import PurchasePlanTable from "../../../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
-import fetchPurchasePlans from "../../services/api/fetchPurchasePlans";
-import fetchPurchasePlan from "../../services/api/fetchPurchasePlan";
-import fetchSession from "../../services/api/fetchSession";
-import MultiStepFormContext from "../../context/multiStepForm/context";
-import fetchProfileOrganizations from "../../services/api/fetchProfileOrganizations";
+import fetchPurchasePlans from "../../../../services/api/fetchPurchasePlans";
+import fetchPurchasePlan from "../../../../services/api/fetchPurchasePlan";
+import fetchSession from "../../../../services/api/fetchSession";
+import MultiStepFormContext from "../../../../context/multiStepForm/context";
+import fetchProfileOrganizations from "../../../../services/api/fetchProfileOrganizations";
 import axios from "axios";
-import createProcedure from "../../services/api/createProcedure";
-import fetchOrganizationEmployees from "../../services/api/fetchOrganizationEmployees";
-import fetchOrganizationEmployee from "../../services/api/fetchOrganizationEmployee";
+import createProcedure from "../../../../services/api/createProcedure";
+import fetchOrganizationEmployees from "../../../../services/api/fetchOrganizationEmployees";
+import fetchOrganizationEmployee from "../../../../services/api/fetchOrganizationEmployee";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
