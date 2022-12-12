@@ -411,6 +411,8 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     }
   };
 
+  console.log("err", formError);
+
   return (
     <div className="col-md-9">
       <Form

@@ -61,7 +61,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     serverData: formGlobalServerData,
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
-
+  const isBiddingPerUnitOption = !!formGlobalValues.bidding_per_unit;
   const serverProcedure = formGlobalServerData.procedure;
 
   console.log("procedureee 4", formGlobalValues);
@@ -88,6 +88,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         )
       : "",
     provision_contract_percent: "",
+    lot_unit_start_price: "",
   });
 
   const isBidProvisionSpecified =
@@ -139,6 +140,9 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
     setFormGlobalValues((state) => ({
       ...state,
+      bidding_per_unit_amount: isBiddingPerUnitOption
+        ? `${"RUB"} ${parseFloat(formValue.lot_unit_start_price) * 100}`
+        : null,
       provision_bid: {
         is_specified: true,
         // is_specified: isBidProvisionSpecified,
@@ -198,7 +202,6 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         const provisionContractPercent =
           parseFloat(formValue.provision_contract_percent) ?? null;
 
-        console.log("perrccc", provisionContractPercent);
         if (
           !!provisionContractPercent ||
           provisionContractPercent < 5 ||
@@ -265,6 +268,17 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     formValue.lot_start_price,
   ]);
 
+  useEffect(() => {
+    if (isBiddingPerUnitOption) {
+      if (!parseFloat(formValue.lot_unit_start_price)) {
+        setFormError((state) => ({
+          ...state,
+          lot_unit_start_price: "Поле обязательно для заполнения",
+        }));
+      }
+    }
+  }, [formValue.lot_unit_start_price]);
+
   return (
     <div className="col-md-9">
       <Form
@@ -290,7 +304,14 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             accepter={Input}
             error={formError.lot_start_price}
           />
-
+          {isBiddingPerUnitOption ? (
+            <Field
+              name="lot_unit_start_price"
+              label="Начальная (максимальная) цена за единицу"
+              accepter={Input}
+              error={formError.lot_unit_start_price}
+            />
+          ) : null}
           <Field
             name="lot_currency"
             label="Валюта"
