@@ -48,6 +48,10 @@ const MultiStepFormContextProvider: React.FC<
   }, [serverData, isInited]);
 
   useEffect(() => {
+    
+  }, [currentStepId]);
+
+  useEffect(() => {
     initServerData();
   }, []);
 

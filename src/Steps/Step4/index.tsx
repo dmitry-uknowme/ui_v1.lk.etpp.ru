@@ -54,7 +54,7 @@ const model = Schema.Model({
   lot_title: StringType().isRequired("Поле обязательно для заполнения"),
 });
 
-const Step4 = ({ onNext, onPrevious }) => {
+const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const {
     formValues: formGlobalValues,
     setFormValues: setFormGlobalValues,
@@ -75,11 +75,18 @@ const Step4 = ({ onNext, onPrevious }) => {
     nds_type: "NO_NDS",
     provision_bid_is_specified: false,
     provision_bid_type: "WITHOUT_COLLATERAL",
-    provision_bid_amount: "",
+    provision_bid_amount: formGlobalValues?.provision_bid?.amount
+      ? parseFloat(formGlobalValues?.provision_bid?.amount / 100).toFixed(2)
+      : "",
     provision_bid_percent: "",
-    provision_bid_methods: [],
-    provision_contract_type: "NOT_SPECIFIED",
-    provision_contract_amount: "",
+    provision_bid_methods: formGlobalValues?.provision_bid?.methods || [],
+    provision_contract_type:
+      formGlobalValues?.provision_contract?.type || "NOT_SPECIFIED",
+    provision_contract_amount: formGlobalValues?.provision_contract?.amount
+      ? parseFloat(formGlobalValues?.provision_contract?.amount / 100).toFixed(
+          2
+        )
+      : "",
     provision_contract_percent: "",
   });
 
@@ -176,10 +183,8 @@ const Step4 = ({ onNext, onPrevious }) => {
         ?.parentNode?.parentNode?.scrollIntoView();
       return;
     }
-    onNext();
+    nextStep();
   };
-
-  console.log("isss");
 
   useEffect(() => {
     if (isContractProvisionSpecified) {
@@ -441,7 +446,7 @@ const Step4 = ({ onNext, onPrevious }) => {
         </Panel>
 
         <Form.Group>
-          <Button onClick={onPrevious}>Назад</Button>
+          <Button onClick={prevStep}>Назад</Button>
           <Button appearance="primary" onClick={handleSubmit}>
             Далее
           </Button>

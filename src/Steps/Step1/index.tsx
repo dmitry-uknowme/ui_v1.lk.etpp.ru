@@ -6,11 +6,7 @@ import {
   Checkbox,
   Radio,
   Schema,
-  CheckPicker,
-  InputNumber,
   Panel,
-  Slider,
-  DatePicker,
   Message,
   toaster,
   FlexboxGrid,
@@ -55,12 +51,14 @@ const model = Schema.Model({
   procedure_title: StringType().isRequired("Поле обязательно для заполнения"),
 });
 
-const Step1 = ({ onNext, onPrevious }) => {
+const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const {
     formValues: formGlobalValues,
     setFormValues: setFormGlobalValues,
     serverData: formGlobalServerData,
     setServerData: setFormGlobalServerData,
+    currentStepId,
+    setCurrentStepId,
   } = useContext(FormContext);
 
   console.log("procedureee 1", formGlobalValues);
@@ -68,12 +66,13 @@ const Step1 = ({ onNext, onPrevious }) => {
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
-    is_via_plan: "false",
-    purchase_plan_id: "",
-    purchase_method_id: "",
-    procedure_title: "",
+    is_via_plan: formGlobalServerData?.isViaPlan?.toString() || "false",
+    purchase_plan_id: formGlobalServerData.purchasePlanId || "",
+    purchase_method_id: formGlobalValues.plan_position_id || "",
+    procedure_title: formGlobalValues.name || "",
     procedure_section: "SECTION_FZ_223",
     procedure_method: "AUCTION",
+    //TODO:options parser
     options: ["rnp_requirement_option"],
   });
 
@@ -166,7 +165,7 @@ const Step1 = ({ onNext, onPrevious }) => {
     //   }
     // );
 
-    setTimeout(() => onNext(), 500);
+    nextStep();
     // if (!formRef.current.check()) {
     //   await createProcedureViaPurchasePlan(formValue.);
     //   toaster.push(<Message type="error">Error</Message>);
@@ -316,7 +315,7 @@ const Step1 = ({ onNext, onPrevious }) => {
           </Checkbox>
         </Field>
         <Form.Group>
-          <Button onClick={onPrevious}>Назад</Button>
+          <Button onClick={prevStep}>Назад</Button>
           <Button appearance="primary" onClick={handleSubmit}>
             Далее
           </Button>

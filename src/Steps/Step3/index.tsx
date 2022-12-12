@@ -44,7 +44,7 @@ const Field = React.forwardRef((props, ref) => {
 
 const { ArrayType, NumberType, StringType, DateType } = Schema.Types;
 
-const Step3 = ({ onNext, onPrevious }) => {
+const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const {
     formValues: formGlobalValues,
     setFormValues: setFormGlobalValues,
@@ -171,7 +171,7 @@ const Step3 = ({ onNext, onPrevious }) => {
         ?.parentNode?.parentNode?.scrollIntoView();
       return;
     }
-    onNext();
+    nextStep();
   };
 
   return (
@@ -302,7 +302,7 @@ const Step3 = ({ onNext, onPrevious }) => {
         </Panel>
 
         <Form.Group>
-          <Button onClick={onPrevious}>Назад</Button>
+          <Button onClick={prevStep}>Назад</Button>
           <Button appearance="primary" onClick={handleSubmit}>
             Далее
           </Button>

@@ -54,7 +54,7 @@ const model = Schema.Model({
   procedure_title: StringType().isRequired("Поле обязательно для заполнения"),
 });
 
-const Step2 = ({ onNext, onPrevious }) => {
+const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const {
     formValues: formGlobalValues,
     setFormValues: setFormGlobalValues,
@@ -68,7 +68,8 @@ const Step2 = ({ onNext, onPrevious }) => {
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
     accepting_bids_place: "ON_ETP",
-    contract_conclude_type: "ON_SITE",
+    contract_conclude_type: formGlobalValues.contract_type || "ON_SITE",
+    //TODO:options parser
     options: ["rnp_requirement_option"],
   });
 
@@ -112,7 +113,7 @@ const Step2 = ({ onNext, onPrevious }) => {
       platform: "SECTION_223_FZ",
       contract_by_any_participant: true,
     }));
-    onNext();
+    nextStep();
     // if (!formRef.current.check()) {
     //   toaster.push(<Message type="error">Error</Message>);
     //   return;
@@ -193,7 +194,7 @@ const Step2 = ({ onNext, onPrevious }) => {
           </Checkbox>
         </Field>
         <Form.Group>
-          <Button onClick={onPrevious}>Назад</Button>
+          <Button onClick={prevStep}>Назад</Button>
           <Button appearance="primary" onClick={handleSubmit}>
             Далее
           </Button>
