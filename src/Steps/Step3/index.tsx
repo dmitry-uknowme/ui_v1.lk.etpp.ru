@@ -55,21 +55,45 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
-    start_acceipting_bids_date: new Date(),
-    end_acceipting_bids_date: new Date(),
-    reviewing_bids_date: new Date(),
-    summing_up_bids_date: new Date(),
-    bidding_process: "В соответствии с закупочной документацией",
-    order_review_and_summing_up: "В соответствии с закупочной документацией",
-    place_review_and_summing_up: "В соответствии с закупочной документацией",
-    procedure_process: "В соответствии с закупочной документацией",
-    info_trading_venue: "В соответствии с закупочной документацией",
+    start_acceipting_bids_date: formGlobalValues?.lots[0]?.date_time?.start_bids
+      ? new Date(formGlobalValues?.lots[0]?.date_time?.start_bids)
+      : new Date(),
+    end_acceipting_bids_date: formGlobalValues?.lots[0]?.date_time?.close_bids
+      ? new Date(formGlobalValues?.lots[0]?.date_time?.close_bids)
+      : new Date(),
+    reviewing_bids_date: formGlobalValues?.lots[0]?.date_time?.review_bids
+      ? new Date(formGlobalValues?.lots[0]?.date_time?.review_bids)
+      : new Date(),
+    summing_up_bids_date: formGlobalValues?.lots[0]?.date_time?.summing_up_end
+      ? new Date(formGlobalValues?.lots[0]?.date_time?.summing_up_end)
+      : new Date(),
+    bidding_process:
+      formGlobalValues?.bidding_process ||
+      "В соответствии с закупочной документацией",
+    order_review_and_summing_up:
+      formGlobalValues?.order_review_and_summing_up ||
+      "В соответствии с закупочной документацией",
+    place_review_and_summing_up:
+      formGlobalValues?.place_review_and_summing_up ||
+      "В соответствии с закупочной документацией",
+    procedure_process:
+      formGlobalValues?.procedure_process ||
+      "В соответствии с закупочной документацией",
+    info_trading_venue:
+      formGlobalValues?.info_trading_venue ||
+      "В соответствии с закупочной документацией",
     providing_documentation_explanation:
+      formGlobalValues?.providing_documentation_explanation ||
       "В соответствии с закупочной документацией",
-    requirements_participant: "В соответствии с закупочной документацией",
+    requirements_participant:
+      formGlobalValues?.requirements_participant ||
+      "В соответствии с закупочной документацией",
     provision_procurement_documentation:
+      formGlobalValues?.provision_procurement_documentation ||
       "В соответствии с закупочной документацией",
-    other_info_by_customer: "В соответствии с закупочной документацией",
+    other_info_by_customer:
+      formGlobalValues?.other_info_by_customer ||
+      "В соответствии с закупочной документацией",
   });
 
   const schema = {
