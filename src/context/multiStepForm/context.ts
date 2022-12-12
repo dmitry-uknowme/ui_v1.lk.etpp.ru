@@ -9,6 +9,12 @@ export interface IMultiStepForm {
     purchasePlan?: any;
     isViaPlan?: boolean;
     purchasePlanId?: string;
+    options?: {
+      bidding_per_position_option?: boolean;
+      bidding_per_unit_option?: boolean;
+      reduction_ratio_option?: boolean;
+      protocols_count_more_option?: boolean;
+    };
   };
   formValues: object;
   formErrors: object;

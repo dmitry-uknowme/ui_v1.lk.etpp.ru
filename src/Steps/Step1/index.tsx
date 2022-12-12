@@ -27,6 +27,7 @@ import fetchPurchasePlan from "../../services/api/fetchPurchasePlan";
 import fetchSession from "../../services/api/fetchSession";
 import FormContext from "../../context/multiStepForm/context";
 import createProcedureViaPurchasePlan from "../../services/api/createProcedureViaPurchasePlan";
+import Money, { parseCurrency } from "../../utils/money";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -81,25 +82,25 @@ const Step1 = ({ onNext, onPrevious }) => {
   const purchasePlansQuery = useQuery(
     ["purchasePlans", isViaPlan],
     async () => {
-      if (isViaPlan) {
-        const result = await fetchPurchasePlans();
-        if (!result?.length) {
-          return;
-        }
-        setFormValue((state) => ({ ...state, purchase_plan_id: result[0].id }));
-        return result;
+      const result = await fetchPurchasePlans();
+      if (result?.length) {
+        setFormValue((state) => ({
+          ...state,
+          purchase_plan_id: result[0].id,
+        }));
       }
-    }
+
+      return result;
+    },
+    { enabled: !!isViaPlan }
   );
 
   const sessionQuery = useQuery("session", fetchSession);
 
   const purchasePlanQuery = useQuery(
     ["purchasePlan", formValue.purchase_plan_id],
-    async () =>
-      isViaPlan &&
-      formValue.purchase_plan_id.trim().length &&
-      (await fetchPurchasePlan(formValue.purchase_plan_id))
+    async () => await fetchPurchasePlan(formValue.purchase_plan_id),
+    { enabled: !!(isViaPlan && formValue.purchase_plan_id.trim().length) }
   );
 
   const currentPurchasePlan = purchasePlansQuery?.data?.find(
@@ -262,14 +263,16 @@ const Step1 = ({ onNext, onPrevious }) => {
                 ?.map((position) => ({
                   ...position,
                   maximum_contract_price: position.maximum_contract_price
-                    ? (
+                    ? new Money(
                         parseInt(
-                          position.maximum_contract_price
-                            .replaceAll("RUB", "")
-                            .replaceAll(/\s/g, "")
-                        ) / 100
-                      ).toFixed(2)
-                    : null,
+                          position.maximum_contract_price.replaceAll(
+                            parseCurrency(position.maximum_contract_price),
+                            ""
+                          )
+                        ),
+                        parseCurrency(position.maximum_contract_price)
+                      ).localeFormat({ style: "currency" })
+                    : "Не предусмотрено",
                   status:
                     position.status === "STATUS_WAIT"
                       ? "Формируется"

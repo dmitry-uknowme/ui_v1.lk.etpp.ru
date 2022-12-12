@@ -219,6 +219,9 @@ const Step6 = ({ onNext, onPrevious }) => {
             ))}
           </Table> */}
           <Uploader
+            renderThumbnail={() => null}
+            renderFileInfo={() => null}
+            fileListVisible={false}
             action={`${API_V1_URL}/notice/${noticeId}/document/upload`}
             // action={`${API_V1_URL}/notice/${noticeId}/document/upload`}
             autoUpload={false}
@@ -229,7 +232,15 @@ const Step6 = ({ onNext, onPrevious }) => {
             onChange={async (files) => {
               console.log("on changeee", files);
               const formData = new FormData();
-              formData.append("files[]", files[0].blobFile);
+              // const fileList = new DataTransfer();
+              // files.map((file) => fileList.items.add(file.blobFile));
+              // fileList.items.add(files[0].blobFile);
+              // fileList.items.add(files[0].blobFile);
+
+              // console.log("fileList", fileList);
+              files.map((file) => formData.append("files[]", file.blobFile));
+              // formData.append("files[]", fileList.files);
+              // formData.append("files[]", files[0].blobFile);
               $.ajax({
                 url: `${API_V1_URL}/notice/${noticeId}/document/upload`,
                 data: formData,

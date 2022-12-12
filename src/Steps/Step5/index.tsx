@@ -32,6 +32,7 @@ import fetchProfileOrganizations from "../../services/api/fetchProfileOrganizati
 import axios from "axios";
 import createProcedure from "../../services/api/createProcedure";
 import fetchOrganizationEmployees from "../../services/api/fetchOrganizationEmployees";
+import fetchOrganizationEmployee from "../../services/api/fetchOrganizationEmployee";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -77,33 +78,33 @@ const Step5 = ({ onNext, onPrevious }) => {
   const [formValue, setFormValue] = React.useState({
     isOrganizerEqualsCustomer: [],
     organizer_id: "",
-    organizer_org_full_name: "This field is",
-    organizer_org_short_name: "This field is",
-    organizer_org_inn: "This field is",
-    organizer_org_kpp: "This field is",
-    organizer_org_ogrn: "This field is",
-    organizer_org_legal_address: "This field is",
-    organizer_org_fact_address: "This field is",
+    organizer_org_full_name: "",
+    organizer_org_short_name: "",
+    organizer_org_inn: "",
+    organizer_org_kpp: "",
+    organizer_org_ogrn: "",
+    organizer_org_legal_address: "",
+    organizer_org_fact_address: "",
     organizer_representative_id: "",
-    organizer_representative_surname: "This field is",
-    organizer_representative_name: "This field is",
-    organizer_representative_lastname: "This field is",
-    organizer_representative_phone: "This field is",
-    organizer_representative_email: "This field is",
+    organizer_representative_surname: "",
+    organizer_representative_name: "",
+    organizer_representative_lastname: "",
+    organizer_representative_phone: "",
+    organizer_representative_email: "",
     customer_id: "",
-    customer_org_full_name: "This field is",
-    customer_org_short_name: "This field is",
-    customer_org_inn: "This field is",
-    customer_org_kpp: "This field is",
-    customer_org_ogrn: "This field is",
-    customer_org_legal_address: "This field is",
-    customer_org_fact_address: "This field is",
+    customer_org_full_name: "",
+    customer_org_short_name: "",
+    customer_org_inn: "",
+    customer_org_kpp: "",
+    customer_org_ogrn: "",
+    customer_org_legal_address: "",
+    customer_org_fact_address: "",
     customer_representative_id: "",
-    customer_representative_surname: "This field is",
-    customer_representative_name: "This field is",
-    customer_representative_lastname: "This field is",
-    customer_representative_phone: "This field is",
-    customer_representative_email: "This field is",
+    customer_representative_surname: "",
+    customer_representative_name: "",
+    customer_representative_lastname: "",
+    customer_representative_phone: "",
+    customer_representative_email: "",
   });
 
   const profileOrganizationsQuery = useQuery(
@@ -116,14 +117,28 @@ const Step5 = ({ onNext, onPrevious }) => {
       setFormValue((state) => ({
         ...state,
         organizer_id: organizations.id,
+        organizer_org_full_name: organizations.full_title_organization,
+        organizer_org_short_name: organizations.short_title_organization,
+        organizer_org_inn: organizations.inn,
+        organizer_org_kpp: organizations.kpp,
+        organizer_org_ogrn: organizations.ogrn,
+        organizer_org_fact_address: organizations.fact_ADDRESS,
+        organizer_org_legal_address: organizations.legal_address,
         customer_id: organizations.id,
+        customer_org_full_name: organizations.full_title_organization,
+        customer_org_short_name: organizations.short_title_organization,
+        customer_org_inn: organizations.inn,
+        customer_org_kpp: organizations.kpp,
+        customer_org_ogrn: organizations.ogrn,
+        customer_org_fact_address: organizations.fact_ADDRESS,
+        customer_org_legal_address: organizations.legal_address,
       }));
       return organizations;
     }
   );
 
   const organizerEmployeesQuery = useQuery(
-    ["organizerEmployees"],
+    ["organizerEmployees", formValue.organizer_id],
     async () => {
       const employees = await fetchOrganizationEmployees(
         formValue.organizer_id
@@ -145,12 +160,89 @@ const Step5 = ({ onNext, onPrevious }) => {
     }
   );
 
-  console.log("emppppppppp", organizerEmployeesQuery);
-
   const customerEmployeesQuery = useQuery(
     ["customerEmployees", formValue.customer_id],
-    async () => await fetchOrganizationEmployees(formValue.customer_id)
+    async () => {
+      const employees = await fetchOrganizationEmployees(formValue.customer_id);
+      if (employees?.length) {
+        setFormValue((state) => ({
+          ...state,
+          customer_representative_id: employees[0].id,
+        }));
+      }
+      return employees;
+    },
+    {
+      enabled:
+        formValue.customer_id.trim().length &&
+        formValue.customer_id !== "MANUAL_INPUT"
+          ? true
+          : false,
+    }
   );
+
+  const currentOrganizerOrganization = profileOrganizationsQuery?.data ?? null;
+  // const currentOrganizerOrganization = profileOrganizationsQuery?.data?.length
+  //   ? profileOrganizationsQuery.data.find(
+  //       (org) => org.id === formValue.organizer_id
+  //     )
+  //   : null;
+  const organizerEmployeeQuery = useQuery(
+    ["organizerEmployee", formValue.organizer_representative_id],
+    async () => {
+      const employee = await fetchOrganizationEmployee(
+        formValue.organizer_representative_id
+      );
+      if (employee) {
+        setFormValue((state) => ({
+          ...state,
+          organizer_representative_name: employee.full_name_first_name,
+          organizer_representative_surname: employee.full_name_last_name,
+          organizer_representative_lastname: employee.full_name_middle_name,
+          organizer_representative_email: employee.email,
+          organizer_representative_phone: employee.phone,
+        }));
+      }
+      return employee;
+    },
+    {
+      enabled:
+        formValue.organizer_representative_id?.trim()?.length &&
+        formValue.organizer_representative_id !== "MANUAL_INPUT"
+          ? true
+          : false,
+    }
+  );
+
+  const customerEmployeeQuery = useQuery(
+    ["customerEmployee", formValue.customer_representative_id],
+    async () => {
+      const employee = await fetchOrganizationEmployee(
+        formValue.organizer_representative_id
+      );
+      if (employee) {
+        setFormValue((state) => ({
+          ...state,
+          customer_representative_name: employee.full_name_first_name,
+          customer_representative_surname: employee.full_name_last_name,
+          customer_representative_lastname: employee.full_name_middle_name,
+          customer_representative_email: employee.email,
+          customer_representative_phone: employee.phone,
+        }));
+      }
+      return employee;
+    },
+    {
+      enabled:
+        formValue.customer_representative_id?.trim()?.length &&
+        formValue.customer_representative_id !== "MANUAL_INPUT"
+          ? true
+          : false,
+    }
+  );
+
+  const currentOrganizerEmployee = organizerEmployeeQuery.data;
+  const currentCustomerEmployee = customerEmployeeQuery.data;
 
   const isOrganizerManualInput = formValue.organizer_id === "MANUAL_INPUT";
   const isSubOrganizerManualInput =
@@ -171,7 +263,7 @@ const Step5 = ({ onNext, onPrevious }) => {
         middle_name: formValue.customer_representative_surname,
         email: formValue.customer_representative_email,
         phone: formValue.customer_representative_phone,
-        additional_phone: "This field is",
+        additional_phone: "This is",
         inn: formValue.customer_org_inn,
         kpp: formValue.customer_org_kpp,
         short_title: formValue.customer_org_short_name,
@@ -191,7 +283,7 @@ const Step5 = ({ onNext, onPrevious }) => {
         middle_name: formValue.organizer_representative_surname,
         email: formValue.organizer_representative_email,
         phone: formValue.organizer_representative_phone,
-        additional_phone: "This field is",
+        additional_phone: "This is",
         inn: formValue.organizer_org_inn,
         kpp: formValue.organizer_org_kpp,
         short_title: formValue.organizer_org_short_name,
@@ -231,13 +323,6 @@ const Step5 = ({ onNext, onPrevious }) => {
       }));
       onNext();
     }
-
-    //setTimeout(() => onNext(), 500);
-    // if (!formRef.current.check()) {
-    //   toaster.push(<Message type="error">Error</Message>);
-    //   return;
-    // }
-    // toaster.push(<Message type="success">Success</Message>);
   };
 
   return (
@@ -293,50 +378,82 @@ const Step5 = ({ onNext, onPrevious }) => {
                     name="organizer_org_full_name"
                     label="Полное наименование организации"
                     accepter={Input}
+                    value={
+                      isOrganizerManualInput
+                        ? formValue.organizer_org_full_name
+                        : currentOrganizerOrganization?.full_title_organization
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
                     name="organizer_org_short_name"
                     label="Сокращенное наименование организации"
                     accepter={Input}
+                    value={
+                      isOrganizerManualInput
+                        ? formValue.organizer_org_short_name
+                        : currentOrganizerOrganization?.short_title_organization
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
                     name="organizer_org_inn"
                     label="ИНН"
                     accepter={Input}
+                    value={
+                      isOrganizerManualInput
+                        ? formValue.organizer_org_inn
+                        : currentOrganizerOrganization?.inn
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
                     name="organizer_org_kpp"
                     label="КПП"
                     accepter={Input}
+                    value={
+                      isOrganizerManualInput
+                        ? formValue.organizer_org_kpp
+                        : currentOrganizerOrganization?.kpp
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
                     name="organizer_org_ogrn"
                     label="ОГРН"
                     accepter={Input}
+                    value={
+                      isOrganizerManualInput
+                        ? formValue.organizer_org_ogrn
+                        : currentOrganizerOrganization?.ogrn
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
                     name="organizer_org_legal_address"
                     label="Юридический адрес"
                     accepter={Input}
+                    value={
+                      isOrganizerManualInput
+                        ? formValue.organizer_org_ogrn
+                        : currentOrganizerOrganization?.legal_address
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
                     name="organizer_org_fact_address"
                     label="Фактический адрес"
                     accepter={Input}
+                    value={
+                      isOrganizerManualInput
+                        ? formValue.organizer_org_ogrn
+                        : currentOrganizerOrganization?.fact_ADDRESS
+                    }
                     error={formError.procedure_title}
                   />
                   <hr />
                 </div>
               </Animation.Collapse>
-              {/* <h4 style={{ fontSize: "0.9rem", marginBottom: "1.3rem" }}>
-                Контактное лицо
-              </h4> */}
               <Field
                 name="organizer_representative_id"
                 label="Контактное лицо"
@@ -344,7 +461,8 @@ const Step5 = ({ onNext, onPrevious }) => {
                 preventOverflow
                 error={formError.procedure_section}
                 data={
-                  organizerEmployeesQuery.isError
+                  organizerEmployeesQuery.isError ||
+                  !organizerEmployeesQuery?.data?.length
                     ? [{ label: "Заполнить вручную", value: "MANUAL_INPUT" }]
                     : [
                         ...organizerEmployeesQuery?.data?.map((emp) => ({
@@ -363,30 +481,55 @@ const Step5 = ({ onNext, onPrevious }) => {
                     name="organizer_representative_surname"
                     label="Фамилия"
                     accepter={Input}
+                    value={
+                      isSubOrganizerManualInput
+                        ? formValue.organizer_representative_lastname
+                        : currentOrganizerEmployee?.full_name_last_name
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
                     name="organizer_representative_name"
                     label="Имя"
                     accepter={Input}
+                    value={
+                      isSubOrganizerManualInput
+                        ? formValue.organizer_representative_name
+                        : currentOrganizerEmployee?.full_name_first_name
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
                     name="organizer_representative_lastname"
                     label="Отчество"
                     accepter={Input}
+                    value={
+                      isSubOrganizerManualInput
+                        ? formValue.organizer_representative_surname
+                        : currentOrganizerEmployee?.full_name_middle_name
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
                     name="organizer_representative_email"
                     label="Email"
                     accepter={Input}
+                    value={
+                      isSubOrganizerManualInput
+                        ? formValue.organizer_representative_email
+                        : currentOrganizerEmployee?.email
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
                     name="organizer_representative_phone"
                     label="Номер телефона"
                     accepter={Input}
+                    value={
+                      isSubOrganizerManualInput
+                        ? formValue.organizer_representative_phone
+                        : currentOrganizerEmployee?.phone
+                    }
                     error={formError.procedure_title}
                   />
                 </div>
@@ -394,7 +537,7 @@ const Step5 = ({ onNext, onPrevious }) => {
             </Panel>
           </Panel>
           <Panel
-            header="Сведения о заказчике"
+            header={`Сведения о заказчике`}
             style={
               isOrganizerEqualsCustomer
                 ? {
@@ -408,7 +551,7 @@ const Step5 = ({ onNext, onPrevious }) => {
             <Panel>
               <Field
                 name="customer_id"
-                label="Выбрать из списка"
+                label="Организация"
                 accepter={SelectPicker}
                 error={formError.procedure_section}
                 data={
@@ -424,84 +567,167 @@ const Step5 = ({ onNext, onPrevious }) => {
                         { label: "Заполнить вручную", value: "MANUAL_INPUT" },
                       ]
                 }
+                loading={profileOrganizationsQuery.isLoading}
                 placeholder="Выберите"
               />
               <Animation.Collapse in={isCustomerManualInput} timeout={500}>
                 <div>
                   <Field
-                    name="organizer_org_full_name"
+                    name="customer_org_full_name"
                     label="Полное наименование организации"
                     accepter={Input}
+                    value={
+                      isCustomerManualInput
+                        ? formValue.customer_org_full_name
+                        : currentOrganizerOrganization?.full_title_organization
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
-                    name="organizer_org_short_name"
+                    name="customer_org_short_name"
                     label="Сокращенное наименование организации"
                     accepter={Input}
+                    value={
+                      isCustomerManualInput
+                        ? formValue.customer_org_short_name
+                        : currentOrganizerOrganization?.short_title_organization
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
-                    name="organizer_org_inn"
+                    name="customer_org_inn"
                     label="ИНН"
                     accepter={Input}
+                    value={
+                      isCustomerManualInput
+                        ? formValue.customer_org_inn
+                        : currentOrganizerOrganization?.inn
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
-                    name="organizer_org_kpp"
+                    name="customer_org_kpp"
                     label="КПП"
                     accepter={Input}
+                    value={
+                      isCustomerManualInput
+                        ? formValue.customer_org_kpp
+                        : currentOrganizerOrganization?.kpp
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
-                    name="organizer_org_ogrn"
+                    name="customer_org_ogrn"
                     label="ОГРН"
                     accepter={Input}
+                    value={
+                      isCustomerManualInput
+                        ? formValue.customer_org_ogrn
+                        : currentOrganizerOrganization?.ogrn
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
-                    name="organizer_org_legal_address"
+                    name="customer_org_legal_address"
                     label="Юридический адрес"
                     accepter={Input}
+                    value={
+                      isCustomerManualInput
+                        ? formValue.customer_org_legal_address
+                        : currentOrganizerOrganization?.legal_address
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
-                    name="organizer_org_fact_address"
+                    name="customer_org_fact_address"
                     label="Фактический адрес"
                     accepter={Input}
+                    value={
+                      isCustomerManualInput
+                        ? formValue.customer_org_fact_address
+                        : currentOrganizerOrganization?.fact_ADDRESS
+                    }
                     error={formError.procedure_title}
                   />
                   <hr />
-                  <h4 style={{ fontSize: "0.9rem", marginBottom: "1.3rem" }}>
-                    Контактное лицо
-                  </h4>
+                </div>
+              </Animation.Collapse>
+              <Field
+                name="customer_representative_id"
+                label="Контактное лицо"
+                accepter={SelectPicker}
+                preventOverflow
+                error={formError.procedure_section}
+                data={
+                  customerEmployeesQuery.isError ||
+                  !customerEmployeesQuery?.data?.length
+                    ? [{ label: "Заполнить вручную", value: "MANUAL_INPUT" }]
+                    : [
+                        ...customerEmployeesQuery?.data?.map((emp) => ({
+                          label: emp.user_name || "Сотрудник",
+                          value: emp.id,
+                        })),
+                        { label: "Заполнить вручную", value: "MANUAL_INPUT" },
+                      ]
+                }
+                loading={customerEmployeesQuery.isLoading}
+                placeholder="Выберите"
+              />
+              <Animation.Collapse in={isSubCustomerManualInput}>
+                <div>
                   <Field
-                    name="organizer_representative_surname"
+                    name="customer_representative_surname"
                     label="Фамилия"
                     accepter={Input}
+                    value={
+                      isSubCustomerManualInput
+                        ? formValue.customer_representative_lastname
+                        : currentCustomerEmployee?.full_name_last_name
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
-                    name="organizer_representative_name"
+                    name="customer_representative_name"
                     label="Имя"
                     accepter={Input}
+                    value={
+                      isSubCustomerManualInput
+                        ? formValue.customer_representative_name
+                        : currentCustomerEmployee?.full_name_first_name
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
-                    name="organizer_representative_lastname"
+                    name="customer_representative_lastname"
                     label="Отчество"
                     accepter={Input}
+                    value={
+                      isSubCustomerManualInput
+                        ? formValue.customer_representative_surname
+                        : currentCustomerEmployee?.full_name_middle_name
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
-                    name="organizer_representative_email"
+                    name="customer_representative_email"
                     label="Email"
                     accepter={Input}
+                    value={
+                      isSubCustomerManualInput
+                        ? formValue.customer_representative_email
+                        : currentCustomerEmployee?.email
+                    }
                     error={formError.procedure_title}
                   />
                   <Field
-                    name="organizer_representative_phone"
+                    name="customer_representative_phone"
                     label="Номер телефона"
                     accepter={Input}
+                    value={
+                      isSubCustomerManualInput
+                        ? formValue.customer_representative_phone
+                        : currentCustomerEmployee?.phone
+                    }
                     error={formError.procedure_title}
                   />
                 </div>

@@ -1,31 +1,18 @@
 import {
   Form,
   Button,
-  CheckboxGroup,
-  RadioGroup,
-  Checkbox,
-  Radio,
   Schema,
-  CheckPicker,
-  InputNumber,
   Panel,
-  Slider,
   DatePicker,
-  Message,
-  toaster,
-  FlexboxGrid,
   Input,
-  Animation,
-  SelectPicker,
-  Header,
   Stack,
-  InputGroup,
+  toaster,
+  Message,
 } from "rsuite";
-import { format as formatDate } from "date-fns";
+import { add, format as formatDate } from "date-fns";
 import React, { useContext, useEffect, useState } from "react";
 import PurchasePlanTable from "../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
-import fetchPurchasePlans from "../../services/api/fetchPurchasePlans";
 import fetchPurchasePlan from "../../services/api/fetchPurchasePlan";
 import fetchSession from "../../services/api/fetchSession";
 import MultiStepFormContext from "../../context/multiStepForm/context";
@@ -55,11 +42,7 @@ const Field = React.forwardRef((props, ref) => {
   );
 });
 
-const { ArrayType, NumberType, StringType } = Schema.Types;
-const model = Schema.Model({
-  is_via_plan: StringType().isRequired("Поле обязательно для заполнения"),
-  procedure_title: StringType().isRequired("Поле обязательно для заполнения"),
-});
+const { ArrayType, NumberType, StringType, DateType } = Schema.Types;
 
 const Step3 = ({ onNext, onPrevious }) => {
   const {
@@ -89,15 +72,40 @@ const Step3 = ({ onNext, onPrevious }) => {
     other_info_by_customer: "В соответствии с закупочной документацией",
   });
 
-  const isViaPlan = formValue.is_via_plan === "true";
+  const schema = {
+    start_acceipting_bids_date: DateType().min(
+      new Date(),
+      "Дата начала подачи заявок не может быть раньше текущего времени"
+    ),
+    end_acceipting_bids_date: DateType().min(
+      new Date() > formValue.start_acceipting_bids_date
+        ? add(formValue.start_acceipting_bids_date, { minutes: 1 })
+        : add(new Date(), { minutes: 1 }),
+      new Date() > formValue.start_acceipting_bids_date
+        ? "Дата окончания подачи заявок не может быть раньше текущего времени"
+        : "Дата окончания подачи заявок не может быть раньше даты начала рассмотрения заявок"
+    ),
+    reviewing_bids_date: DateType().min(
+      new Date() > formValue.end_acceipting_bids_date
+        ? add(formValue.end_acceipting_bids_date, { minutes: 1 })
+        : add(new Date(), { minutes: 1 }),
+      new Date() > formValue.end_acceipting_bids_date
+        ? "Дата начала рассмотрения заявок не может быть раньше текущего времени"
+        : "Дата начала рассмотрения заявок не может быть раньше даты окончания подачи заявок"
+    ),
+    summing_up_bids_date: DateType().min(
+      new Date() > formValue.reviewing_bids_date
+        ? add(formValue.reviewing_bids_date, { minutes: 1 })
+        : add(new Date(), { minutes: 1 }),
+      new Date() > formValue.reviewing_bids_date
+        ? "Дата подведения итогов не может быть раньше текущего времени"
+        : "Дата подведения итогов не может быть раньше даты начала рассмотрения заявок"
+    ),
+  };
 
-  const purchasePlanQuery = useQuery(
-    ["purchasePlan", formValue.purchase_plan_id],
-    async () =>
-      isViaPlan &&
-      formValue.purchase_plan_id.trim().length &&
-      (await fetchPurchasePlan(formValue.purchase_plan_id))
-  );
+  const model = Schema.Model(schema);
+
+  const isViaPlan = formValue.is_via_plan === "true";
 
   const sessionQuery = useQuery("session", fetchSession);
 
@@ -151,12 +159,19 @@ const Step3 = ({ onNext, onPrevious }) => {
         },
       ],
     }));
+    // onNext();
+    if (!formRef.current.check()) {
+      toaster.push(
+        <Message type="error">
+          Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг
+        </Message>
+      );
+      document
+        .querySelector(".rs-form-group .rs-form-error-message")
+        ?.parentNode?.parentNode?.scrollIntoView();
+      return;
+    }
     onNext();
-    // if (!formRef.current.check()) {
-    //   toaster.push(<Message type="error">Error</Message>);
-    //   return;
-    // }
-    // toaster.push(<Message type="success">Success</Message>);
   };
 
   return (
@@ -187,14 +202,14 @@ const Step3 = ({ onNext, onPrevious }) => {
             <Field
               accepter={DatePicker}
               name="reviewing_bids_date"
-              label="Дата и время окончания подачи заявок"
+              label="Дата и время начала рассмотрения заявок"
               format="yyyy-MM-dd HH:mm"
               errorMessage={formError.createDate}
             />
             <Field
               accepter={DatePicker}
               name="summing_up_bids_date"
-              label="Дата и время окончания подачи заявок"
+              label="Дата и время подведения итогов"
               format="yyyy-MM-dd HH:mm"
               errorMessage={formError.createDate}
             />
