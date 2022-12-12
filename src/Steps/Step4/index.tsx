@@ -133,7 +133,8 @@ const Step4 = ({ onNext, onPrevious }) => {
     setFormGlobalValues((state) => ({
       ...state,
       provision_bid: {
-        is_specified: isBidProvisionSpecified,
+        is_specified: true,
+        // is_specified: isBidProvisionSpecified,
         amount: `${"RUB"} ${parseFloat(bidProvisionAmount) * 100}`,
         // percent: parseFloat(bidProvisionPercent),
         // percent: parseFloat(parseFloat(bidProvisionPercent).toFixed(2)),
@@ -143,7 +144,9 @@ const Step4 = ({ onNext, onPrevious }) => {
       },
       provision_contract: {
         is_specified: isContractProvisionSpecified,
-        type: contractProvisionType,
+        type: isContractProvisionSpecified
+          ? contractProvisionType
+          : "FROM_START_PRICE",
         amount: `${"RUB"} ${parseFloat(contractProvisionAmount) * 100}`,
         // percent: parseFloat(contractProvisionPercent),
         // percent: contractProvisionPercent,
@@ -176,8 +179,9 @@ const Step4 = ({ onNext, onPrevious }) => {
     onNext();
   };
 
+  console.log("isss");
+
   useEffect(() => {
-    console.log("is contracttt", isContractProvisionSpecified);
     if (isContractProvisionSpecified) {
       if (
         formValue.lot_start_price &&

@@ -244,6 +244,8 @@ const Step5 = ({ onNext, onPrevious }) => {
   const currentOrganizerEmployee = organizerEmployeeQuery.data;
   const currentCustomerEmployee = customerEmployeeQuery.data;
 
+  console.log("org", currentOrganizerEmployee);
+
   const isOrganizerManualInput = formValue.organizer_id === "MANUAL_INPUT";
   const isSubOrganizerManualInput =
     formValue.organizer_representative_id === "MANUAL_INPUT";
