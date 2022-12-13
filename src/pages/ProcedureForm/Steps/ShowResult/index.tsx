@@ -144,7 +144,6 @@ const ShowResult = ({ currentStep }) => {
                 </tr>
               </tbody>
             </table>
-
             <Panel shaded header="Опции процедуры">
               <table className="table table-responsive table-bordered">
                 <tbody>
@@ -196,7 +195,9 @@ const ShowResult = ({ currentStep }) => {
           <Link to="/procedure_edit/1">
             <Button appearance="subtle">Редактировать</Button>
           </Link>
-          <a href={`https://dev.223.etpp.ru/procedure/${data.procedure_id}`}>
+          <a
+            href={`https://dev.223.etpp.ru/procedure/${data.procedure.id.value}`}
+          >
             <Button appearance="primary">Опубликовать</Button>
           </a>
         </Modal.Footer>

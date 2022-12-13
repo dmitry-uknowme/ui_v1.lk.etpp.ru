@@ -137,40 +137,48 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     }
   }, [selectedPlanPositions]);
 
-  useEffect(() => {
-    if (formValue.options.includes("reduction_ratio_option")) {
-      setFormValue((state) => ({
-        ...state,
-        options: [...state.options, "bidding_per_unit_option"],
-      }));
-    }
-    if (formValue.options.includes("bidding_per_unit_option")) {
-      setFormValue((state) => ({
-        ...state,
-        options: [...state.options, "reduction_ratio_option"],
-      }));
-    }
-    if (!formValue.options.includes("bidding_per_unit_option")) {
-      setFormValue((state) => ({
-        ...state,
-        options: [
-          ...state.options.filter(
-            (option) => option !== "reduction_ratio_option"
-          ),
-        ],
-      }));
-    }
-    if (!formValue.options.includes("reduction_ratio_option")) {
-      setFormValue((state) => ({
-        ...state,
-        options: [
-          ...state.options.filter(
-            (option) => option !== "bidding_per_unit_option"
-          ),
-        ],
-      }));
-    }
-  }, [formValue.options]);
+  // useEffect(() => {
+  //   if (formValue.options.includes("reduction_ratio_option")) {
+  //     // setTimeout(() => {
+  //     setFormValue((state) => ({
+  //       ...state,
+  //       options: [...state.options, "bidding_per_unit_option"],
+  //     }));
+  //     // }, 500);
+  //   }
+  //   if (formValue.options.includes("bidding_per_unit_option")) {
+  //     // setTimeout(() => {
+  //     setFormValue((state) => ({
+  //       ...state,
+  //       options: [...state.options, "reduction_ratio_option"],
+  //     }));
+  //     // }, 600);
+  //   }
+  //   if (!formValue.options.includes("bidding_per_unit_option")) {
+  //     // setTimeout(() => {
+  //     setFormValue((state) => ({
+  //       ...state,
+  //       options: [
+  //         ...state.options.filter(
+  //           (option) => option !== "reduction_ratio_option"
+  //         ),
+  //       ],
+  //     }));
+  //     // }, 500);
+  //   }
+  //   if (!formValue.options.includes("reduction_ratio_option")) {
+  //     // setTimeout(() => {
+  //     setFormValue((state) => ({
+  //       ...state,
+  //       options: [
+  //         ...state.options.filter(
+  //           (option) => option !== "bidding_per_unit_option"
+  //         ),
+  //       ],
+  //     }));
+  //     // }, 600);
+  //   }
+  // }, [formValue.options]);
 
   return (
     <div className="col-md-8">
@@ -224,10 +232,27 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           <Checkbox value={"bidding_per_position_option"}>
             Попозиционная закупка
           </Checkbox>
-          <Checkbox value={"bidding_per_unit_option"}>
+          <Checkbox
+            value={"bidding_per_unit_option"}
+            checked={
+              !!(
+                formValue.options.includes("bidding_per_unit_option") ||
+                formValue.options.includes("reduction_ratio_option")
+              )
+            }
+          >
             Торги за единицу
           </Checkbox>
-          <Checkbox value={"reduction_ratio_option"}>
+          <Checkbox
+            value={"reduction_ratio_option"}
+            // checked={true}
+            // checked={
+            //   !!(
+            //     formValue.options.includes("bidding_per_unit_option") ||
+            //     formValue.options.includes("reduction_ratio_option")
+            //   )
+            // }
+          >
             Коэффициент снижения
           </Checkbox>
           <Checkbox value={"protocols_count_more_option"}>

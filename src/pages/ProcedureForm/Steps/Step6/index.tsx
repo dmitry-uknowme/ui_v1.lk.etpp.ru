@@ -141,17 +141,22 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       );
     }
   };
-  const allDocumentsSigned = !!documents.filter(
-    (doc) => doc.status !== "STATUS_SIGNED"
-  );
-  console.log("issss", allDocumentsSigned);
+  // const allDocumentsSigned = !!documents.filter(
+  //   (doc) => doc.status !== "STATUS_SIGNED"
+  // );
 
   const handleSubmit = () => {
-    const allDocumentsSigned = !!documents.filter(
+    const isDocumentsExists = documents?.length;
+    const isAllDocumentsSigned = !!documents.filter(
       (doc) => doc.status !== "STATUS_SIGNED"
     );
+    if (!isDocumentsExists) {
+      return toaster.push(
+        <Message type="error">Не загружен документ извещения</Message>
+      );
+    }
 
-    if (!allDocumentsSigned) {
+    if (!isAllDocumentsSigned) {
       return toaster.push(
         <Message type="error">Подписаны не все документы извещения</Message>
       );
