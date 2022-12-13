@@ -61,7 +61,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     serverData: formGlobalServerData,
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
-  const isBiddingPerUnitOption = !!formGlobalValues.bidding_per_unit;
+  const isBiddingPerUnitOption = !!formGlobalValues?.bidding_per_unit;
   const serverProcedure = formGlobalServerData.procedure;
 
   console.log("procedureee 4", formGlobalValues);
@@ -103,8 +103,8 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const isContractProvisionFromStartPrice =
     formValue.provision_contract_type === "FROM_START_PRICE";
 
-  const planId = formGlobalServerData.purchasePlanId;
-  const planPositionId = formGlobalValues.plan_position_id;
+  const planId = formGlobalServerData?.purchasePlanId;
+  const planPositionId = formGlobalValues?.plan_position_id;
 
   const purchasePlanPositionQuery = useQuery(
     ["purchasePlanPosition"],
@@ -166,8 +166,8 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       original_price: `${"RUB"} ${parseFloat(formValue.lot_start_price) * 100}`,
       lots: [
         {
-          ...formGlobalValues.lots[0],
-          name: formGlobalValues.name,
+          ...(formGlobalValues?.lots?.length ? formGlobalValues?.lots[0] : {}),
+          name: formValue.lot_title,
           //TODO:da
           starting_price: `${"RUB"} ${
             parseFloat(formValue.lot_start_price) * 100

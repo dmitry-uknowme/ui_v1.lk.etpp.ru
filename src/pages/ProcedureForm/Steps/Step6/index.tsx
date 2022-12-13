@@ -54,7 +54,7 @@ const model = Schema.Model({
   procedure_title: StringType().isRequired("Поле обязательно для заполнения"),
 });
 
-const Step6 = ({ onNext, onPrevious }) => {
+const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const [documents, setDocuments] = useState([]);
   const {
     formValues: formGlobalValues,
@@ -68,7 +68,7 @@ const Step6 = ({ onNext, onPrevious }) => {
   console.log("proceee 6", procedure);
   if (!procedure) {
     toaster.push(<Message type="error">Извещение не создано </Message>);
-    return onPrevious();
+    return prevStep();
   }
   const procedureId = procedure?.guid?.value;
 
@@ -143,7 +143,7 @@ const Step6 = ({ onNext, onPrevious }) => {
   };
 
   const handleSubmit = () => {
-    // onNext();
+    onNext();
     // if (!formRef.current.check()) {
     //   toaster.push(<Message type="error">Error</Message>);
     //   return;
@@ -274,10 +274,10 @@ const Step6 = ({ onNext, onPrevious }) => {
         </Panel>
 
         <Form.Group>
-          <Button onClick={onPrevious}>Назад</Button>
-          <a href={`https://dev.223.etpp.ru/procedure/${procedureId}`}>
-            <Button appearance="primary">Предпросмотр процедуры</Button>
-          </a>
+          <Button onClick={prevStep}>Назад</Button>
+          <Button appearance="primary" onClick={nextStep}>
+            Предпросмотр процедуры
+          </Button>
         </Form.Group>
       </Form>
     </div>

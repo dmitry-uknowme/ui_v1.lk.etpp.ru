@@ -13,7 +13,9 @@ const fetchProcedure = async (
 ) => {
   const { procedureId } = payload;
   try {
-    const { data } = await axios.get(`${API_URL}/procedures/${procedureId}`);
+    const { data } = await axios.get(
+      `${API_URL}/procedures/${procedureId}/full`
+    );
     return data;
   } catch (err) {
     onError(err);

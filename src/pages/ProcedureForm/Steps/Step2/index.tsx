@@ -68,10 +68,17 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
     accepting_bids_place: "ON_ETP",
-    contract_conclude_type: formGlobalValues.contract_type || "ON_SITE",
+    contract_conclude_type: formGlobalValues?.contract_type || "ON_SITE",
     //TODO:options parser
     options: ["rnp_requirement_option"],
   });
+
+  useEffect(() => {
+    setFormValue((state) => ({
+      ...state,
+      contract_conclude_type: formGlobalValues?.contract_type || "ON_SITE",
+    }));
+  }, [formGlobalValues.contract_type]);
 
   const isViaPlan = formGlobalServerData.isViaPlan;
 

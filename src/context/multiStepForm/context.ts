@@ -1,4 +1,5 @@
 import React, { createContext } from "react";
+import { ProcedureFormActionVariants } from "../../pages/ProcedureForm";
 import { IAuthSession } from "../../types/auth";
 import { IProcedure } from "../../types/procedure";
 
@@ -9,6 +10,7 @@ export interface IMultiStepForm {
     purchasePlan?: any;
     isViaPlan?: boolean;
     purchasePlanId?: string;
+    actionType?: ProcedureFormActionVariants;
     options?: {
       bidding_per_position_option?: boolean;
       bidding_per_unit_option?: boolean;
@@ -23,17 +25,17 @@ export interface IMultiStepForm {
 export interface IMultiStepFormContext {
   formValues: IMultiStepForm["formValues"];
   setFormValues: React.Dispatch<
-    React.SetStateAction<IMultiStepForm["formValues"]>
+    React.Dispatch<React.SetStateAction<IMultiStepForm["formValues"]>>
   >;
 
   formErrors: IMultiStepForm["formErrors"];
   setFormErrors: React.Dispatch<
-    React.SetStateAction<IMultiStepForm["formErrors"]>
+    React.Dispatch<React.SetStateAction<IMultiStepForm["formErrors"]>>
   >;
 
   serverData: IMultiStepForm["serverData"];
   setServerData: React.Dispatch<
-    React.SetStateAction<IMultiStepForm["serverData"]>
+    React.Dispatch<React.SetStateAction<IMultiStepForm["serverData"]>>
   >;
   currentStepId: number;
   setCurrentStepId: React.Dispatch<React.SetStateAction<number>>;

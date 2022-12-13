@@ -5,6 +5,7 @@ import { Message, Steps, toaster } from "rsuite";
 import MultiStepFormContextProvider from "../../context/multiStepForm/provider";
 import fetchProcedure from "../../services/api/fetchProcedure";
 import CurrentStep from "./Steps/CurrentStep";
+import ShowResult from "./Steps/ShowResult";
 
 export enum ProcedureFormActionVariants {
   CREATE = "CREATE",
@@ -15,16 +16,15 @@ interface ProcedureFormProps {
   action: ProcedureFormActionVariants;
 }
 
-const initProcedure = async (procedureId: string) => {
-  const procedure = await fetchProcedure({ procedureId });
-  return procedure;
-};
 const ProcedureForm: React.FC<ProcedureFormProps> = ({ action }) => {
   const [activeStep, setActiveStep] = useState<number>(0);
 
   return (
     <div>
-      <MultiStepFormContextProvider>
+      <MultiStepFormContextProvider
+        currentStepId={activeStep}
+        setCurrentStepId={setActiveStep}
+      >
         {/* <div className="container-fluid"> */}
         <div className="row">
           <div className="col-md-3">
@@ -48,6 +48,10 @@ const ProcedureForm: React.FC<ProcedureFormProps> = ({ action }) => {
                 style={{ cursor: "pointer" }}
               />
               <Steps.Item title="Документация" style={{ cursor: "pointer" }} />
+              <Steps.Item
+                title="Предпросмотр извещения"
+                // style={{ cursor: "pointer", display: "none" }}
+              />
             </Steps>
           </div>
           <div className="col-md-9">
@@ -55,6 +59,7 @@ const ProcedureForm: React.FC<ProcedureFormProps> = ({ action }) => {
 
             {/* <Panel header={`Шаг: ${step + 1}`}> */}
             {<CurrentStep action={action} />}
+
             {/* </Panel> */}
             <hr />
           </div>

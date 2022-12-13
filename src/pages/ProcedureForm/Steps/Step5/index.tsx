@@ -21,8 +21,10 @@ import MultiStepFormContext from "../../../../context/multiStepForm/context";
 import fetchProfileOrganizations from "../../../../services/api/fetchProfileOrganizations";
 import axios from "axios";
 import createProcedure from "../../../../services/api/createProcedure";
+import updateProcedure from "../../../../services/api/updateProcedure";
 import fetchOrganizationEmployees from "../../../../services/api/fetchOrganizationEmployees";
 import fetchOrganizationEmployee from "../../../../services/api/fetchOrganizationEmployee";
+import { ProcedureFormActionVariants } from "../..";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -122,7 +124,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   } = useContext(MultiStepFormContext);
 
   console.log("procedureee 5", formGlobalValues);
-
+  const procedureId = formGlobalServerData.procedureId;
   const session = formGlobalServerData.session;
   const profileId = formGlobalServerData?.session?.profile_id;
 
@@ -329,6 +331,14 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       }));
     }
     const finalData = {
+      name: "da",
+      lots: [
+        {
+          ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}),
+          positions: [],
+        },
+      ],
+
       customer: {
         ogrn: formValue.customer_org_ogrn,
         first_name: formValue.customer_representative_name,
@@ -388,26 +398,53 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       ...formGlobalValues,
       ...finalData,
     }));
-    const procedureData = await createProcedure(
-      { ...finalData, ...formGlobalValues },
-      (err) => {
+    if (formGlobalServerData.actionType === ProcedureFormActionVariants.EDIT) {
+      const procedureData = await updateProcedure(
+        procedureId,
+        { ...finalData, ...formGlobalValues },
+        (err) => {
+          toaster.push(
+            <Message type="error">
+              Ошибка при создании процедуры {JSON.stringify(err, null, 2)}
+            </Message>
+          );
+        }
+      );
+      if (procedureData) {
         toaster.push(
-          <Message type="error">
-            Ошибка при создании процедуры {JSON.stringify(err, null, 2)}
-          </Message>
+          <Message type="success">Процедура успешно создана</Message>
         );
+        const noticeId = procedureData.notice_id;
+        setFormGlobalServerData((state) => ({
+          ...state,
+          noticeId,
+          procedure: procedureData.procedure,
+        }));
+        nextStep();
       }
-    );
-
-    if (procedureData) {
-      toaster.push(<Message type="success">Процедура успешно создана</Message>);
-      const noticeId = procedureData.notice_id;
-      setFormGlobalServerData((state) => ({
-        ...state,
-        noticeId,
-        procedure: procedureData.procedure,
-      }));
-      nextStep();
+    } else {
+      const procedureData = await createProcedure(
+        { ...finalData, ...formGlobalValues },
+        (err) => {
+          toaster.push(
+            <Message type="error">
+              Ошибка при создании процедуры {JSON.stringify(err, null, 2)}
+            </Message>
+          );
+        }
+      );
+      if (procedureData) {
+        toaster.push(
+          <Message type="success">Процедура успешно создана</Message>
+        );
+        const noticeId = procedureData.notice_id;
+        setFormGlobalServerData((state) => ({
+          ...state,
+          noticeId,
+          procedure: procedureData.procedure,
+        }));
+        nextStep();
+      }
     }
   };
 

@@ -5,11 +5,13 @@ import FormContext, { IMultiStepFormContext } from "./context";
 
 interface MultiStepFormContextProviderProps {
   children: React.ReactNode;
+  currentStepId: number;
+  setCurrentStepId: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const MultiStepFormContextProvider: React.FC<
   MultiStepFormContextProviderProps
-> = ({ children }) => {
+> = ({ children, currentStepId, setCurrentStepId }) => {
   const [formValues, setFormValues] = useState<
     IMultiStepFormContext["formValues"]
   >({});
@@ -19,7 +21,7 @@ const MultiStepFormContextProvider: React.FC<
   const [serverData, setServerData] = useState<
     IMultiStepFormContext["serverData"]
   >({});
-  const [currentStepId, setCurrentStepId] = useState<number>(0);
+  // const [currentStepId, setCurrentStepId] = useState<number>(0);
   const [isInited, setIsInited] = useState<boolean>(false);
 
   const initServerData = async () => {
@@ -47,9 +49,7 @@ const MultiStepFormContextProvider: React.FC<
     }
   }, [serverData, isInited]);
 
-  useEffect(() => {
-    
-  }, [currentStepId]);
+  useEffect(() => {}, [currentStepId]);
 
   useEffect(() => {
     initServerData();

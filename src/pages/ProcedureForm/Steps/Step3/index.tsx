@@ -157,9 +157,9 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       provision_procurement_documentation,
       other_info_by_customer,
       lots: [
-        ...formGlobalValues.lots,
+        // ...formGlobalValues.lots,
         {
-          name: formGlobalValues.name,
+          ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}),
           //TODO:da
           positions: [],
           date_time: {
@@ -197,6 +197,25 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     }
     nextStep();
   };
+
+  useEffect(() => {
+    setFormValue((state) => ({
+      ...state,
+      start_acceipting_bids_date: formGlobalValues?.lots[0]?.date_time
+        ?.start_bids
+        ? new Date(formGlobalValues?.lots[0]?.date_time?.start_bids)
+        : new Date(state.start_acceipting_bids_date),
+      end_acceipting_bids_date: formGlobalValues?.lots[0]?.date_time?.close_bids
+        ? new Date(formGlobalValues?.lots[0]?.date_time?.close_bids)
+        : new Date(state.end_acceipting_bids_date),
+      reviewing_bids_date: formGlobalValues?.lots[0]?.date_time?.review_bids
+        ? new Date(formGlobalValues?.lots[0]?.date_time?.review_bids)
+        : new Date(state.reviewing_bids_date),
+      summing_up_bids_date: formGlobalValues?.lots[0]?.date_time?.summing_up_end
+        ? new Date(formGlobalValues?.lots[0]?.date_time?.summing_up_end)
+        : new Date(state.summing_up_bids_date),
+    }));
+  }, [formGlobalValues.lots]);
 
   return (
     <div className="col-md-8">

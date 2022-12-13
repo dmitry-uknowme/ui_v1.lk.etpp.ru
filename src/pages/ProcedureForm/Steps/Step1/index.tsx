@@ -24,6 +24,7 @@ import fetchSession from "../../../../services/api/fetchSession";
 import FormContext from "../../../../context/multiStepForm/context";
 import createProcedureViaPurchasePlan from "../../../../services/api/createProcedureViaPurchasePlan";
 import Money, { parseCurrency } from "../../../../utils/money";
+import { ProcedureFormActionVariants } from "../..";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -66,17 +67,45 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
-    is_via_plan: formGlobalServerData?.isViaPlan?.toString() || "false",
+    is_via_plan: formGlobalServerData?.isViaPlan?.toString() || "true",
     purchase_plan_id: formGlobalServerData.purchasePlanId || "",
-    purchase_method_id: formGlobalValues.plan_position_id || "",
-    procedure_title: formGlobalValues.name || "",
+    purchase_method_id: formGlobalValues?.plan_position_id || "",
+    procedure_title: formGlobalValues?.name || "",
     procedure_section: "SECTION_FZ_223",
     procedure_method: "AUCTION",
     //TODO:options parser
     options: ["rnp_requirement_option"],
   });
 
+  const planPositionId = formValue.purchase_method_id;
+  const procedureTitle = formValue.procedure_title;
+  const requirementRNPOption = formValue.options.includes(
+    "rnp_requirement_option"
+  );
+  const smbOption = formValue.options.includes("smb_participant_option");
+  const subcontractorOption = formValue.options.includes(
+    "subcontractor_option"
+  );
+
+  useEffect(() => {
+    if (formGlobalValues.plan_position_id) {
+      setSelectedPlanPositions([{ id: formGlobalValues.plan_position_id }]);
+    }
+    setFormValue((state) => ({
+      ...state,
+      procedure_title: formGlobalValues?.lots?.length
+        ? formGlobalValues?.lots[0]?.name
+        : "",
+    }));
+  }, [
+    formGlobalValues.lots,
+    formGlobalValues.name,
+    formGlobalValues.plan_position_id,
+  ]);
+
   const isViaPlan = formValue.is_via_plan === "true";
+  const isEditType =
+    formGlobalServerData.actionType === ProcedureFormActionVariants.EDIT;
 
   const purchasePlansQuery = useQuery(
     ["purchasePlans", isViaPlan],
@@ -117,15 +146,6 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       );
     }
     const profileId = session.profile_id;
-    const planPositionId = formValue.purchase_method_id;
-    const procedureTitle = formValue.procedure_title;
-    const requirementRNPOption = formValue.options.includes(
-      "rnp_requirement_option"
-    );
-    const smbOption = formValue.options.includes("smb_participant_option");
-    const subcontractorOption = formValue.options.includes(
-      "subcontractor_option"
-    );
 
     setFormGlobalValues((state) => ({
       ...state,
@@ -199,6 +219,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           accepter={RadioGroup}
           error={formError.is_via_plan}
           inline
+          disabled={isEditType}
         >
           <Radio value={"true"}>
             Заполнение сведений на основе плана закупок
@@ -241,6 +262,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               name="purchase_plan_id"
               label="Выберите план закупки"
               accepter={SelectPicker}
+              disabled={isEditType}
               error={formError.purchase_plan_id}
               data={
                 purchasePlansQuery?.data?.length
@@ -272,7 +294,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                         parseCurrency(position.maximum_contract_price)
                       ).localeFormat({ style: "currency" })
                     : "Не предусмотрено",
-                  status:
+                  status_localized:
                     position.status === "STATUS_WAIT"
                       ? "Формируется"
                       : position.status === "STATUS_POSTED"
@@ -285,6 +307,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               isLoading={purchasePlanQuery?.isLoading}
               selectedItems={selectedPlanPositions}
               setSelectedItems={setSelectedPlanPositions}
+              disabled={isEditType}
             />
           </Panel>
         </Animation.Collapse>

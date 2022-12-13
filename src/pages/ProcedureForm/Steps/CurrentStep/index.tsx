@@ -7,6 +7,7 @@ import MultiStepFormContext, {
   IMultiStepFormContext,
 } from "../../../../context/multiStepForm/context";
 import fetchProcedure from "../../../../services/api/fetchProcedure";
+import ShowResult from "../ShowResult";
 import Step1 from "../Step1";
 import Step2 from "../Step2";
 import Step3 from "../Step3";
@@ -28,7 +29,7 @@ const CurrentStep: React.FC<CurrentStepProps> = ({ action }) => {
     setCurrentStepId,
   } = useContext(MultiStepFormContext);
 
-  const Stepper = [Step1, Step2, Step3, Step4, Step5, Step6];
+  const Stepper = [Step1, Step2, Step3, Step4, Step5, Step6, ShowResult];
   const Step = Stepper[currentStepId];
 
   const nextStep = () => {
@@ -36,7 +37,7 @@ const CurrentStep: React.FC<CurrentStepProps> = ({ action }) => {
     //   "formContext",
     //   JSON.stringify({ formGlobalValues, formGlobalServerData, currentStepId })
     // );
-    setTimeout(() => setCurrentStepId((state) => state + 1), 500);
+    setCurrentStepId((state) => state + 1);
   };
   const prevStep = () => {
     // localStorage.setItem(
@@ -60,12 +61,8 @@ const CurrentStep: React.FC<CurrentStepProps> = ({ action }) => {
   }, [formGlobalValues]);
 
   const params = useParams();
+
   const procedureId = params?.procedure_id;
-  if (!procedureId) {
-    return toaster.push(
-      <Message type="error">404. Кажется вы заблудились</Message>
-    );
-  }
 
   const procedureQuery = useQuery(
     ["procedure", procedureId],
@@ -73,44 +70,72 @@ const CurrentStep: React.FC<CurrentStepProps> = ({ action }) => {
     {
       enabled: !!(procedureId && action === ProcedureFormActionVariants.EDIT),
       onError: (err) =>
-        toaster.push(
-          <Message type="error">
-            404. Кажется вы заблудились {JSON.stringify(err)}
-          </Message>
-        ),
+        toaster.push(<Message type="error">404. Процедура не найдена</Message>),
+      onSuccess: (procedure) => {
+        if (procedure) {
+          // const procedure = procedureQuery.data;
+          const organizer = procedure.organizer;
+          const customer = procedure.customer;
+          const lot = procedure.lots[0];
+          console.log("ssssss", procedure, lot);
+          setFormGlobalServerData((state) => ({
+            ...state,
+            actionType: action,
+            procedureId: procedure.id,
+          }));
+          setFormGlobalValues((state) => ({
+            ...state,
+            plan_position_id: lot.plan_position_id ?? null,
+            organizer: {
+              inn: organizer.inn,
+              // kpp: serverProcedure.organizer.kpp,
+              short_title: organizer.inn,
+              full_title: organizer.full_title,
+              phone: organizer.phone_number,
+              email: organizer.email,
+              // TODO: kpp, address,
+            },
+            customer: {
+              inn: customer.inn,
+              // kpp: serverProcedure.organizer.kpp,
+              short_title: customer.inn,
+              full_title: customer.full_title,
+              phone: customer.phone_number,
+              email: customer.email,
+              // TODO: kpp, address,
+            },
+            lots: [
+              {
+                date_time: {
+                  start_bids: lot.start_bid_date,
+                  close_bids: lot.close_bid_date,
+                  review_bids: lot.close_bid_date,
+                  summing_up_end: lot.summing_up_date,
+                },
+                name: procedure.name,
+                starting_price: `${procedure.price_original.currency} ${procedure.price_original.amount}`,
+              },
+            ],
+          }));
+        }
+      },
     }
   );
 
-  useEffect(() => {
-    if (procedureQuery?.isError) {
-      return toaster.push(
-        <Message type="error">404. Кажется вы заблудились</Message>
-      );
-    }
-    if (procedureQuery?.data) {
-      const serverProcedure = procedureQuery.data;
-      // console.log('ssssss',serverProcedure)
-      setFormGlobalValues((state) => ({
-        ...state,
-        organizer: serverProcedure.customer,
-      }));
-    }
-  }, [procedureQuery]);
-
-  //   useEffect(() => {
-  //     const savedFormContext = localStorage.getItem("formContext")
-  //       ? (JSON.parse(
-  //           localStorage.getItem("formContext")
-  //         ) as IMultiStepFormContext)
-  //       : null;
-  //     if (savedFormContext as IMultiStepFormContext) {
-  //       setTimeout(() => {
-  //         setFormGlobalValues(savedFormContext?.formValues);
-  //         setFormGlobalServerData(savedFormContext?.serverData);
-  //         setFormGlobalServerData(savedFormContext?.currentStepId);
-  //       }, 500);
-  //     }
-  //   }, [currentStepId]);
+  // useEffect(() => {
+  //   const savedFormContext = localStorage.getItem("formContext")
+  //     ? (JSON.parse(
+  //         localStorage.getItem("formContext")
+  //       ) as IMultiStepFormContext)
+  //     : null;
+  //   if (savedFormContext as IMultiStepFormContext) {
+  //     setTimeout(() => {
+  //       setFormGlobalValues(savedFormContext?.formValues);
+  //       setFormGlobalServerData(savedFormContext?.serverData);
+  //       setFormGlobalServerData(savedFormContext?.currentStepId);
+  //     }, 500);
+  //   }
+  // }, [currentStepId]);
 
   return (
     <Step
