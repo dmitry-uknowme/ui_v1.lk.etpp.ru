@@ -14,9 +14,6 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 import PurchasePlanTable from "../../../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
-import fetchPurchasePlans from "../../../../services/api/fetchPurchasePlans";
-import fetchPurchasePlan from "../../../../services/api/fetchPurchasePlan";
-import fetchSession from "../../../../services/api/fetchSession";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
 import fetchProfileOrganizations from "../../../../services/api/fetchProfileOrganizations";
 import axios from "axios";
@@ -411,6 +408,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         }
       );
       if (procedureData) {
+        console.log("update procedureeeeee", procedureData);
         setFormGlobalServerData((state) => ({
           ...state,
           procedure: procedureData,
@@ -438,15 +436,27 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         }
       );
       if (procedureData) {
+        console.log("created procedureeeeee", procedureData.procedure);
         toaster.push(
           <Message type="success">Процедура успешно создана</Message>
         );
         const noticeId = procedureData.notice_id;
+        const procedureId = procedureData.procedure.guid.value;
+        const procedureNumber = procedureData.procedure.id;
         setFormGlobalServerData((state) => ({
           ...state,
           noticeId,
           procedure: procedureData.procedure,
+          procedureId,
+          procedureNumber,
         }));
+
+        // setFormGlobalValues((state) => ({
+        //   ...state,
+        //   id: procedureId,
+        //   number: procedureNumber,
+        //   notice_id: noticeId,
+        // }));
         nextStep();
       }
     }

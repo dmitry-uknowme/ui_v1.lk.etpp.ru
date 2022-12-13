@@ -35,7 +35,7 @@ export interface IMultiStepFormContext {
 
   serverData: IMultiStepForm["serverData"];
   setServerData: React.Dispatch<
-    React.Dispatch<React.SetStateAction<IMultiStepForm["serverData"]>>
+    React.SetStateAction<IMultiStepForm["serverData"]>
   >;
   currentStepId: number;
   setCurrentStepId: React.Dispatch<React.SetStateAction<number>>;

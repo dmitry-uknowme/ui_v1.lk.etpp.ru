@@ -1,10 +1,35 @@
+import axios from "axios";
 import React, { useContext } from "react";
+import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
-import { Button, Modal, Panel, Placeholder, Table } from "rsuite";
+import {
+  Button,
+  Message,
+  Modal,
+  Panel,
+  Placeholder,
+  Table,
+  toaster,
+} from "rsuite";
 import { FormGroupContext } from "rsuite/esm/FormGroup/FormGroup";
+import LotPositionsTable from "../../../../components/Table/LotPositionsTable";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
-import Money from "../../../../utils/money";
-const ShowResult = ({ currentStep }) => {
+import fetchPurchasePlanPosition from "../../../../services/api/fetchPurchasePlanPosition";
+import Money, { parseCurrency, parseDBMoney } from "../../../../utils/money";
+
+interface ShowResultModalProps {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  activeStep: number;
+  setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const ShowResultModal: React.FC<ShowResultModalProps> = ({
+  isOpen,
+  setIsOpen,
+  activeStep,
+  setActiveStep,
+}) => {
   const {
     formValues: formGlobalValues,
     setFormValues: setFormGlobalValues,
@@ -12,80 +37,96 @@ const ShowResult = ({ currentStep }) => {
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
 
-  console.log("procccccc 7", formGlobalValues);
+  // console.log("procccccc 7", formGlobalValues);
+  const procedureId = formGlobalServerData?.procedureId;
+  const procedureNumber = formGlobalServerData?.procedureNumber;
+  const noticeId = formGlobalServerData?.noticeId;
+  const procedure = {
+    ...formGlobalValues,
+    id: procedureId,
+    number: procedureNumber,
+    notice_id: noticeId,
+  };
 
-  const data = formGlobalValues;
-  // const data = {
-  //   contract_type: "ON_SITE",
-  //   name: "Тест конкурентный отбор",
-  //   number: 20,
-  //   bid_part: "ONE",
-  //   bidding_per_unit: true,
-  //   // original_price: "RUB 50",
-  //   original_price: new Money(50),
-  //   // bidding_per_unit_amount: "RUB 5",
-  //   bidding_per_unit_amount: new Money(5),
-  //   bidding_process: "da",
-  //   contract_by_any_participant: true,
-  //   provision_bid: {
-  //     amount: "need",
-  //     is_specified: "need",
-  //     methods: "need",
-  //   },
-  //   provision_contract: {
-  //     amount: "need",
-  //     is_specified: "need",
-  //     type: "need",
-  //   },
-  //   organizer: {
-  //     email: "organizer@etpp.ru ",
-  //     fact_address: "da",
-  //     first_name: "СОтрудник",
-  //     last_name: "Сотрудник",
-  //     middle_name: "СОтрудник",
-  //     legal_addres: { index: "Россия" },
-  //     fact_addres: { index: "Россия" },
-  //     ogrn: "824978217489",
-  //     phone: "828939849",
-  //     short_title: "ООО ЕТП РБ",
-  //     full_title: "ООО ЕТП РБ",
-  //   },
-  //   customer: {
-  //     email: "organizer@etpp.ru ",
-  //     fact_address: "da",
-  //     first_name: "СОтрудник",
-  //     last_name: "Сотрудник",
-  //     middle_name: "СОтрудник",
-  //     legal_addres: { index: "Россия" },
-  //     fact_addres: { index: "Россия" },
-  //     ogrn: "824978217489",
-  //     phone: "828939849",
-  //     short_title: "ООО ЕТП РБ",
-  //     full_title: "ООО ЕТП РБ",
-  //     status: "Опубликован",
-  //   },
-  // };
+  const lot = procedure?.lots?.length ? procedure?.lots[0] : null;
+  const dateTime = lot?.date_time;
+
+  if (!procedureId || !noticeId || !lot) {
+    toaster.push(<Message type="error">Извещение не создано</Message>);
+    setActiveStep(4);
+    return;
+  }
+
+  const provisionBid = procedure.provision_bid;
+  const provisionContract = procedure.provision_contract;
+  const planId = formGlobalServerData?.purchasePlanId;
+  const planPositionId = formGlobalValues?.plan_position_id;
+  const cert_thumbprint = formGlobalServerData?.session?.cert_thumbprint;
+
+  const purchasePlanPositionQuery = useQuery(
+    ["purchasePlanPosition", planId, planPositionId],
+    async () => {
+      const planPosition = await fetchPurchasePlanPosition({
+        planId,
+        planPositionId,
+      });
+
+      return planPosition;
+    },
+    { enabled: !!(planId && planPositionId) }
+  );
+
+  const signAndSendNotice = async () => {
+    const signlib = window.signlib;
+    const { data: hashData } = await axios.get(
+      `http://localhost:8000/api/v1/notice/${noticeId}/hash`
+    );
+    const hash = hashData.hash;
+    console.log("hashhhhh", hash);
+
+    try {
+      const signData = await signlib.signStringHash(hash, cert_thumbprint);
+      const sign = signData.sign;
+      const formData = new FormData();
+      formData.append("sign", sign);
+      await axios.post(
+        `http://localhost:8000/api/v1/notice/${noticeId}/sign-and-publish`,
+        formData
+      );
+
+      return toaster.push(
+        <Message type="success">
+          Извещение успешно подписано и отправлено в ЕИС
+        </Message>
+      );
+    } catch (err) {
+      return toaster.push(
+        <Message type="error">Ошибка при подписании извещения</Message>
+      );
+    }
+  };
+
   return (
     <div>
-      <Modal size="full" open={true}>
+      <Modal size="full" open={isOpen}>
         <Modal.Header>
-          {/* <Modal.Title
+          <Modal.Title
             style={{ textAlign: "center", width: "100%", display: "block" }}
           >
             <span style={{ textAlign: "center" }}>
               Извещение о проведении закупки (Конкурентный отбор)
             </span>
-          </Modal.Title> */}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {/* <Placeholder.Paragraph />
            */}
-          <Panel shaded header="Извещение о проведении закупки № 1 (от)">
+          <Panel shaded>
             <table className="table table-responsive table-bordered">
               <tbody>
                 <tr>
                   <td style={{ width: "50%" }}>Номер процедуры</td>
-                  <td style={{ width: "50%" }}>{data?.number}</td>
+                  <td style={{ width: "50%" }}>{procedure?.number}</td>
                 </tr>
                 <tr>
                   <td style={{ width: "50%" }}>Статус</td>
@@ -99,32 +140,35 @@ const ShowResult = ({ currentStep }) => {
                   <td style={{ width: "50%" }}>
                     Наименование предмета закупки
                   </td>
-                  <td style={{ width: "50%" }}>{data?.name}</td>
+                  <td style={{ width: "50%" }}>{procedure?.name}</td>
                 </tr>
                 <tr>
                   <td style={{ width: "50%" }}>
                     Начальная (максимальная) цена в рублях
                   </td>
                   <td style={{ width: "50%" }}>
-                    {data?.original_price
-                      ? new Money(data.original_price).localeFormat({
-                          style: "currency",
-                        })
-                      : null}
+                    {parseDBMoney(procedure.original_price).localeFormat({
+                      style: "currency",
+                    })}
                   </td>
                 </tr>
-                <tr>
-                  <td style={{ width: "50%" }}>
-                    Начальная (максимальная) цена за единицу в рублях
-                  </td>
-                  <td style={{ width: "50%" }}>
-                    {data?.bidding_per_unit
-                      ? new Money(data.bidding_per_unit).localeFormat({
-                          style: "currency",
-                        })
-                      : null}
-                  </td>
-                </tr>
+                {procedure?.bidding_per_unit_amount ? (
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      Начальная (максимальная) цена за единицу в рублях
+                    </td>
+                    <td style={{ width: "50%" }}>
+                      {procedure?.bidding_per_unit_amount
+                        ? parseDBMoney(
+                            procedure.bidding_per_unit_amount
+                          ).localeFormat({
+                            style: "currency",
+                          })
+                        : "Не предусмотрено"}
+                    </td>
+                  </tr>
+                ) : null}
+
                 <tr>
                   <td style={{ width: "50%" }}>
                     Диапазон коэффициента снижения
@@ -140,7 +184,7 @@ const ShowResult = ({ currentStep }) => {
                 </tr>
                 <tr>
                   <td style={{ width: "50%" }}>Форма заключения договора</td>
-                  <td style={{ width: "50%" }}>{data?.contract_type}</td>
+                  <td style={{ width: "50%" }}>{procedure?.contract_type}</td>
                 </tr>
               </tbody>
             </table>
@@ -148,20 +192,20 @@ const ShowResult = ({ currentStep }) => {
               <table className="table table-responsive table-bordered">
                 <tbody>
                   <tr>
-                    <td>Попозиционная закупка</td>
-                    <td>Нет</td>
+                    <td style={{ width: "50%" }}>Закрытая закупка</td>
+                    <td style={{ width: "50%" }}>Нет</td>
                   </tr>
                   <tr>
-                    <td>Закрытая закупка</td>
-                    <td>Нет</td>
+                    <td style={{ width: "50%" }}>Торги за единицу</td>
+                    <td style={{ width: "50%" }}>
+                      {procedure?.bidding_per_unit ? "Да" : "Нет"}
+                    </td>
                   </tr>
                   <tr>
-                    <td>Торги за единицу</td>
-                    <td>{formGlobalValues.bidding_per_unit}</td>
-                  </tr>
-                  <tr>
-                    <td>Коэффициент снижения</td>
-                    <td>Попозиционная закупка</td>
+                    <td style={{ width: "50%" }}>Коэффициент снижения</td>
+                    <td style={{ width: "50%" }}>
+                      {procedure?.reduction_factor_purchase ? "Да" : "Нет"}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -171,39 +215,262 @@ const ShowResult = ({ currentStep }) => {
               <table className="table table-responsive table-bordered">
                 <tbody>
                   <tr>
-                    <td>Попозиционная закупка</td>
-                    <td>Попозиционная закупка</td>
+                    <td style={{ width: "50%" }}>
+                      Дата и время начала подачи заявок
+                    </td>
+                    <td style={{ width: "50%" }}>{dateTime.start_bids}</td>
                   </tr>
                   <tr>
-                    <td>Закрытая закупка</td>
-                    <td>Попозиционная закупка</td>
+                    <td style={{ width: "50%" }}>
+                      Дата и время окончания подачи заявок
+                    </td>
+                    <td style={{ width: "50%" }}>{dateTime.close_bids}</td>
                   </tr>
                   <tr>
-                    <td>Торги за единицу</td>
-                    <td>Попозиционная закупка</td>
+                    <td style={{ width: "50%" }}>
+                      Дата и время рассмотрения и оценки заявок
+                    </td>
+                    <td style={{ width: "50%" }}>{dateTime.review_bids}</td>
                   </tr>
                   <tr>
-                    <td>Коэффициент снижения</td>
-                    <td>Попозиционная закупка</td>
+                    <td style={{ width: "50%" }}>
+                      Дата и время подведения итогов
+                    </td>
+                    <td style={{ width: "50%" }}>{dateTime.summing_up_end}</td>
                   </tr>
                 </tbody>
               </table>
             </Panel>
+            <Panel shaded header="Лот №1">
+              <table className="table table-responsive table-bordered">
+                <tbody>
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      Сведения о позиции плана закупки:
+                    </td>
+                    <td style={{ width: "50%" }}>{dateTime.start_bids}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ width: "50%" }}>Предмет договора</td>
+                    <td style={{ width: "50%" }}>{procedure.name}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      Начальная (максимальная) цена договора
+                    </td>
+                    <td style={{ width: "50%" }}>
+                      {parseDBMoney(procedure.original_price).localeFormat({
+                        style: "currency",
+                      })}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Panel>
+            <Panel shaded header="Сведения о требованиях к процедуре">
+              <table className="table table-responsive table-bordered">
+                <tbody>
+                  <tr>
+                    <td style={{ width: "50%" }}>Вид обеспечения заявки</td>
+                    <td style={{ width: "50%" }}>
+                      {provisionBid?.methods?.length
+                        ? provisionBid.methods[0]
+                        : "Не установлено"}
+                    </td>
+                  </tr>
+                  {provisionBid?.amount ? (
+                    <tr>
+                      <td style={{ width: "50%" }}>
+                        Размер обеспечения заявки
+                      </td>
+                      <td style={{ width: "50%" }}>
+                        {parseDBMoney(provisionBid.amount).localeFormat({
+                          style: "currency",
+                        })}
+                      </td>
+                    </tr>
+                  ) : null}
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      Порядок предоставления обеспечения заявки
+                    </td>
+                    <td style={{ width: "50%" }}>
+                      {provisionBid?.payment_return_deposit}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      Вид обеспечения исполнения договора
+                    </td>
+                    <td style={{ width: "50%" }}>{provisionContract?.type}</td>
+                  </tr>
+                  {provisionContract?.amount ? (
+                    <tr>
+                      <td style={{ width: "50%" }}>
+                        Размер обеспечения исполнения договора
+                      </td>
+                      <td style={{ width: "50%" }}>
+                        {parseDBMoney(provisionContract.amount).localeFormat({
+                          style: "currency",
+                        })}
+                      </td>
+                    </tr>
+                  ) : null}
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      Порядок предоставления обеспечения исполнения договора
+                    </td>
+                    <td style={{ width: "50%" }}>
+                      {provisionContract?.payment_return_deposit}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Panel>
+            <Panel shaded header="Требования к участникам закупки">
+              <table className="table table-responsive table-bordered">
+                <tbody>
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      Требование об отсутствии сведений в РНП
+                    </td>
+                    <td style={{ width: "50%" }}>
+                      {procedure.requirement_not_rnp
+                        ? "Не установлено"
+                        : "Установлено"}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      Участниками закупки могут быть только субъекты малого и
+                      среднего предпринимательства
+                    </td>
+                    <td style={{ width: "50%" }}>
+                      {procedure.is_for_smb ? "Установлено" : "Не установлено"}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      В отношении участников закупки установлено требование о
+                      привлечении к исполнению договора субподрядчиков
+                      (соисполнителей) из числа субъектов малого и среднего
+                      предпринимательства
+                    </td>
+                    <td style={{ width: "50%" }}>
+                      {procedure.is_subcontractor_requirement
+                        ? "Установлено"
+                        : "Не установлено"}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Panel>
+            <Panel shaded header="Порядок проведения закупки">
+              <table className="table table-responsive table-bordered">
+                <tbody>
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      Порядок предоставления заявок на участие в закупке
+                    </td>
+                    <td style={{ width: "50%" }}>
+                      {procedure.other_info_by_customer}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      Порядок рассмотрения заявок
+                    </td>
+                    <td style={{ width: "50%" }}>
+                      {procedure.order_review_and_summing_up}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      Место рассмотрения заявок/подведения итогов
+                    </td>
+                    <td style={{ width: "50%" }}>
+                      {procedure.place_review_and_summing_up}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ width: "100%" }}>
+                      Торги проводятся на электронной торговой площадке "ЕТП
+                      ТПП", находящейся в сети интернет по адресу{" "}
+                      <a href="https://etpp.ru" target="_blank">
+                        https://etpp.ru
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Panel>
+            <Panel shaded header="Иные сведения о лоте">
+              <table className="table table-responsive table-bordered">
+                <tbody>
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      Иные требования установленные Заказчиком (Организатором
+                      закупки)
+                    </td>
+                    <td style={{ width: "50%" }}>
+                      {procedure.other_info_by_customer}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      Срок, место и порядок предоставления документации о
+                      закупке
+                    </td>
+                    <td style={{ width: "50%" }}>
+                      {procedure.order_review_and_summing_up}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      Сведения о порядке предоставления разъяснений на
+                      документацию
+                    </td>
+                    <td style={{ width: "50%" }}>
+                      {procedure.providing_documentation_explanation}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Panel>
+            <Panel header="Перечень товаров, работ, услуг">
+              <LotPositionsTable
+                data={
+                  purchasePlanPositionQuery.data?.positions?.length
+                    ? purchasePlanPositionQuery.data.positions.map(
+                        (position) => ({
+                          ...position,
+                          okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
+                          okved_field: `${position.okved_code}. ${position.okved_name}`,
+                          qty: `${position.qty}, ${position.unit_name}`,
+                          region: "Респ. Башкортостан",
+                        })
+                      )
+                    : []
+                }
+                isLoading={purchasePlanPositionQuery.isLoading}
+              />
+            </Panel>
           </Panel>
         </Modal.Body>
         <Modal.Footer>
-          <Link to="/procedure_edit/1">
+          <Link to={`/procedure_edit/${procedure?.id}`}>
             <Button appearance="subtle">Редактировать</Button>
           </Link>
-          <a
-            href={`https://dev.223.etpp.ru/procedure/${data.procedure.id.value}`}
-          >
-            <Button appearance="primary">Опубликовать</Button>
-          </a>
+          {/* <a href={`http://localhost:8000/procedure/${procedure?.id}`}> */}
+          {/* <a href={`https://dev.223.etpp.ru/procedure/${procedure?.id}`}> */}
+          <Button appearance="primary" onClick={() => signAndSendNotice()}>
+            Опубликовать
+          </Button>
+          {/* </a> */}
         </Modal.Footer>
       </Modal>
     </div>
   );
 };
 
-export default ShowResult;
+export default ShowResultModal;
