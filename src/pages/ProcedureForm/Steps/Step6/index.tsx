@@ -141,9 +141,22 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       );
     }
   };
+  const allDocumentsSigned = !!documents.filter(
+    (doc) => doc.status !== "STATUS_SIGNED"
+  );
+  console.log("issss", allDocumentsSigned);
 
   const handleSubmit = () => {
-    onNext();
+    const allDocumentsSigned = !!documents.filter(
+      (doc) => doc.status !== "STATUS_SIGNED"
+    );
+
+    if (!allDocumentsSigned) {
+      return toaster.push(
+        <Message type="error">Подписаны не все документы извещения</Message>
+      );
+    }
+    nextStep();
     // if (!formRef.current.check()) {
     //   toaster.push(<Message type="error">Error</Message>);
     //   return;
@@ -198,24 +211,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 : null}
             </tbody>
           </table>
-          {/* <Table data={documents}>
-            {Object.keys(documents).map((key) => (
-              <Column>
-                <HeaderCell>Наименование</HeaderCell>
-                <Cell dataKey={key} />
-              </Column>
 
-              //    <Column width={200}>
-              //   <HeaderCell>Наименование</HeaderCell>
-              //   <Cell dataKey="file_real_name" />
-              // </Column>
-
-              // <Column width={120}>
-              //   <HeaderCell>Статус</HeaderCell>
-              //   <Cell dataKey="status_localized"></Cell>
-              // </Column>
-            ))}
-          </Table> */}
           <Uploader
             renderThumbnail={() => null}
             renderFileInfo={() => null}
@@ -275,7 +271,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
         <Form.Group>
           <Button onClick={prevStep}>Назад</Button>
-          <Button appearance="primary" onClick={nextStep}>
+          <Button appearance="primary" onClick={handleSubmit}>
             Предпросмотр процедуры
           </Button>
         </Form.Group>

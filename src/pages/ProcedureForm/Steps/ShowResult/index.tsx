@@ -1,58 +1,70 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Button, Modal, Panel, Placeholder, Table } from "rsuite";
+import { FormGroupContext } from "rsuite/esm/FormGroup/FormGroup";
+import MultiStepFormContext from "../../../../context/multiStepForm/context";
 import Money from "../../../../utils/money";
 const ShowResult = ({ currentStep }) => {
-  const data = {
-    contract_type: "ON_SITE",
-    name: "Тест конкурентный отбор",
-    number: 20,
-    bid_part: "ONE",
-    bidding_per_unit: true,
-    // original_price: "RUB 50",
-    original_price: new Money(50),
-    // bidding_per_unit_amount: "RUB 5",
-    bidding_per_unit_amount: new Money(5),
-    bidding_process: "da",
-    contract_by_any_participant: true,
-    provision_bid: {
-      amount: "need",
-      is_specified: "need",
-      methods: "need",
-    },
-    provision_contract: {
-      amount: "need",
-      is_specified: "need",
-      type: "need",
-    },
-    organizer: {
-      email: "organizer@etpp.ru ",
-      fact_address: "da",
-      first_name: "СОтрудник",
-      last_name: "Сотрудник",
-      middle_name: "СОтрудник",
-      legal_addres: { index: "Россия" },
-      fact_addres: { index: "Россия" },
-      ogrn: "824978217489",
-      phone: "828939849",
-      short_title: "ООО ЕТП РБ",
-      full_title: "ООО ЕТП РБ",
-    },
-    customer: {
-      email: "organizer@etpp.ru ",
-      fact_address: "da",
-      first_name: "СОтрудник",
-      last_name: "Сотрудник",
-      middle_name: "СОтрудник",
-      legal_addres: { index: "Россия" },
-      fact_addres: { index: "Россия" },
-      ogrn: "824978217489",
-      phone: "828939849",
-      short_title: "ООО ЕТП РБ",
-      full_title: "ООО ЕТП РБ",
-      status: "Опубликован",
-    },
-  };
+  const {
+    formValues: formGlobalValues,
+    setFormValues: setFormGlobalValues,
+    serverData: formGlobalServerData,
+    setServerData: setFormGlobalServerData,
+  } = useContext(MultiStepFormContext);
+
+  console.log("procccccc 7", formGlobalValues);
+
+  const data = formGlobalValues;
+  // const data = {
+  //   contract_type: "ON_SITE",
+  //   name: "Тест конкурентный отбор",
+  //   number: 20,
+  //   bid_part: "ONE",
+  //   bidding_per_unit: true,
+  //   // original_price: "RUB 50",
+  //   original_price: new Money(50),
+  //   // bidding_per_unit_amount: "RUB 5",
+  //   bidding_per_unit_amount: new Money(5),
+  //   bidding_process: "da",
+  //   contract_by_any_participant: true,
+  //   provision_bid: {
+  //     amount: "need",
+  //     is_specified: "need",
+  //     methods: "need",
+  //   },
+  //   provision_contract: {
+  //     amount: "need",
+  //     is_specified: "need",
+  //     type: "need",
+  //   },
+  //   organizer: {
+  //     email: "organizer@etpp.ru ",
+  //     fact_address: "da",
+  //     first_name: "СОтрудник",
+  //     last_name: "Сотрудник",
+  //     middle_name: "СОтрудник",
+  //     legal_addres: { index: "Россия" },
+  //     fact_addres: { index: "Россия" },
+  //     ogrn: "824978217489",
+  //     phone: "828939849",
+  //     short_title: "ООО ЕТП РБ",
+  //     full_title: "ООО ЕТП РБ",
+  //   },
+  //   customer: {
+  //     email: "organizer@etpp.ru ",
+  //     fact_address: "da",
+  //     first_name: "СОтрудник",
+  //     last_name: "Сотрудник",
+  //     middle_name: "СОтрудник",
+  //     legal_addres: { index: "Россия" },
+  //     fact_addres: { index: "Россия" },
+  //     ogrn: "824978217489",
+  //     phone: "828939849",
+  //     short_title: "ООО ЕТП РБ",
+  //     full_title: "ООО ЕТП РБ",
+  //     status: "Опубликован",
+  //   },
+  // };
   return (
     <div>
       <Modal size="full" open={true}>
@@ -73,11 +85,11 @@ const ShowResult = ({ currentStep }) => {
               <tbody>
                 <tr>
                   <td style={{ width: "50%" }}>Номер процедуры</td>
-                  <td style={{ width: "50%" }}>{data.number}</td>
+                  <td style={{ width: "50%" }}>{data?.number}</td>
                 </tr>
                 <tr>
                   <td style={{ width: "50%" }}>Статус</td>
-                  <td style={{ width: "50%" }}>1</td>
+                  <td style={{ width: "50%" }}>Черновик</td>
                 </tr>
                 <tr>
                   <td style={{ width: "50%" }}>Тип процедуры</td>
@@ -87,14 +99,18 @@ const ShowResult = ({ currentStep }) => {
                   <td style={{ width: "50%" }}>
                     Наименование предмета закупки
                   </td>
-                  <td style={{ width: "50%" }}>{data.name}</td>
+                  <td style={{ width: "50%" }}>{data?.name}</td>
                 </tr>
                 <tr>
                   <td style={{ width: "50%" }}>
                     Начальная (максимальная) цена в рублях
                   </td>
                   <td style={{ width: "50%" }}>
-                    {data.original_price.localeFormat({ style: "currency" })}
+                    {data?.original_price
+                      ? new Money(data.original_price).localeFormat({
+                          style: "currency",
+                        })
+                      : null}
                   </td>
                 </tr>
                 <tr>
@@ -102,9 +118,11 @@ const ShowResult = ({ currentStep }) => {
                     Начальная (максимальная) цена за единицу в рублях
                   </td>
                   <td style={{ width: "50%" }}>
-                    {data.bidding_per_unit_amount.localeFormat({
-                      style: "currency",
-                    })}
+                    {data?.bidding_per_unit
+                      ? new Money(data.bidding_per_unit).localeFormat({
+                          style: "currency",
+                        })
+                      : null}
                   </td>
                 </tr>
                 <tr>
@@ -122,7 +140,7 @@ const ShowResult = ({ currentStep }) => {
                 </tr>
                 <tr>
                   <td style={{ width: "50%" }}>Форма заключения договора</td>
-                  <td style={{ width: "50%" }}>{data.contract_type}</td>
+                  <td style={{ width: "50%" }}>{data?.contract_type}</td>
                 </tr>
               </tbody>
             </table>
@@ -132,6 +150,41 @@ const ShowResult = ({ currentStep }) => {
                 <tbody>
                   <tr>
                     <td>Попозиционная закупка</td>
+                    <td>Нет</td>
+                  </tr>
+                  <tr>
+                    <td>Закрытая закупка</td>
+                    <td>Нет</td>
+                  </tr>
+                  <tr>
+                    <td>Торги за единицу</td>
+                    <td>{formGlobalValues.bidding_per_unit}</td>
+                  </tr>
+                  <tr>
+                    <td>Коэффициент снижения</td>
+                    <td>Попозиционная закупка</td>
+                  </tr>
+                </tbody>
+              </table>
+            </Panel>
+
+            <Panel shaded header="Этапы проведения">
+              <table className="table table-responsive table-bordered">
+                <tbody>
+                  <tr>
+                    <td>Попозиционная закупка</td>
+                    <td>Попозиционная закупка</td>
+                  </tr>
+                  <tr>
+                    <td>Закрытая закупка</td>
+                    <td>Попозиционная закупка</td>
+                  </tr>
+                  <tr>
+                    <td>Торги за единицу</td>
+                    <td>Попозиционная закупка</td>
+                  </tr>
+                  <tr>
+                    <td>Коэффициент снижения</td>
                     <td>Попозиционная закупка</td>
                   </tr>
                 </tbody>

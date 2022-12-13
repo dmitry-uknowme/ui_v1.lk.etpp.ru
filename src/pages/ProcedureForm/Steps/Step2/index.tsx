@@ -137,6 +137,41 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     }
   }, [selectedPlanPositions]);
 
+  useEffect(() => {
+    if (formValue.options.includes("reduction_ratio_option")) {
+      setFormValue((state) => ({
+        ...state,
+        options: [...state.options, "bidding_per_unit_option"],
+      }));
+    }
+    if (formValue.options.includes("bidding_per_unit_option")) {
+      setFormValue((state) => ({
+        ...state,
+        options: [...state.options, "reduction_ratio_option"],
+      }));
+    }
+    if (!formValue.options.includes("bidding_per_unit_option")) {
+      setFormValue((state) => ({
+        ...state,
+        options: [
+          ...state.options.filter(
+            (option) => option !== "reduction_ratio_option"
+          ),
+        ],
+      }));
+    }
+    if (!formValue.options.includes("reduction_ratio_option")) {
+      setFormValue((state) => ({
+        ...state,
+        options: [
+          ...state.options.filter(
+            (option) => option !== "bidding_per_unit_option"
+          ),
+        ],
+      }));
+    }
+  }, [formValue.options]);
+
   return (
     <div className="col-md-8">
       <Form

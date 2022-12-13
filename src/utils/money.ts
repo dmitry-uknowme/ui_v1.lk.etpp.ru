@@ -17,6 +17,13 @@ export const parseCurrency = (currency: string): IMoney["currency"] => {
   return candidateCurrency;
 };
 
+export const parseDBMoney = (str: string) =>
+  new Money(
+    parseInt(str.replace(/\D/g, ""))
+    // parseInt(str.replaceAll(parseCurrency(str), "")),
+    // parseCurrency(str)
+  );
+
 class Money {
   constructor(
     public amount: number,

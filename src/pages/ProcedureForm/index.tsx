@@ -5,7 +5,6 @@ import { Message, Steps, toaster } from "rsuite";
 import MultiStepFormContextProvider from "../../context/multiStepForm/provider";
 import fetchProcedure from "../../services/api/fetchProcedure";
 import CurrentStep from "./Steps/CurrentStep";
-import ShowResult from "./Steps/ShowResult";
 
 export enum ProcedureFormActionVariants {
   CREATE = "CREATE",

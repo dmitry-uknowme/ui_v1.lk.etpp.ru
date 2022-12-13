@@ -26,7 +26,7 @@ import useDebounce from "../../../../hooks/useDebounce";
 import { Dinero, dinero } from "dinero.js";
 import { RUB } from "@dinero.js/currencies";
 import LotPositionsTable from "../../../../components/Table/LotPositionsTable";
-import Money, { parseCurrency } from "../../../../utils/money";
+import Money, { parseCurrency, parseDBMoney } from "../../../../utils/money";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -176,6 +176,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         },
       ],
     }));
+
     if (!formRef.current.check()) {
       toaster.push(
         <Message type="error">
@@ -278,6 +279,35 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       }
     }
   }, [formValue.lot_unit_start_price]);
+
+  useEffect(() => {
+    console.log("on serv", formGlobalValues);
+    setFormValue((state) => ({
+      ...state,
+      lot_start_price: formGlobalValues?.original_price
+        ? parseDBMoney(formGlobalValues.original_price).localeFormat()
+        : state.lot_start_price,
+      provision_bid_amount: formGlobalValues?.provision_bid?.amount
+        ? formGlobalValues?.provision_bid.amount
+        : state.provision_bid_amount,
+      provision_bid_is_specified: formGlobalValues?.provision_bid?.is_specified
+        ? formGlobalValues?.provision_bid?.is_specified
+        : state.provision_bid_is_specified,
+      provision_contract_amount: formGlobalValues?.provision_contract?.amount
+        ? parseDBMoney(
+            formGlobalValues.provision_contract.amount
+          ).localeFormat()
+        : state.provision_contract_amount,
+      provision_contract_type: formGlobalValues?.provision_contract?.type
+        ? formGlobalValues?.provision_contract?.type
+        : state.provision_contract_type,
+      // provision_bid_is_specified: formGlobalValues.provision_bid.is_specified,
+    }));
+  }, [
+    formGlobalValues.provision_bid,
+    formGlobalValues.provision_contract,
+    formGlobalValues.original_price,
+  ]);
 
   return (
     <div className="col-md-9">
