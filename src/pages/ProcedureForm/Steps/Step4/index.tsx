@@ -61,6 +61,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     serverData: formGlobalServerData,
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
+  const [isBtnLoader, setBtnLoader] = useState<boolean>(false);
   const isBiddingPerUnitOption = !!formGlobalValues?.bidding_per_unit;
   const serverProcedure = formGlobalServerData.procedure;
 
@@ -131,6 +132,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const sessionQuery = useQuery("session", fetchSession);
 
   const handleSubmit = () => {
+    setBtnLoader(true);
     const bidProvisionAmount = formValue.provision_bid_amount;
     const bidProvisionPercent = formValue.provision_bid_percent;
 
@@ -188,6 +190,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         ?.parentNode?.parentNode?.scrollIntoView();
       return;
     }
+    setBtnLoader(false);
     nextStep();
   };
 
@@ -498,7 +501,11 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
         <Form.Group>
           <Button onClick={prevStep}>Назад</Button>
-          <Button appearance="primary" onClick={handleSubmit}>
+          <Button
+            appearance="primary"
+            onClick={handleSubmit}
+            loading={isBtnLoader}
+          >
             Далее
           </Button>
         </Form.Group>

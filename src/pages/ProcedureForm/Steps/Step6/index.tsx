@@ -99,8 +99,6 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   const noticeId = formGlobalServerData.noticeId;
 
-  console.log("doccc", documents);
-
   // const purchasePlanQuery = useQuery(
   //   ["purchasePlan", formValue.purchase_plan_id, isViaPlan],
   //   () =>
@@ -147,9 +145,9 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   const handleSubmit = () => {
     const isDocumentsExists = documents?.length;
-    const isAllDocumentsSigned = !!documents.filter(
-      (doc) => doc.status !== "STATUS_SIGNED"
-    );
+    const isAllDocumentsSigned =
+      documents.filter((doc) => doc.status === "STATUS_SIGNED").length ===
+      documents.length;
     if (!isDocumentsExists) {
       return toaster.push(
         <Message type="error">Не загружен документ извещения</Message>
@@ -204,6 +202,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                             color="blue"
                             size="xs"
                             onClick={() => signDocument(doc)}
+                            loading={doc?.isLoading}
                           >
                             Подписать
                           </Button>
@@ -252,7 +251,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 },
                 success: (response) => {
                   console.log("resss", response);
-                  setDocuments((state) => [...state, ...response.files]);
+                  setDocuments((state) => [...response.files]);
                 },
               });
             }}

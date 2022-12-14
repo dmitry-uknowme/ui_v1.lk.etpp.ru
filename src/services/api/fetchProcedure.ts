@@ -9,7 +9,7 @@ interface FetchProcedurePayload {
 
 const fetchProcedure = async (
   payload: FetchProcedurePayload,
-  onError: (...args: any) => any
+  onError?: (...args: any) => any
 ) => {
   const { procedureId } = payload;
   try {

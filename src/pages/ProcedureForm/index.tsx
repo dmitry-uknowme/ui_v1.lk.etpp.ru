@@ -5,6 +5,7 @@ import { Message, Steps, toaster } from "rsuite";
 import MultiStepFormContextProvider from "../../context/multiStepForm/provider";
 import fetchProcedure from "../../services/api/fetchProcedure";
 import CurrentStep from "./Steps/CurrentStep";
+import ShowResultModal from "./Steps/ShowResult";
 
 export enum ProcedureFormActionVariants {
   CREATE = "CREATE",
@@ -17,6 +18,14 @@ interface ProcedureFormProps {
 
 const ProcedureForm: React.FC<ProcedureFormProps> = ({ action }) => {
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (activeStep === 6) {
+      setIsModalOpen(true);
+    }
+  }, [activeStep]);
+  console.log("stepppp", activeStep);
 
   return (
     <div>
@@ -57,7 +66,15 @@ const ProcedureForm: React.FC<ProcedureFormProps> = ({ action }) => {
             <hr />
 
             {/* <Panel header={`Шаг: ${step + 1}`}> */}
-            {<CurrentStep action={action} />}
+            {activeStep !== 6 ? <CurrentStep action={action} /> : null}
+            {isModalOpen ? (
+              <ShowResultModal
+                isOpen={isModalOpen}
+                setIsOpen={setIsModalOpen}
+                activeStep={activeStep}
+                setActiveStep={setActiveStep}
+              />
+            ) : null}
 
             {/* </Panel> */}
             <hr />
