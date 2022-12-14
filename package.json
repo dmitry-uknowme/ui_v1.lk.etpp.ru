@@ -13,8 +13,10 @@
   },
   "dependencies": {
     "@dinero.js/currencies": "2.0.0-alpha.11",
+    "@rsuite/icons": "^1.0.2",
     "axios": "^1.2.0",
     "bootstrap": "^5.2.3",
+    "currency.js": "^2.0.4",
     "date-fns": "^2.29.3",
     "dinero.js": "2.0.0-alpha.11",
     "jquery": "^3.6.1",

@@ -79,7 +79,6 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     reduction_ratio_to:
       formGlobalValues?.reduction_factor_purchase_to?.toString() || "1",
   });
-  console.log("ffff", formValue);
   useEffect(() => {
     setFormValue((state) => ({
       ...state,

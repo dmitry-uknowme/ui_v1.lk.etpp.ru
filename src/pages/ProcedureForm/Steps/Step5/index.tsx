@@ -335,7 +335,6 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       }));
     }
     const finalData = {
-      name: "da",
       lots: [
         {
           ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}),

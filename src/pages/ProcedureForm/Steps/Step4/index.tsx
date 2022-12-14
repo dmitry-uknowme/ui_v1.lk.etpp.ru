@@ -14,6 +14,7 @@ import {
   Message,
 } from "rsuite";
 import React, { useContext, useEffect, useState } from "react";
+import currency from "currency.js";
 
 import PurchasePlanTable from "../../../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
@@ -27,6 +28,7 @@ import { Dinero, dinero } from "dinero.js";
 import { RUB } from "@dinero.js/currencies";
 import LotPositionsTable from "../../../../components/Table/LotPositionsTable";
 import Money, { parseCurrency, parseDBMoney } from "../../../../utils/money";
+import { parseDBAmount } from "../../../../utils/newMoney";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -37,13 +39,18 @@ const Field = React.forwardRef((props, ref) => {
       className={error ? "has-error" : ""}
     >
       <Form.ControlLabel>{label} </Form.ControlLabel>
-      <Form.Control
-        name={name}
-        accepter={accepter}
-        errorMessage={error}
-        {...rest}
-      />
-      {message && <Form.HelpText></Form.HelpText>}
+      {rest.as === "textarea" ? (
+        <Input as="textarea" name={name} {...rest} />
+      ) : (
+        <Form.Control
+          name={name}
+          accepter={accepter}
+          errorMessage={error}
+          {...rest}
+        />
+      )}
+
+      <Form.HelpText>{message}</Form.HelpText>
     </Form.Group>
   );
 });
@@ -77,19 +84,37 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     provision_bid_is_specified: false,
     provision_bid_type: "WITHOUT_COLLATERAL",
     provision_bid_amount: formGlobalValues?.provision_bid?.amount
-      ? parseFloat(formGlobalValues?.provision_bid?.amount / 100).toFixed(2)
+      ? currency(
+          parseDBAmount(formGlobalValues.provision_bid.amount)
+        ).toString()
       : "",
+    // provision_bid_amount: formGlobalValues?.provision_bid?.amount
+    //   ? parseFloat(formGlobalValues?.provision_bid?.amount / 100).toFixed(2)
+    //   : "",
     provision_bid_percent: "",
     provision_bid_methods: formGlobalValues?.provision_bid?.methods || [],
     provision_contract_type:
       formGlobalValues?.provision_contract?.type || "NOT_SPECIFIED",
     provision_contract_amount: formGlobalValues?.provision_contract?.amount
-      ? parseFloat(formGlobalValues?.provision_contract?.amount / 100).toFixed(
-          2
-        )
+      ? currency(
+          parseDBAmount(formGlobalValues.provision_contract.amount)
+        ).toString()
       : "",
+    // provision_contract_amount: formGlobalValues?.provision_contract?.amount
+    //   ? parseFloat(formGlobalValues?.provision_contract?.amount / 100).toFixed(
+    //       2
+    //     )
+    //   : "",
     provision_contract_percent: "",
-    lot_unit_start_price: "",
+    lot_unit_start_price: formGlobalValues?.bidding_per_unit_amount
+      ? currency(
+          parseDBAmount(formGlobalValues.bidding_per_unit_amount)
+        ).toString()
+      : "",
+    provision_bid_payment_return_deposit:
+      "В соответствии с закупочной документацией",
+    provision_contract_payment_return_deposit:
+      "В соответствии с закупочной документацией",
   });
 
   const isBidProvisionSpecified =
@@ -114,17 +139,19 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         planId,
         planPositionId,
       });
-      setFormValue((state) => ({
-        ...state,
-        lot_start_price: new Money(
-          planPosition.maximum_contract_price_from_budget.replaceAll(
-            parseCurrency(planPosition.maximum_contract_price_from_budget),
-            ""
-          ),
-          "RUB"
-          // parseCurrency(planPosition.maximum_contract_price_from_budget)
-        ).localeFormat(),
-      }));
+      if (!formValue.lot_start_price || !formGlobalValues.original_price) {
+        setFormValue((state) => ({
+          ...state,
+          lot_start_price: new Money(
+            planPosition.maximum_contract_price_from_budget.replaceAll(
+              parseCurrency(planPosition.maximum_contract_price_from_budget),
+              ""
+            ),
+            "RUB"
+            // parseCurrency(planPosition.maximum_contract_price_from_budget)
+          ).localeFormat(),
+        }));
+      }
       return planPosition;
     }
   );
@@ -140,10 +167,22 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     const contractProvisionAmount = formValue.provision_contract_amount;
     const contractProvisionPercent = formValue.provision_contract_percent;
 
+    if (isBiddingPerUnitOption) {
+      if (!parseFloat(formValue.lot_unit_start_price)) {
+        setFormError((state) => ({
+          ...state,
+          lot_unit_start_price: "Поле обязательно для заполнения",
+        }));
+        setBtnLoader(false);
+        return;
+      }
+    }
+
     setFormGlobalValues((state) => ({
       ...state,
+      name: formValue.lot_title,
       bidding_per_unit_amount: isBiddingPerUnitOption
-        ? `${"RUB"} ${parseFloat(formValue.lot_unit_start_price) * 100}`
+        ? `${"RUB"} ${parseFloat(formValue.lot_unit_start_price)}`
         : null,
       provision_bid: {
         is_specified: true,
@@ -170,7 +209,6 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         {
           ...(formGlobalValues?.lots?.length ? formGlobalValues?.lots[0] : {}),
           name: formValue.lot_title,
-          //TODO:da
           starting_price: `${"RUB"} ${
             parseFloat(formValue.lot_start_price) * 100
           }`,
@@ -196,37 +234,45 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   useEffect(() => {
     if (isContractProvisionSpecified) {
-      if (
-        formValue.lot_start_price &&
-        parseFloat(formValue.provision_contract_percent)
-      ) {
-        const startPrice = new Money(
-          Math.round(parseFloat(formValue.lot_start_price) * 100)
-        );
-        const provisionContractPercent =
-          parseFloat(formValue.provision_contract_percent) ?? null;
-
-        if (
-          !!provisionContractPercent ||
-          provisionContractPercent < 5 ||
-          provisionContractPercent > 30
-        ) {
-          setFormError((state) => ({
-            ...state,
-            provision_contract_percent:
-              "Обеспечение исполнения договора должно быть от 5% до 30%",
-          }));
-          return;
-        }
-
-        setFormValue((state) => ({
+      const startPrice = currency(parseFloat(formValue.lot_start_price));
+      const provisionContractPercent =
+        parseFloat(formValue.provision_contract_percent) ?? null;
+      if (!parseFloat(formValue.lot_start_price)) {
+        setFormError((state) => ({
           ...state,
-          provision_contract_amount: new Money(startPrice.amount)
-            .multiply(provisionContractPercent)
-            .divide(100)
-            .localeFormat(),
+          provision_contract_amount: "Введите НМЦ лота",
         }));
+        setFormValue((state) => ({ ...state, provision_contract_amount: "" }));
+        return;
       }
+      if (!provisionContractPercent) {
+        return;
+        // setFormError((state) => ({
+        //   ...state,
+        //   provision_contract_amount: "Введите процент",
+        // }));
+      }
+      if (
+        !provisionContractPercent ||
+        provisionContractPercent < 5 ||
+        provisionContractPercent > 30
+      ) {
+        setFormError((state) => ({
+          ...state,
+          provision_contract_percent:
+            "Обеспечение исполнения договора должно быть от 5% до 30%",
+        }));
+        return;
+      }
+
+      setFormValue((state) => ({
+        ...state,
+        provision_contract_amount: startPrice
+          .multiply(provisionContractPercent)
+          .divide(100)
+          .toString(),
+      }));
+      // }
     }
   }, [
     isContractProvisionSpecified,
@@ -238,11 +284,26 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   useEffect(() => {
     if (isBidProvisionSpecified) {
       if (isBidProvisionPercent || isBidProvisionByDocumentation) {
-        const startPrice = new Money(
-          Math.round(parseFloat(formValue.lot_start_price) * 100)
-        );
+        const startPrice = currency(parseFloat(formValue.lot_start_price));
         const provisionBidPercent =
           parseFloat(formValue.provision_bid_percent) ?? null;
+
+        if (!parseFloat(formValue.lot_start_price)) {
+          setFormError((state) => ({
+            ...state,
+            provision_contract_amount: "Введите НМЦ лота",
+          }));
+          setFormValue((state) => ({
+            ...state,
+            provision_contract_amount: "",
+          }));
+          return;
+        }
+
+        if (!provisionBidPercent) {
+          return;
+        }
+
         if (
           !provisionBidPercent ||
           provisionBidPercent < 0.5 ||
@@ -258,10 +319,10 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
         setFormValue((state) => ({
           ...state,
-          provision_bid_amount: new Money(startPrice.amount)
+          provision_bid_amount: startPrice
             .multiply(provisionBidPercent)
             .divide(100)
-            .localeFormat(),
+            .toString(),
         }));
       }
     }
@@ -284,25 +345,22 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   }, [formValue.lot_unit_start_price]);
 
   useEffect(() => {
-    // console.log("on serv", formGlobalValues);
     setFormValue((state) => ({
       ...state,
       lot_start_price: formGlobalValues?.original_price
-        ? parseDBMoney(formGlobalValues.original_price).localeFormat()
+        ? parseDBAmount(formGlobalValues.original_price).toString()
         : state.lot_start_price,
       provision_bid_amount: formGlobalValues?.provision_bid?.amount
-        ? formGlobalValues?.provision_bid.amount
+        ? parseDBAmount(formGlobalValues.provision_bid.amount).toString()
         : state.provision_bid_amount,
       provision_bid_is_specified: formGlobalValues?.provision_bid?.is_specified
-        ? formGlobalValues?.provision_bid?.is_specified
+        ? formGlobalValues.provision_bid.is_specified
         : state.provision_bid_is_specified,
       provision_contract_amount: formGlobalValues?.provision_contract?.amount
-        ? parseDBMoney(
-            formGlobalValues.provision_contract.amount
-          ).localeFormat()
+        ? parseDBAmount(formGlobalValues.provision_contract.amount).toString()
         : state.provision_contract_amount,
       provision_contract_type: formGlobalValues?.provision_contract?.type
-        ? formGlobalValues?.provision_contract?.type
+        ? formGlobalValues.provision_contract.type
         : state.provision_contract_type,
       // provision_bid_is_specified: formGlobalValues.provision_bid.is_specified,
     }));
@@ -427,17 +485,23 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             </Animation.Collapse>
             {/* </div> */}
           </Stack>
+          <Animation.Collapse in={isBidProvisionSpecified}>
+            <div>
+              <Field
+                label="Срок и порядок внесения обеспечения заявки"
+                name="provision_bid_payment_return_deposit"
+                accepter={Input}
+                value={formValue.provision_bid_payment_return_deposit}
+                onChange={(value) => setFormValue(value)}
+                as="textarea"
+                style={{ width: "100%" }}
+              />
+            </div>
+          </Animation.Collapse>
           {/* </Animation.Collapse> */}
         </Panel>
 
         <Panel header="Обеспечение исполнения договора">
-          {/* <Field
-            name="provision_contract_option"
-            accepter={CheckboxGroup}
-            error={formError.provision_contract_option}
-          >
-            <Checkbox value={"ON"}>Установлено</Checkbox>
-          </Field> */}
           <Field
             name="provision_contract_type"
             label="Тип обеспечения исполнения договора"
@@ -467,21 +531,25 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                   name="provision_contract_amount"
                   label="Размер обеспечения исполнения договора, руб"
                   accepter={Input}
-                  value={formValue.provision_contract_amount}
+                  error={formError.provision_contract_amount}
                 />
               </div>
             </Animation.Collapse>
           </Stack>
-          {/* <Field
-            label="Размер обеспечения исполнения договора от"
-            accepter={RadioGroup}
-            error={formError.provision_contract_type}
-            inline
-            name="provision_contract_type"
-          >
-            <Radio value={"FROM_START_PRICE"}>От начальной цены лота</Radio>
-            <Radio value={"FROM_CONTRACT_PRICE"}>От цены договора</Radio>
-          </Field> */}
+          <Animation.Collapse in={isContractProvisionSpecified}>
+            <div>
+              <Field
+                label="Срок и порядок внесения обеспечения исполнения договора"
+                name="provision_contract_payment_return_deposit"
+                accepter={Input}
+                value={formValue.provision_contract_payment_return_deposit}
+                onChange={(value) => setFormValue(value)}
+                as="textarea"
+                style={{ width: "100%" }}
+              />
+            </div>
+          </Animation.Collapse>
+
           <Header>Перечень товаров, работ, услуг</Header>
           <LotPositionsTable
             data={

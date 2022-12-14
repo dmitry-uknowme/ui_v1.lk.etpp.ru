@@ -2,11 +2,13 @@ lockfileVersion: 5.4
 
 specifiers:
   '@dinero.js/currencies': 2.0.0-alpha.11
+  '@rsuite/icons': ^1.0.2
   '@types/react': ^18.0.24
   '@types/react-dom': ^18.0.8
   '@vitejs/plugin-react': ^2.2.0
   axios: ^1.2.0
   bootstrap: ^5.2.3
+  currency.js: ^2.0.4
   date-fns: ^2.29.3
   dinero.js: 2.0.0-alpha.11
   jquery: ^3.6.1
@@ -23,8 +25,10 @@ specifiers:
 
 dependencies:
   '@dinero.js/currencies': 2.0.0-alpha.11
+  '@rsuite/icons': 1.0.2_biqbaboplfbrettd7655fr4n2y
   axios: 1.2.1
   bootstrap: 5.2.3
+  currency.js: 2.0.4
   date-fns: 2.29.3
   dinero.js: 2.0.0-alpha.11
   jquery: 3.6.1
@@ -605,6 +609,11 @@ packages:
 
   /csstype/3.1.1:
     resolution: {integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==}
+
+  /currency.js/2.0.4:
+    resolution: {integrity: sha512-6/OplJYgJ0RUlli74d93HJ/OsKVBi8lB1+Z6eJYS1YZzBuIp4qKKHpJ7ad+GvTlWmLR/hLJOWTykN5Nm8NJ7+w==}
+    engines: {node: '>=4'}
+    dev: false
 
   /date-fns/2.29.3:
     resolution: {integrity: sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==}

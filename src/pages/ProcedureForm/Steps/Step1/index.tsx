@@ -62,8 +62,6 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     setCurrentStepId,
   } = useContext(FormContext);
 
-  console.log("procedureee 1", formGlobalValues);
-
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
@@ -74,7 +72,15 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     procedure_section: "SECTION_FZ_223",
     procedure_method: "AUCTION",
     //TODO:options parser
-    options: ["rnp_requirement_option"],
+    options: [
+      formGlobalValues?.requirement_not_rnp
+        ? "rnp_requirement_option"
+        : "rnp_requirement_option",
+      formGlobalValues?.is_for_smb ? "smb_participant_option" : null,
+      formGlobalValues?.is_subcontractor_requirement
+        ? "subcontractor_option"
+        : null,
+    ],
   });
 
   const planPositionId = formValue.purchase_method_id;
@@ -87,21 +93,19 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     "subcontractor_option"
   );
 
-  // useEffect(() => {
-  //   if (formGlobalValues.plan_position_id) {
-  //     setSelectedPlanPositions([{ id: formGlobalValues.plan_position_id }]);
-  //   }
-  //   setFormValue((state) => ({
-  //     ...state,
-  //     procedure_title: formGlobalValues?.lots?.length
-  //       ? formGlobalValues?.lots[0]?.name
-  //       : "",
-  //   }));
-  // }, [
-  //   formGlobalValues.lots,
-  //   formGlobalValues.name,
-  //   formGlobalValues.plan_position_id,
-  // ]);
+  useEffect(() => {
+    if (formGlobalValues.plan_position_id) {
+      setSelectedPlanPositions([{ id: formGlobalValues.plan_position_id }]);
+    }
+    setFormValue((state) => ({
+      ...state,
+      procedure_title: formGlobalValues?.name ? formGlobalValues?.name : "",
+    }));
+  }, [
+    formGlobalValues.lots,
+    formGlobalValues.name,
+    formGlobalValues.plan_position_id,
+  ]);
 
   const isViaPlan = formValue.is_via_plan === "true";
   const isEditType =

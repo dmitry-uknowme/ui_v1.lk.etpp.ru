@@ -1,5 +1,3 @@
-import { toDecimal } from "dinero.js";
-
 export interface IMoney {
   amount: number;
   currency: "RUB" | "GBP" | "USD" | "EUR";

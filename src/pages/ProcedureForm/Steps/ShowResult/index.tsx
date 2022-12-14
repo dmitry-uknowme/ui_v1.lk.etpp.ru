@@ -16,6 +16,10 @@ import LotPositionsTable from "../../../../components/Table/LotPositionsTable";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
 import fetchPurchasePlanPosition from "../../../../services/api/fetchPurchasePlanPosition";
 import Money, { parseCurrency, parseDBMoney } from "../../../../utils/money";
+import { useNavigate } from "react-router-dom";
+import formatDate from "../../../../utils/formatDate";
+
+const LK_URL = import.meta.env.LK_URL;
 
 interface ShowResultModalProps {
   isOpen: boolean;
@@ -36,6 +40,8 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
     serverData: formGlobalServerData,
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
+
+  const navigate = useNavigate();
 
   // console.log("procccccc 7", formGlobalValues);
   const procedureId = formGlobalServerData?.procedureId;
@@ -79,7 +85,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const signAndSendNotice = async () => {
     const signlib = window.signlib;
     const { data: hashData } = await axios.get(
-      `http://localhost:8000/api/v1/notice/${noticeId}/hash`
+      `http://localhost:8001/api/v1/notice/${noticeId}/hash`
     );
     const hash = hashData.hash;
     console.log("hashhhhh", hash);
@@ -90,8 +96,9 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
       const formData = new FormData();
       formData.append("sign", sign);
       await axios.post(
-        `http://localhost:8000/api/v1/notice/${noticeId}/sign-and-publish`,
-        formData
+        `http://localhost:8001/api/v1/notice/${noticeId}/sign-and-publish`,
+        formData,
+        { withCredentials: true }
       );
 
       return toaster.push(
@@ -104,6 +111,14 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
         <Message type="error">Ошибка при подписании извещения</Message>
       );
     }
+  };
+
+  const handleSubmit = () => {};
+
+  const handleEdit = () => {
+    setIsOpen(false);
+    setActiveStep(0);
+    navigate(`/procedure_edit/${procedure.id}`);
   };
 
   return (
@@ -169,12 +184,17 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                   </tr>
                 ) : null}
 
-                <tr>
-                  <td style={{ width: "50%" }}>
-                    Диапазон коэффициента снижения
-                  </td>
-                  <td style={{ width: "50%" }}>От 0 до 1</td>
-                </tr>
+                {procedure?.reduction_factor_purchase ? (
+                  <tr>
+                    <td style={{ width: "50%" }}>
+                      Диапазон коэффициента снижения
+                    </td>
+                    <td style={{ width: "50%" }}>
+                      От {procedure.reduction_factor_purchase_from} до{" "}
+                      {procedure.reduction_factor_purchase_to}
+                    </td>
+                  </tr>
+                ) : null}
                 <tr>
                   <td style={{ width: "50%" }}>
                     Количество публикуемых протоколов, согласно положению
@@ -184,7 +204,11 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                 </tr>
                 <tr>
                   <td style={{ width: "50%" }}>Форма заключения договора</td>
-                  <td style={{ width: "50%" }}>{procedure?.contract_type}</td>
+                  <td style={{ width: "50%" }}>
+                    {procedure?.contract_type === "ON_SITE"
+                      ? "Электронная"
+                      : "Бумажная"}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -218,25 +242,33 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     <td style={{ width: "50%" }}>
                       Дата и время начала подачи заявок
                     </td>
-                    <td style={{ width: "50%" }}>{dateTime.start_bids}</td>
+                    <td style={{ width: "50%" }}>
+                      {formatDate(new Date(dateTime.start_bids))}
+                    </td>
                   </tr>
                   <tr>
                     <td style={{ width: "50%" }}>
                       Дата и время окончания подачи заявок
                     </td>
-                    <td style={{ width: "50%" }}>{dateTime.close_bids}</td>
+                    <td style={{ width: "50%" }}>
+                      {formatDate(new Date(dateTime.close_bids))}
+                    </td>
                   </tr>
                   <tr>
                     <td style={{ width: "50%" }}>
                       Дата и время рассмотрения и оценки заявок
                     </td>
-                    <td style={{ width: "50%" }}>{dateTime.review_bids}</td>
+                    <td style={{ width: "50%" }}>
+                      {formatDate(new Date(dateTime.review_bids))}
+                    </td>
                   </tr>
                   <tr>
                     <td style={{ width: "50%" }}>
                       Дата и время подведения итогов
                     </td>
-                    <td style={{ width: "50%" }}>{dateTime.summing_up_end}</td>
+                    <td style={{ width: "50%" }}>
+                      {formatDate(new Date(dateTime.summing_up_end))}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -248,7 +280,9 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     <td style={{ width: "50%" }}>
                       Сведения о позиции плана закупки:
                     </td>
-                    <td style={{ width: "50%" }}>{dateTime.start_bids}</td>
+                    <td style={{ width: "50%" }}>
+                      {/* {dateTime.start_bids} */}
+                    </td>
                   </tr>
                   <tr>
                     <td style={{ width: "50%" }}>Предмет договора</td>
@@ -274,8 +308,17 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     <td style={{ width: "50%" }}>Вид обеспечения заявки</td>
                     <td style={{ width: "50%" }}>
                       {provisionBid?.methods?.length
-                        ? provisionBid.methods[0]
-                        : "Не установлено"}
+                        ? provisionBid.methods[0] === "PERCENTAGE_AMOUNT"
+                          ? "Процент от НМЦ (с внесением д/с на эл. площадку или банковская гарантия на эл. площадку)"
+                          : provisionBid.methods[0] === "FIXED_AMOUNT"
+                          ? "Фиксированная сумма (с внесением д/с на эл. площадку или банковская гарантия)"
+                          : provisionBid.methods[0] === "WITHOUT_COLLATERAL"
+                          ? "Без обеспечения"
+                          : provisionBid.methods[0] ===
+                            "ACCORDING_DOCUMENTATION"
+                          ? "В соответствии с документацией"
+                          : null
+                        : null}
                     </td>
                   </tr>
                   {provisionBid?.amount ? (
@@ -302,7 +345,18 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     <td style={{ width: "50%" }}>
                       Вид обеспечения исполнения договора
                     </td>
-                    <td style={{ width: "50%" }}>{provisionContract?.type}</td>
+                    <td style={{ width: "50%" }}>
+                      {provisionContract?.type
+                        ? provisionContract.type ==
+                          "ACCORDING_PROCUREMENT_DOCUMENTS"
+                          ? "В соответствии с закупочной документацией"
+                          : provisionContract.type === "FROM_START_PRICE"
+                          ? "От начальной цены лота"
+                          : provisionContract.type === "FROM_CONTRACT_PRICE"
+                          ? "От цены договора"
+                          : null
+                        : null}
+                    </td>
                   </tr>
                   {provisionContract?.amount ? (
                     <tr>
@@ -393,7 +447,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     </td>
                   </tr>
                   <tr>
-                    <td style={{ width: "100%" }}>
+                    <td style={{ width: "100%" }} rowSpan={2}>
                       Торги проводятся на электронной торговой площадке "ЕТП
                       ТПП", находящейся в сети интернет по адресу{" "}
                       <a href="https://etpp.ru" target="_blank">
@@ -458,11 +512,9 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
           </Panel>
         </Modal.Body>
         <Modal.Footer>
-          <Link to={`/procedure_edit/${procedure?.id}`}>
-            <Button appearance="subtle">Редактировать</Button>
-          </Link>
-          {/* <a href={`http://localhost:8000/procedure/${procedure?.id}`}> */}
-          {/* <a href={`https://dev.223.etpp.ru/procedure/${procedure?.id}`}> */}
+          <Button appearance="subtle" onClick={handleEdit}>
+            Редактировать
+          </Button>
           <Button appearance="primary" onClick={() => signAndSendNotice()}>
             Опубликовать
           </Button>

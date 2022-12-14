@@ -9,16 +9,16 @@ import {
   toaster,
   Message,
   Badge,
+  IconButton,
 } from "rsuite";
 import $ from "jquery";
 
 import React, { useContext, useEffect, useState } from "react";
-import PurchasePlanTable from "../../../../components/Table/PuchasePlanTable";
+import CloseIcon from "@rsuite/icons/Close";
+import TrashIcon from "@rsuite/icons/Trash";
 import { useQuery } from "react-query";
 import MaskedInput from "react-text-mask";
 import createNumberMask from "text-mask-addons/dist/createNumberMask";
-import fetchPurchasePlans from "../../../../services/api/fetchPurchasePlans";
-import fetchPurchasePlan from "../../../../services/api/fetchPurchasePlan";
 import fetchSession from "../../../../services/api/fetchSession";
 import toBase64 from "../../../../utils/toBase64";
 import axios from "axios";
@@ -55,6 +55,8 @@ const model = Schema.Model({
 });
 
 const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
+  const [isBtnLoader, setBtnLoader] = useState<boolean>(false);
+
   const [documents, setDocuments] = useState([]);
   const {
     formValues: formGlobalValues,
@@ -118,7 +120,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         document.file_hash,
         cert_thumbprint
       );
-
+      console.log("signnnnn", signData);
       await sendSignedDocuments({
         documents: [{ id: document.id, sign: signData.sign }],
       });
@@ -134,8 +136,27 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         <Message type="success">Документ успешно подписан</Message>
       );
     } catch (err) {
+      console.log("errr", err);
       return toaster.push(
-        <Message type="error">Ошибка при подписании документа</Message>
+        <Message type="error">
+          Ошибка при подписании документа {JSON.stringify(err)}
+        </Message>
+      );
+    }
+  };
+
+  const removeDocument = async (document) => {
+    const documentId = document.id;
+
+    try {
+      const { data } = await axios.get(
+        `http://localhost:8001/notice/document/${documentId}/delete`,
+        { withCredentials: true }
+      );
+      setDocuments((state) => state.filter((doc) => doc.id !== documentId));
+    } catch (err) {
+      toaster.push(
+        <Message type="error">Ошибка при удалении документа</Message>
       );
     }
   };
@@ -159,6 +180,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         <Message type="error">Подписаны не все документы извещения</Message>
       );
     }
+
     nextStep();
     // if (!formRef.current.check()) {
     //   toaster.push(<Message type="error">Error</Message>);
@@ -188,14 +210,17 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               <tr>
                 <th>Наименование</th>
                 <th>Статус</th>
+                <th>Действия</th>
               </tr>
             </thead>
             <tbody>
               {documents?.length
                 ? documents.map((doc) => (
-                    <tr>
-                      <td>{doc.file_real_name}</td>
-                      <td>
+                    <tr key={doc.id}>
+                      <td style={{ verticalAlign: "middle" }}>
+                        {doc.file_real_name}
+                      </td>
+                      <td style={{ verticalAlign: "middle" }}>
                         {doc.status === "STATUS_NEW" ? (
                           <Button
                             appearance="primary"
@@ -209,6 +234,28 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                         ) : (
                           <Badge color="green" content={doc.status_localized} />
                         )}
+                      </td>
+                      <td
+                        onClick={() => removeDocument(doc)}
+                        style={{ verticalAlign: "middle" }}
+                      >
+                        {doc.status !== "STATUS_SIGNED" ? (
+                          <IconButton
+                            size="sm"
+                            color="red"
+                            appearance="subtle"
+                            onClick={() => removeDocument(doc)}
+                            // appearance="subtle"
+                            icon={
+                              <TrashIcon
+                                color="red"
+                                onClick={() => removeDocument(doc)}
+                              />
+                            }
+                          >
+                            Удалить
+                          </IconButton>
+                        ) : null}
                       </td>
                     </tr>
                   ))
