@@ -71,8 +71,9 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     contract_conclude_type: formGlobalValues?.contract_type || "ON_SITE",
     //TODO:options parser
     options: ["rnp_requirement_option"],
-    reduction_ratio_from: "0",
-    reduction_ratio_to: "1",
+    reduction_ratio_from:
+      formGlobalValues?.reduction_factor_purchase_from || "0",
+    reduction_ratio_to: formGlobalValues?.reduction_factor_purchase_to || "1",
   });
 
   useEffect(() => {
