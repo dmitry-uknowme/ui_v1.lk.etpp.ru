@@ -70,12 +70,16 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     accepting_bids_place: "ON_ETP",
     contract_conclude_type: formGlobalValues?.contract_type || "ON_SITE",
     //TODO:options parser
-    options: ["rnp_requirement_option"],
+    options: [
+      formGlobalValues?.bidding_per_unit && "reduction_ratio_option",
+      "rnp_requirement_option",
+    ],
     reduction_ratio_from:
-      formGlobalValues?.reduction_factor_purchase_from || "0",
-    reduction_ratio_to: formGlobalValues?.reduction_factor_purchase_to || "1",
+      formGlobalValues?.reduction_factor_purchase_from?.toString() || "0",
+    reduction_ratio_to:
+      formGlobalValues?.reduction_factor_purchase_to?.toString() || "1",
   });
-
+  console.log("ffff", formValue);
   useEffect(() => {
     setFormValue((state) => ({
       ...state,

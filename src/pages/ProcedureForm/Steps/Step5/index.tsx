@@ -22,6 +22,7 @@ import updateProcedure from "../../../../services/api/updateProcedure";
 import fetchOrganizationEmployees from "../../../../services/api/fetchOrganizationEmployees";
 import fetchOrganizationEmployee from "../../../../services/api/fetchOrganizationEmployee";
 import { ProcedureFormActionVariants } from "../..";
+import fetchProfile from "../../../../services/api/fetchProfile";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -167,29 +168,35 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       formGlobalServerData?.session && formGlobalServerData.session.profileId,
     ],
     async () => {
-      const organizations = await fetchProfileOrganizations({ profileId });
-      setFormValue((state) => ({
-        ...state,
-        organizer_id: organizations.id,
-        organizer_org_full_name: organizations.full_title_organization,
-        organizer_org_short_name: organizations.short_title_organization,
-        organizer_org_inn: organizations.inn,
-        organizer_org_kpp: organizations.kpp,
-        organizer_org_ogrn: organizations.ogrn,
-        organizer_org_fact_address: organizations.fact_ADDRESS,
-        organizer_org_legal_address: organizations.legal_address,
-        customer_id: organizations.id,
-        сustomer_org_full_name: organizations.full_title_organization,
-        customer_org_short_name: organizations.short_title_organization,
-        customer_org_inn: organizations.inn,
-        customer_org_kpp: organizations.kpp,
-        customer_org_ogrn: organizations.ogrn,
-        customer_org_fact_address: organizations.fact_ADDRESS,
-        customer_org_legal_address: organizations.legal_address,
-      }));
+      let organizations = await fetchProfileOrganizations({ profileId });
+      const currentOrganization = await fetchProfile({ profileId });
+      organizations = [...organizations, currentOrganization];
+      if (organizations?.length) {
+        setFormValue((state) => ({
+          ...state,
+          organizer_id: organizations[0].id,
+          organizer_org_full_name: organizations[0].full_title_organization,
+          organizer_org_short_name: organizations[0].short_title_organization,
+          organizer_org_inn: organizations[0].inn,
+          organizer_org_kpp: organizations[0].kpp,
+          organizer_org_ogrn: organizations[0].ogrn,
+          organizer_org_fact_address: organizations[0].fact_address,
+          organizer_org_legal_address: organizations[0].legal_address,
+          customer_id: organizations[0].id,
+          сustomer_org_full_name: organizations[0].full_title_organization,
+          customer_org_short_name: organizations[0].short_title_organization,
+          customer_org_inn: organizations[0].inn,
+          customer_org_kpp: organizations[0].kpp,
+          customer_org_ogrn: organizations[0].ogrn,
+          customer_org_fact_address: organizations[0].fact_address,
+          customer_org_legal_address: organizations[0].legal_address,
+        }));
+      }
       return organizations;
     }
   );
+
+  // console.log("profilleee", profileOrganizationsQuery.data);
 
   const organizerEmployeesQuery = useQuery(
     ["organizerEmployees", formValue.organizer_id],
@@ -235,7 +242,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     }
   );
 
-  const currentOrganizerOrganization = profileOrganizationsQuery?.data ?? null;
+  // const currentOrganizerOrganization = profileOrganizationsQuery?.data ?? null;
   // const currentOrganizerOrganization = profileOrganizationsQuery?.data?.length
   //   ? profileOrganizationsQuery.data.find(
   //       (org) => org.id === formValue.organizer_id
@@ -494,15 +501,15 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 accepter={SelectPicker}
                 error={formError.procedure_section}
                 data={
-                  profileOrganizationsQuery.isError
+                  profileOrganizationsQuery.isError ||
+                  !profileOrganizationsQuery?.data?.length
                     ? [{ label: "Заполнить вручную", value: "MANUAL_INPUT" }]
                     : [
-                        {
-                          label:
-                            profileOrganizationsQuery?.data
-                              ?.short_title_organization,
-                          value: profileOrganizationsQuery?.data?.id,
-                        },
+                        ...profileOrganizationsQuery?.data?.map((org) => ({
+                          value: org.id,
+                          label: org.short_title_organization,
+                        })),
+
                         { label: "Заполнить вручную", value: "MANUAL_INPUT" },
                       ]
                 }
@@ -637,15 +644,15 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 accepter={SelectPicker}
                 error={formError.procedure_section}
                 data={
-                  profileOrganizationsQuery.isError
+                  profileOrganizationsQuery.isError ||
+                  !profileOrganizationsQuery?.data?.length
                     ? [{ label: "Заполнить вручную", value: "MANUAL_INPUT" }]
                     : [
-                        {
-                          label:
-                            profileOrganizationsQuery?.data
-                              ?.short_title_organization,
-                          value: profileOrganizationsQuery?.data?.id,
-                        },
+                        ...profileOrganizationsQuery?.data?.map((org) => ({
+                          value: org.id,
+                          label: org.short_title_organization,
+                        })),
+
                         { label: "Заполнить вручную", value: "MANUAL_INPUT" },
                       ]
                 }

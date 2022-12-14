@@ -5,13 +5,13 @@ export interface FetchProfileOrganizationsPayload {
   profileId: string;
 }
 
-const fetchProfileOrganizations = async (
+const fetchProfile = async (
   payload: FetchProfileOrganizationsPayload,
   onError?: (...args: any) => any
 ) => {
   try {
     const { data } = await axios.get(
-      `${API_V1_URL}/user/profile/${payload.profileId}/customers`
+      `${API_V1_URL}/user/profile/organization/${payload.profileId}/get`
     );
     return data.data;
   } catch (err) {
@@ -19,4 +19,4 @@ const fetchProfileOrganizations = async (
   }
 };
 
-export default fetchProfileOrganizations;
+export default fetchProfile;
