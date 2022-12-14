@@ -281,7 +281,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   }, [formValue.lot_unit_start_price]);
 
   useEffect(() => {
-    console.log("on serv", formGlobalValues);
+    // console.log("on serv", formGlobalValues);
     setFormValue((state) => ({
       ...state,
       lot_start_price: formGlobalValues?.original_price

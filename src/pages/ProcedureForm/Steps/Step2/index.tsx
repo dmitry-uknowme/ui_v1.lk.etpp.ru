@@ -71,6 +71,8 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     contract_conclude_type: formGlobalValues?.contract_type || "ON_SITE",
     //TODO:options parser
     options: ["rnp_requirement_option"],
+    reduction_ratio_from: "0",
+    reduction_ratio_to: "1",
   });
 
   useEffect(() => {
@@ -103,10 +105,13 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
     setFormGlobalValues((state) => ({
       ...state,
-      bidding_per_unit: biddingPerUnitOption,
+      // bidding_per_unit: ,
+      bidding_per_unit: reductionRatioOption,
       reduction_factor_purchase: reductionRatioOption,
-      reduction_factor_purchase_to: 1.0,
-      reduction_factor_purchase_from: 0.0,
+      reduction_factor_purchase_to: parseFloat(formValue.reduction_ratio_to),
+      reduction_factor_purchase_from: parseFloat(
+        formValue.reduction_ratio_from
+      ),
       more_than_one_protocol: protocolsCountMoreOption,
       contract_type: contractConcludeType,
       bid_part: "ONE",
@@ -120,6 +125,23 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       platform: "SECTION_223_FZ",
       contract_by_any_participant: true,
     }));
+    if (isReductionRatioOption) {
+      // console.log(
+      //   "formvvv",
+      //   parseFloat(formValue.reduction_ratio_from),
+      //   parseFloat(formValue.reduction_ratio_to)
+      // );
+      if (
+        !formValue.reduction_ratio_from.trim().length ||
+        !formValue.reduction_ratio_to.trim().length
+      ) {
+        return toaster.push(
+          <Message type="error">
+            Вы не ввели диапазон коэффициента снижения
+          </Message>
+        );
+      }
+    }
     nextStep();
     // if (!formRef.current.check()) {
     //   toaster.push(<Message type="error">Error</Message>);
@@ -137,48 +159,9 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     }
   }, [selectedPlanPositions]);
 
-  // useEffect(() => {
-  //   if (formValue.options.includes("reduction_ratio_option")) {
-  //     // setTimeout(() => {
-  //     setFormValue((state) => ({
-  //       ...state,
-  //       options: [...state.options, "bidding_per_unit_option"],
-  //     }));
-  //     // }, 500);
-  //   }
-  //   if (formValue.options.includes("bidding_per_unit_option")) {
-  //     // setTimeout(() => {
-  //     setFormValue((state) => ({
-  //       ...state,
-  //       options: [...state.options, "reduction_ratio_option"],
-  //     }));
-  //     // }, 600);
-  //   }
-  //   if (!formValue.options.includes("bidding_per_unit_option")) {
-  //     // setTimeout(() => {
-  //     setFormValue((state) => ({
-  //       ...state,
-  //       options: [
-  //         ...state.options.filter(
-  //           (option) => option !== "reduction_ratio_option"
-  //         ),
-  //       ],
-  //     }));
-  //     // }, 500);
-  //   }
-  //   if (!formValue.options.includes("reduction_ratio_option")) {
-  //     // setTimeout(() => {
-  //     setFormValue((state) => ({
-  //       ...state,
-  //       options: [
-  //         ...state.options.filter(
-  //           (option) => option !== "bidding_per_unit_option"
-  //         ),
-  //       ],
-  //     }));
-  //     // }, 600);
-  //   }
-  // }, [formValue.options]);
+  const isReductionRatioOption = !!formValue.options.includes(
+    "reduction_ratio_option"
+  );
 
   return (
     <div className="col-md-8">
@@ -200,28 +183,7 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             <Radio value={"ON_SITE"}>Электронная</Radio>
             <Radio value={"ON_PAPER"}>Бумажная</Radio>
           </Field>
-          {/* <Field
-            name="contract_conclude_place"
-            label="Договор заключается"
-            accepter={RadioGroup}
-            error={formError.contract_conclude_place}
-            inline
-          >
-            <Radio value={"ON_ETP"}>На ЭТП</Radio>
-            <Radio value={"OUT_ETP"}>Вне ЭТП</Radio>
-          </Field> */}
         </Stack>
-        {/* <Field
-          name="participant_bid_type"
-          label="Тип предложения участников"
-          accepter={RadioGroup}
-          error={formError.participant_bid_type}
-          inline
-        >
-          <Radio value={"PRICE"}>Ценновое предложение</Radio>
-          <Radio value={"REDUCTION_RATIO"}>Коэффициент снижения</Radio>
-          <Radio value={"REDUCTION_PERCENT"}>Процент снижения</Radio>
-        </Field> */}
 
         <Field
           name="options"
@@ -233,19 +195,8 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             Попозиционная закупка
           </Checkbox>
           <Checkbox
-            value={"bidding_per_unit_option"}
-            checked={
-              !!(
-                formValue.options.includes("bidding_per_unit_option") ||
-                formValue.options.includes("reduction_ratio_option")
-              )
-            }
-          >
-            Торги за единицу
-          </Checkbox>
-          <Checkbox
+            // value={"bidding_per_unit_option"}
             value={"reduction_ratio_option"}
-            // checked={true}
             // checked={
             //   !!(
             //     formValue.options.includes("bidding_per_unit_option") ||
@@ -253,8 +204,36 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             //   )
             // }
           >
+            Торги за единицу
+          </Checkbox>
+          <Checkbox value={"reduction_ratio_option"}>
             Коэффициент снижения
           </Checkbox>
+          <Stack spacing={10}>
+            <Animation.Collapse in={isReductionRatioOption}>
+              <div>
+                <Field
+                  name="reduction_ratio_from"
+                  label="Диапазон коэффициента снижения от"
+                  accepter={Input}
+                  error={formError.reduction_ratio_from}
+                />
+              </div>
+            </Animation.Collapse>
+
+            <Animation.Collapse in={isReductionRatioOption}>
+              <div>
+                <Field
+                  name="reduction_ratio_to"
+                  label="Диапазон коэффициента снижения до"
+                  accepter={Input}
+                  error={formError.reduction_ratio_to}
+                />
+              </div>
+            </Animation.Collapse>
+            {/* </div> */}
+          </Stack>
+
           <Checkbox value={"protocols_count_more_option"}>
             Количество публикуемых протоколов, согласно Положению Заказчика,
             более 1

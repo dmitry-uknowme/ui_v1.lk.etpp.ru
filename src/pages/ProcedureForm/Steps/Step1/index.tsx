@@ -87,21 +87,21 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     "subcontractor_option"
   );
 
-  useEffect(() => {
-    if (formGlobalValues.plan_position_id) {
-      setSelectedPlanPositions([{ id: formGlobalValues.plan_position_id }]);
-    }
-    setFormValue((state) => ({
-      ...state,
-      procedure_title: formGlobalValues?.lots?.length
-        ? formGlobalValues?.lots[0]?.name
-        : "",
-    }));
-  }, [
-    formGlobalValues.lots,
-    formGlobalValues.name,
-    formGlobalValues.plan_position_id,
-  ]);
+  // useEffect(() => {
+  //   if (formGlobalValues.plan_position_id) {
+  //     setSelectedPlanPositions([{ id: formGlobalValues.plan_position_id }]);
+  //   }
+  //   setFormValue((state) => ({
+  //     ...state,
+  //     procedure_title: formGlobalValues?.lots?.length
+  //       ? formGlobalValues?.lots[0]?.name
+  //       : "",
+  //   }));
+  // }, [
+  //   formGlobalValues.lots,
+  //   formGlobalValues.name,
+  //   formGlobalValues.plan_position_id,
+  // ]);
 
   const isViaPlan = formValue.is_via_plan === "true";
   const isEditType =
