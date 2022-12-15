@@ -123,7 +123,9 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const handleEdit = () => {
     setIsOpen(false);
     setActiveStep(0);
-    navigate(`/procedure_edit/${procedure.id}`);
+    window.history.pushState(null,null,`/procedure/edit/new/${procedure.id}`)
+    // window.history.pushState()
+    // navigate(`/procedure_edit/${procedure.id}`);
   };
 
   return (
