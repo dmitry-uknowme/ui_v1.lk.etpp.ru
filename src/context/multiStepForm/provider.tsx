@@ -139,13 +139,13 @@ const MultiStepFormContextProvider: React.FC<
           },
         ],
         provision_bid: {
-          amount: `${provisionBid.currency} ${provisionBid.amount}`,
+          amount: `${provisionBid.amount.currency} ${provisionBid.amount.amount}`,
           is_specified: provisionBid.is_specified,
           methods: provisionBid.methods,
           payment_return_deposit: null,
         },
         provision_contract: {
-          amount: `${provisionContract.currency} ${provisionContract.amount}`,
+          amount: `${provisionContract.amount.currency} ${provisionContract.amount.amount}`,
           is_specified: provisionContract.is_specified,
           // methods: provisionContract.methods,
           type: provisionContract.type,

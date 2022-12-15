@@ -25,7 +25,6 @@ import fetchSession from "../../../../services/api/fetchSession";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
 import fetchPurchasePlanPosition from "../../../../services/api/fetchPurchasePlanPosition";
 import useDebounce from "../../../../hooks/useDebounce";
-import { Dinero, dinero } from "dinero.js";
 import { RUB } from "@dinero.js/currencies";
 import LotPositionsTable from "../../../../components/Table/LotPositionsTable";
 import Money, { parseCurrency, parseDBMoney } from "../../../../utils/money";
