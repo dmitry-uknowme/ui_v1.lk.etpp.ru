@@ -17,6 +17,10 @@ export interface IMultiStepForm {
       reduction_ratio_option?: boolean;
       protocols_count_more_option?: boolean;
     };
+    organizerId?: string;
+    organizerRepresentativeId?: string;
+    customerId?: string;
+    customerRepresentativeId?: string;
   };
   formValues: object;
   formErrors: object;

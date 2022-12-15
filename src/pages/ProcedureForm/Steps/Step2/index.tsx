@@ -72,6 +72,8 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     //TODO:options parser
     options: [
       formGlobalValues?.bidding_per_unit && "reduction_ratio_option",
+      formGlobalValues?.more_than_one_protocol && "protocols_count_more_option",
+
       "rnp_requirement_option",
     ],
     reduction_ratio_from:
@@ -87,8 +89,6 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   }, [formGlobalValues.contract_type]);
 
   const isViaPlan = formGlobalServerData.isViaPlan;
-
-  const sessionQuery = useQuery("session", fetchSession);
 
   const [selectedPlanPositions, setSelectedPlanPositions] = useState([]);
   const handleSubmit = () => {

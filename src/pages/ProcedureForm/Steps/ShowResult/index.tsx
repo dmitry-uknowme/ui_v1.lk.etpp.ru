@@ -20,6 +20,8 @@ import Money, { parseCurrency, parseDBMoney } from "../../../../utils/money";
 import { useNavigate } from "react-router-dom";
 import formatDate from "../../../../utils/formatDate";
 import { API_V1_URL } from "../../../../services/api";
+import currency from "currency.js";
+import { parseDBAmount } from "../../../../utils/newMoney";
 
 const LK_URL = import.meta.env.LK_URL;
 
@@ -171,7 +173,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     Начальная (максимальная) цена в рублях
                   </td>
                   <td style={{ width: "50%" }}>
-                    {parseDBMoney(procedure.original_price).localeFormat({
+                    {currency(parseDBAmount(procedure.original_price)).format({
                       style: "currency",
                     })}
                   </td>
@@ -183,9 +185,9 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     </td>
                     <td style={{ width: "50%" }}>
                       {procedure?.bidding_per_unit_amount
-                        ? parseDBMoney(
-                            procedure.bidding_per_unit_amount
-                          ).localeFormat({
+                        ? currency(
+                            parseDBAmount(procedure.bidding_per_unit_amount)
+                          ).format({
                             style: "currency",
                           })
                         : "Не предусмотрено"}
@@ -232,6 +234,12 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                   </tr>
                   <tr>
                     <td style={{ width: "50%" }}>Торги за единицу</td>
+                    <td style={{ width: "50%" }}>
+                      {procedure?.bidding_per_unit ? "Да" : "Нет"}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ width: "50%" }}>Попозиционная закупка</td>
                     <td style={{ width: "50%" }}>
                       {procedure?.bidding_per_unit ? "Да" : "Нет"}
                     </td>

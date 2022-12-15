@@ -121,7 +121,6 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
 
-  console.log("procedureee 5", formGlobalValues);
   const procedureId = formGlobalServerData.procedureId;
   const session = formGlobalServerData.session;
   const profileId = formGlobalServerData?.session?.profile_id;
@@ -130,34 +129,49 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
     isOrganizerEqualsCustomer: [],
-    organizer_id: "",
-    organizer_org_full_name: "",
-    organizer_org_short_name: "",
-    organizer_org_inn: "",
-    organizer_org_kpp: "",
-    organizer_org_ogrn: "",
-    organizer_org_legal_address: "",
-    organizer_org_fact_address: "",
-    organizer_representative_id: "",
-    organizer_representative_surname: "",
-    organizer_representative_name: "",
-    organizer_representative_lastname: "",
-    organizer_representative_phone: "",
-    organizer_representative_email: "",
-    customer_id: "",
-    сustomer_org_full_name: "",
-    customer_org_short_name: "",
-    customer_org_inn: "",
-    customer_org_kpp: "",
-    customer_org_ogrn: "",
-    customer_org_legal_address: "",
-    customer_org_fact_address: "",
-    customer_representative_id: "",
-    customer_representative_surname: "",
-    customer_representative_name: "",
-    customer_representative_lastname: "",
-    customer_representative_phone: "",
-    customer_representative_email: "",
+    organizer_id: formGlobalServerData?.organizerId || "",
+    organizer_org_full_name: formGlobalValues?.organizer?.full_title || "",
+    organizer_org_short_name: formGlobalValues?.organizer?.short_title || "",
+    organizer_org_inn: formGlobalValues?.organizer?.inn || "",
+    organizer_org_kpp: formGlobalValues?.organizer?.kpp || "",
+    organizer_org_ogrn: formGlobalValues?.organizer?.ogrn || "",
+    organizer_org_legal_address:
+      formGlobalValues?.organizer?.legal_address?.index || "",
+    organizer_org_fact_address:
+      formGlobalValues?.organizer?.fact_address?.index || "",
+    organizer_representative_id:
+      formGlobalServerData?.organizerRepresentativeId || "",
+    organizer_representative_surname:
+      formGlobalValues?.organizer?.middle_name || "",
+    organizer_representative_name:
+      formGlobalValues?.organizer?.first_name || "",
+    organizer_representative_lastname:
+      formGlobalValues?.organizer?.last_name || "",
+    organizer_representative_phone: formGlobalValues?.organizer?.phone || "",
+    organizer_representative_email: formGlobalValues?.organizer?.email || "",
+    organizer_representative_phone_extra:
+      formGlobalValues?.organizer?.additional_phone || "",
+    customer_id: formGlobalServerData?.customerId || "",
+    сustomer_org_full_name: formGlobalValues?.customer?.full_title || "",
+    customer_org_short_name: formGlobalValues?.customer?.short_title || "",
+    customer_org_inn: formGlobalValues?.customer?.inn || "",
+    customer_org_kpp: formGlobalValues?.customer?.kpp || "",
+    customer_org_ogrn: formGlobalValues?.customer?.ogrn || "",
+    customer_org_legal_address:
+      formGlobalValues?.customer?.legal_address?.index || "",
+    customer_org_fact_address:
+      formGlobalValues?.customer?.fact_address?.index || "",
+    customer_representative_id:
+      formGlobalServerData?.customerRepresentativeId || "",
+    customer_representative_surname:
+      formGlobalValues?.customer?.middle_name || "",
+    customer_representative_name: formGlobalValues?.organizer?.first_name || "",
+    customer_representative_lastname:
+      formGlobalValues?.organizer?.last_name || "",
+    customer_representative_phone: formGlobalValues?.organizer?.phone || "",
+    customer_representative_email: formGlobalValues?.organizer?.email || "",
+    customer_representative_phone_extra:
+      formGlobalValues?.organizer?.additional_phone || "",
   });
 
   const isErrorsExists = !!Object.keys(formError)?.length;
@@ -171,28 +185,31 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       let organizations = await fetchProfileOrganizations({ profileId });
       const currentOrganization = await fetchProfile({ profileId });
       organizations = [...organizations, currentOrganization];
-      if (organizations?.length) {
-        setFormValue((state) => ({
-          ...state,
-          organizer_id: organizations[0].id,
-          organizer_org_full_name: organizations[0].full_title_organization,
-          organizer_org_short_name: organizations[0].short_title_organization,
-          organizer_org_inn: organizations[0].inn,
-          organizer_org_kpp: organizations[0].kpp,
-          organizer_org_ogrn: organizations[0].ogrn,
-          organizer_org_fact_address: organizations[0].fact_address,
-          organizer_org_legal_address: organizations[0].legal_address,
-          customer_id: organizations[0].id,
-          сustomer_org_full_name: organizations[0].full_title_organization,
-          customer_org_short_name: organizations[0].short_title_organization,
-          customer_org_inn: organizations[0].inn,
-          customer_org_kpp: organizations[0].kpp,
-          customer_org_ogrn: organizations[0].ogrn,
-          customer_org_fact_address: organizations[0].fact_address,
-          customer_org_legal_address: organizations[0].legal_address,
-        }));
+      // const selectOrganization =formGlobalServerData.or
+      if (!formGlobalServerData?.organizerId) {
+        if (organizations?.length) {
+          setFormValue((state) => ({
+            ...state,
+            organizer_id: organizations[0].id,
+            organizer_org_full_name: organizations[0].full_title_organization,
+            organizer_org_short_name: organizations[0].short_title_organization,
+            organizer_org_inn: organizations[0].inn,
+            organizer_org_kpp: organizations[0].kpp,
+            organizer_org_ogrn: organizations[0].ogrn,
+            organizer_org_fact_address: organizations[0].fact_address,
+            organizer_org_legal_address: organizations[0].legal_address,
+            customer_id: organizations[0].id,
+            сustomer_org_full_name: organizations[0].full_title_organization,
+            customer_org_short_name: organizations[0].short_title_organization,
+            customer_org_inn: organizations[0].inn,
+            customer_org_kpp: organizations[0].kpp,
+            customer_org_ogrn: organizations[0].ogrn,
+            customer_org_fact_address: organizations[0].fact_address,
+            customer_org_legal_address: organizations[0].legal_address,
+          }));
+        }
+        return organizations;
       }
-      return organizations;
     }
   );
 
@@ -204,13 +221,15 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       const employees = await fetchOrganizationEmployees(
         formValue.organizer_id
       );
-      if (employees?.length) {
-        setFormValue((state) => ({
-          ...state,
-          organizer_representative_id: employees[0].id,
-        }));
+      if (!formGlobalServerData?.organizerRepresentativeId) {
+        if (employees?.length) {
+          setFormValue((state) => ({
+            ...state,
+            organizer_representative_id: employees[0].id,
+          }));
+        }
+        return employees;
       }
-      return employees;
     },
     {
       enabled:
@@ -225,13 +244,16 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     ["customerEmployees", formValue.customer_id],
     async () => {
       const employees = await fetchOrganizationEmployees(formValue.customer_id);
-      if (employees?.length) {
-        setFormValue((state) => ({
-          ...state,
-          customer_representative_id: employees[0].id,
-        }));
+
+      if (!formGlobalServerData?.customerRepresentativeId) {
+        if (employees?.length) {
+          setFormValue((state) => ({
+            ...state,
+            customer_representative_id: employees[0].id,
+          }));
+        }
+        return employees;
       }
-      return employees;
     },
     {
       enabled:
@@ -326,6 +348,8 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         customer_representative_surname: state.organizer_representative_surname,
         customer_representative_email: state.organizer_representative_email,
         customer_representative_phone: state.organizer_representative_phone,
+        customer_representative_phone_extra:
+          state.organizer_representative_phone_extra,
         customer_org_inn: state.organizer_org_inn,
         customer_org_kpp: state.organizer_org_kpp,
         customer_org_short_name: state.organizer_org_short_name,
@@ -349,7 +373,14 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         middle_name: formValue.customer_representative_surname,
         email: formValue.customer_representative_email,
         phone: formValue.customer_representative_phone,
-        additional_phone: "This is",
+        additional_phone:
+          formValue.customer_representative_phone_extra.trim() === ""
+            ? "da"
+            : formValue.customer_representative_phone_extra,
+        // additional_phone:
+        //   formValue.customer_representative_phone_extra.trim() === ""
+        //     ? null
+        //     : formValue.customer_representative_phone_extra,
         inn: formValue.customer_org_inn,
         kpp: formValue.customer_org_kpp,
         short_title: formValue.customer_org_short_name,
@@ -369,7 +400,14 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         middle_name: formValue.organizer_representative_surname,
         email: formValue.organizer_representative_email,
         phone: formValue.organizer_representative_phone,
-        additional_phone: "This is",
+        additional_phone:
+          formValue.organizer_representative_phone_extra.trim() === ""
+            ? "da"
+            : formValue.organizer_representative_phone_extra,
+        // additional_phone:
+        //   formValue.organizer_representative_phone_extra.trim() === ""
+        //     ? null
+        //     : formValue.organizer_representative_phone_extra,
         inn: formValue.organizer_org_inn,
         kpp: formValue.organizer_org_kpp,
         short_title: formValue.organizer_org_short_name,
@@ -395,13 +433,22 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         ?.parentNode?.parentNode?.scrollIntoView();
       return;
     }
-
+    setFormGlobalServerData((state) => ({
+      ...state,
+      organizerId: formValue.organizer_id,
+      customerId: formValue.customer_id,
+      organizerRepresentativeId: formValue.organizer_representative_id,
+      customerRepresentativeId: formValue.customer_representative_id,
+    }));
     setFormGlobalValues((state) => ({
       ...state,
       ...formGlobalValues,
       ...finalData,
     }));
-    if (formGlobalServerData.actionType === ProcedureFormActionVariants.EDIT) {
+    if (
+      formGlobalServerData.actionType === ProcedureFormActionVariants.EDIT ||
+      formGlobalServerData.procedureId
+    ) {
       const procedureData = await updateProcedure(
         procedureId,
         { ...finalData, ...formGlobalValues },
@@ -419,9 +466,9 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           ...state,
           procedure: procedureData,
         }));
-        toaster.push(
-          <Message type="success">Процедура успешно создана</Message>
-        );
+        // toaster.push(
+        //   <Message type="success">Процедура успешно создана</Message>
+        // );
         const noticeId = procedureData.notice_id;
         setFormGlobalServerData((state) => ({
           ...state,
@@ -622,6 +669,12 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                     accepter={Input}
                     error={formError.organizer_representative_phone}
                   />
+                  <Field
+                    name="organizer_representative_phone_extra"
+                    label="Добавочный номер телефона"
+                    accepter={Input}
+                    error={formError.organizer_representative_phone_extra}
+                  />
                 </div>
               </Animation.Collapse>
             </Panel>
@@ -765,6 +818,12 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                     accepter={Input}
                     error={formError.customer_representative_phone}
                   />
+                  <Field
+                    name="customer_representative_phone_extra"
+                    label="Добавочный номер телефона"
+                    accepter={Input}
+                    error={formError.customer_representative_phone_extra}
+                  />
                 </div>
               </Animation.Collapse>
             </Panel>
@@ -784,7 +843,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         <Form.Group>
           <Button onClick={prevStep}>Назад</Button>
           <Button appearance="primary" onClick={handleSubmit}>
-            Далее
+            Создать извещение
           </Button>
         </Form.Group>
       </Form>

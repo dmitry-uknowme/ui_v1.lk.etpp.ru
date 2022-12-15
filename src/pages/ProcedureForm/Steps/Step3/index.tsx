@@ -14,7 +14,6 @@ import React, { useContext, useEffect, useState } from "react";
 import PurchasePlanTable from "../../../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
 import fetchPurchasePlan from "../../../../services/api/fetchPurchasePlan";
-import fetchSession from "../../../../services/api/fetchSession";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
 
 const Field = React.forwardRef((props, ref) => {
@@ -130,8 +129,6 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const model = Schema.Model(schema);
 
   const isViaPlan = formValue.is_via_plan === "true";
-
-  const sessionQuery = useQuery("session", fetchSession);
 
   const handleSubmit = () => {
     const {
