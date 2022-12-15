@@ -287,6 +287,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           organizer_representative_lastname: employee.full_name_middle_name,
           organizer_representative_email: employee.email,
           organizer_representative_phone: employee.phone,
+          organizer_representative_phone_extra: employee.additional_phone,
         }));
       }
       return employee;
@@ -314,6 +315,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           customer_representative_lastname: employee.full_name_middle_name,
           customer_representative_email: employee.email,
           customer_representative_phone: employee.phone,
+          customer_representative_phone_extra: employee.additional_phone,
         }));
       }
       return employee;
