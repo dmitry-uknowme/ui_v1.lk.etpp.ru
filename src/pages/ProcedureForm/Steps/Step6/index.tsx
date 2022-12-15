@@ -10,10 +10,12 @@ import {
   Message,
   Badge,
   IconButton,
+  Checkbox,
+  ButtonToolbar,
 } from "rsuite";
 import $ from "jquery";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import CloseIcon from "@rsuite/icons/Close";
 import TrashIcon from "@rsuite/icons/Trash";
 import { useQuery } from "react-query";
@@ -55,9 +57,13 @@ const model = Schema.Model({
 });
 
 const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
+  const uploaderRer = useRef();
+  const [fileList, setFileList] = useState([]);
   const [isBtnLoader, setBtnLoader] = useState<boolean>(false);
-
+  const [isRemoveLoader, setRemoveLoader] = useState<boolean>(false);
+  const [isSignLoader, setSignLoader] = useState<boolean>(false);
   const [documents, setDocuments] = useState([]);
+  const [selectedDocuments, setSelectedDocuments] = useState([]);
   const {
     formValues: formGlobalValues,
     setFormValues: setFormGlobalValues,
@@ -73,20 +79,6 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     return prevStep();
   }
   const procedureId = procedure?.guid?.value;
-
-  const currencyMask = createNumberMask({
-    prefix: "",
-    suffix: "RUB",
-    includeThousandsSeparator: true,
-    thousandsSeparatorSymbol: " ",
-    allowDecimal: true,
-    decimalSymbol: ".",
-    decimalLimit: 2, // how many digits allowed after the decimal
-    // integerLimit: 7, // limit length of integer numbers
-    allowNegative: false,
-    allowLeadingZeroes: false,
-    requireDecimal: true,
-  });
 
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
@@ -196,7 +188,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   }, []);
 
   return (
-    <div className="col-md-8">
+    <div className="col-md-9">
       <Form
         ref={formRef}
         onChange={setFormValue}
@@ -208,6 +200,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           <table className="table">
             <thead>
               <tr>
+                <th>Выбрать</th>
                 <th>Наименование</th>
                 <th>Статус</th>
                 <th>Действия</th>
@@ -217,6 +210,38 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               {documents?.length
                 ? documents.map((doc) => (
                     <tr key={doc.id}>
+                      <td>
+                        <Checkbox
+                          value={doc.id}
+                          checked={
+                            !!selectedDocuments.find((d) => d.id === doc.id)
+                          }
+                          // checked={
+                          //   !!selectedDocuments.find((d) => d.id === doc.id)
+                          // }
+                          onChange={(value) => {
+                            const currentDocument = documents.find(
+                              (d) => d.id === value
+                            );
+                            const isChecked = !!selectedDocuments.find(
+                              (doc) => currentDocument.id === doc.id
+                            );
+
+                            if (isChecked) {
+                              setSelectedDocuments((state) => [
+                                ...state.filter(
+                                  (d) => d.id !== currentDocument.id
+                                ),
+                              ]);
+                            } else {
+                              setSelectedDocuments((state) => [
+                                ...state,
+                                currentDocument,
+                              ]);
+                            }
+                          }}
+                        />
+                      </td>
                       <td style={{ verticalAlign: "middle" }}>
                         {doc.file_real_name}
                       </td>
@@ -262,8 +287,62 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 : null}
             </tbody>
           </table>
-
+          {selectedDocuments?.length || documents?.length ? (
+            <ButtonToolbar>
+              <Button
+                appearance="ghost"
+                color="blue"
+                onClick={async () => {
+                  try {
+                    await Promise.all(
+                      selectedDocuments.map((doc) => signDocument(doc))
+                    );
+                  } catch (err) {
+                    toaster.push(
+                      <Message type="error">
+                        Ошибка при подписании документов
+                      </Message>
+                    );
+                  } finally {
+                    setSignLoader(false);
+                  }
+                }}
+                loading={isSignLoader}
+                disabled={!selectedDocuments.length}
+              >
+                Подписать выделенные
+              </Button>
+              <IconButton
+                size="sm"
+                color="red"
+                appearance="ghost"
+                onClick={async () => {
+                  try {
+                    await Promise.all(
+                      selectedDocuments.map((doc) => removeDocument(doc))
+                    );
+                  } catch (err) {
+                    toaster.push(
+                      <Message type="error">
+                        Ошибка при удалении документов
+                      </Message>
+                    );
+                  } finally {
+                    setRemoveLoader(false);
+                  }
+                }}
+                loading={isRemoveLoader}
+                disabled={!selectedDocuments.length}
+                icon={<TrashIcon color="red" />}
+              >
+                Удалить выделенные
+              </IconButton>
+            </ButtonToolbar>
+          ) : null}
+          <div className="mt-3"></div>
           <Uploader
+            fileList={fileList}
+            ref={uploaderRer}
             renderThumbnail={() => null}
             renderFileInfo={() => null}
             fileListVisible={false}
@@ -284,23 +363,56 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
               // console.log("fileList", fileList);
               files.map((file) => formData.append("files[]", file.blobFile));
+              try {
+                const { data } = await axios.post(
+                  `${API_V1_URL}/notice/${noticeId}/document/upload`,
+                  formData,
+                  {
+                    withCredentials: true,
+                    onUploadProgress: (progressEvent) => {
+                      // console.log("progresss", progressEvent);
+                      const totalLength = progressEvent?.total
+                        ? progressEvent.total
+                        : progressEvent?.event.target.getResponseHeader(
+                            "content-length"
+                          ) ||
+                          progressEvent?.target.getResponseHeader(
+                            "x-decompressed-content-length"
+                          );
+                      console.log(
+                        "progressss value",
+                        Math.round((progressEvent.loaded * 100) / totalLength)
+                      );
+                    },
+                  }
+                );
+                // console.log("refff", uploaderRer?.current);
+                // await initDocuments();
+
+                setDocuments(data.files);
+                setFileList([]);
+              } catch (err) {
+                return toaster.push(
+                  <Message type="error">Ошибка при загрузке документа</Message>
+                );
+              }
               // formData.append("files[]", fileList.files);
               // formData.append("files[]", files[0].blobFile);
-              $.ajax({
-                url: `${API_V1_URL}/notice/${noticeId}/document/upload`,
-                data: formData,
-                cache: false,
-                contentType: false,
-                processData: false,
-                method: "POST",
-                xhrFields: {
-                  withCredentials: true,
-                },
-                success: (response) => {
-                  console.log("resss", response);
-                  setDocuments((state) => [...response.files]);
-                },
-              });
+              // $.ajax({
+              //   url: `${API_V1_URL}/notice/${noticeId}/document/upload`,
+              //   data: formData,
+              //   cache: false,
+              //   contentType: false,
+              //   processData: false,
+              //   method: "POST",
+              //   xhrFields: {
+              //     withCredentials: true,
+              //   },
+              //   success: (response) => {
+              //     console.log("resss", response);
+              //     setDocuments((state) => [...response.files]);
+              //   },
+              // });
             }}
             draggable
             multiple

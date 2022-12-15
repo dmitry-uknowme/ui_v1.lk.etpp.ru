@@ -123,7 +123,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const handleEdit = () => {
     setIsOpen(false);
     setActiveStep(0);
-    window.history.pushState(null,null,`/procedure/edit/new/${procedure.id}`)
+    window.history.pushState(null, null, `/procedure/edit/new/${procedure.id}`);
     // window.history.pushState()
     // navigate(`/procedure_edit/${procedure.id}`);
   };
@@ -209,7 +209,9 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     Количество публикуемых протоколов, согласно положению
                     Заказчика, более 1
                   </td>
-                  <td style={{ width: "50%" }}>Да</td>
+                  <td style={{ width: "50%" }}>
+                    {procedure?.more_than_one_protocol ? "Да" : "Нет"}
+                  </td>
                 </tr>
                 <tr>
                   <td style={{ width: "50%" }}>Форма заключения договора</td>
