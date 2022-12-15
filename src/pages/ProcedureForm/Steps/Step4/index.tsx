@@ -82,7 +82,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     lot_title: formGlobalValues?.name || "",
     lot_currency: "RUB",
     nds_type: "NO_NDS",
-    provision_bid_is_specified: false,
+    provision_bid_is_specified: "false",
     provision_bid_type: formGlobalValues?.provision_bid?.methods?.length
       ? formGlobalValues?.provision_bid?.methods[0]
       : "WITHOUT_COLLATERAL",

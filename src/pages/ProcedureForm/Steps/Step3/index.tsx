@@ -58,22 +58,26 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       formGlobalValues?.lots?.length &&
       formGlobalValues?.lots[0]?.date_time?.start_bids
         ? new Date(formGlobalValues?.lots[0]?.date_time?.start_bids)
-        : new Date(),
+        : add(new Date(), { minutes: 1 }),
+    // : new Date(),
     end_acceipting_bids_date:
       formGlobalValues?.lots?.length &&
       formGlobalValues?.lots[0]?.date_time?.close_bids
         ? new Date(formGlobalValues?.lots[0]?.date_time?.close_bids)
-        : new Date(),
+        : // : new Date(),
+          add(new Date(), { minutes: 2 }),
     reviewing_bids_date:
       formGlobalValues?.lots?.length &&
       formGlobalValues?.lots[0]?.date_time?.review_bids
         ? new Date(formGlobalValues?.lots[0]?.date_time?.review_bids)
-        : new Date(),
+        : // : new Date(),
+          add(new Date(), { minutes: 3 }),
     summing_up_bids_date:
       formGlobalValues?.lots?.length &&
       formGlobalValues?.lots[0]?.date_time?.summing_up_end
         ? new Date(formGlobalValues?.lots[0]?.date_time?.summing_up_end)
-        : new Date(),
+        : // : new Date(),
+          add(new Date(), { minutes: 4 }),
     bidding_process:
       formGlobalValues?.bidding_process ||
       "В соответствии с закупочной документацией",
