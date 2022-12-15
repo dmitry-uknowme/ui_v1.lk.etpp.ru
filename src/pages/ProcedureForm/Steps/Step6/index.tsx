@@ -26,7 +26,7 @@ import toBase64 from "../../../../utils/toBase64";
 import axios from "axios";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
 import uploadNoticeDocuments from "../../../../services/api/uploadNoticeDocuments";
-import { API_V1_URL } from "../../../../services/api";
+import { API_V1_URL, LK_URL } from "../../../../services/api";
 import fetchNoticeDocuments from "../../../../services/api/fetchNoticeDocuments";
 import sendSignedDocuments from "../../../../services/api/sendSignedDocument";
 
@@ -142,7 +142,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
     try {
       const { data } = await axios.get(
-        `http://localhost:8001/notice/document/${documentId}/delete`,
+        `${LK_URL}/notice/document/${documentId}/delete`,
         { withCredentials: true }
       );
       setDocuments((state) => state.filter((doc) => doc.id !== documentId));

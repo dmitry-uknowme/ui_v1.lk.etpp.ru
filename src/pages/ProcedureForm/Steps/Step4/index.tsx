@@ -12,6 +12,7 @@ import {
   InputGroup,
   toaster,
   Message,
+  InputNumber,
 } from "rsuite";
 import React, { useContext, useEffect, useState } from "react";
 import currency from "currency.js";
@@ -488,7 +489,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 <Field
                   name="provision_bid_percent"
                   label="Размер обеспечения заявки, %"
-                  accepter={Input}
+                  accepter={InputNumber}
                   error={formError.provision_bid_percent}
                 />
               </div>
@@ -500,7 +501,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 <Field
                   name="provision_bid_amount"
                   label="Размер обеспечения заявки, руб"
-                  accepter={Input}
+                  accepter={InputNumber}
                   value={formValue.provision_bid_amount}
                   disabled={isBidProvisionPercent}
                 />
@@ -543,7 +544,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 <Field
                   name="provision_contract_percent"
                   label="Размер обеспечения исполнения договора, %"
-                  accepter={Input}
+                  accepter={InputNumber}
                   error={formError.provision_contract_percent}
                 />
               </div>
@@ -553,7 +554,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 <Field
                   name="provision_contract_amount"
                   label="Размер обеспечения исполнения договора, руб"
-                  accepter={Input}
+                  accepter={InputNumber}
                   error={formError.provision_contract_amount}
                 />
               </div>

@@ -161,7 +161,6 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       requirement_not_rnp: requirementRNPOption,
       is_for_smb: smbOption,
       is_subcontractor_requirement: subcontractorOption,
-      lots: [],
     }));
 
     setFormGlobalServerData((state) => ({

@@ -90,13 +90,14 @@ const MultiStepFormContextProvider: React.FC<
       const provisionBid = procedure.provision_bid;
       const provisionContract = procedure.provision_contract;
       console.log("ssssss", procedure, lot);
-      setFormValues((state) => ({
+      setServerData((state) => ({
         ...state,
         actionType: actionType,
         procedureId: procedure.id,
       }));
       setFormValues((state) => ({
         ...state,
+        name: procedure.name,
         plan_position_id: lot?.plan_position_id ?? null,
         original_price: `${procedure.price_original.currency} ${procedure.price_original.amount}`,
         organizer: {
@@ -150,6 +151,22 @@ const MultiStepFormContextProvider: React.FC<
           type: provisionContract.type,
           payment_return_deposit: null,
         },
+        is_subcontractor_requirement: procedure.requirements.subcontractor,
+        is_for_smb: procedure.requirements.only_for_smb,
+        requirement_not_rnp: procedure.requirements.rnp,
+        bidding_per_unit: procedure.bidding_per_unit,
+
+        bidding_process: procedure.bidding_process,
+        order_review_and_summing_up: procedure.order_review_and_summing_up,
+        place_review_and_summing_up: procedure.place_review_and_summing_up,
+        procedure_process: procedure.procedure_process,
+        info_trading_venue: procedure.info_trading_venue,
+        requirements_participant: procedure.requirements_participant,
+        providing_documentation_explanation:
+          procedure.providing_documentation_explanation,
+        other_info_by_customer: procedure.other_info_by_customer,
+        provision_procurement_documentation:
+          procedure.provision_procurement_documentation,
       }));
     }
   }, [procedureData]);
