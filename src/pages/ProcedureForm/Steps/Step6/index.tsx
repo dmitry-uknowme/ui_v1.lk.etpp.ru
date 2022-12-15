@@ -323,7 +323,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         <Form.Group>
           <Button onClick={prevStep}>Назад</Button>
           <Button appearance="primary" onClick={handleSubmit}>
-            Предпросмотр процедуры
+            Предпросмотр извещения
           </Button>
         </Form.Group>
       </Form>

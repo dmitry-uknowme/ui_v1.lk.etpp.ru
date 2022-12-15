@@ -165,6 +165,8 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       ...state,
       isViaPlan,
       purchasePlanId: formValue.purchase_plan_id,
+      purchasePlanNumber: currentPurchasePlan.registration_number,
+      planPositionNumber: selectedPlanPositions[0].number,
     }));
 
     if (!planPositionId) {

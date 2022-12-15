@@ -192,7 +192,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         // percent: parseFloat(parseFloat(bidProvisionPercent).toFixed(2)),
         // percent: bidProvisionPercent,
         methods: [formValue.provision_bid_type],
-        payment_return_deposit: null,
+        payment_return_deposit: formValue.provision_bid_payment_return_deposit,
       },
       provision_contract: {
         is_specified: isContractProvisionSpecified,
@@ -202,7 +202,8 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         amount: `${"RUB"} ${parseFloat(contractProvisionAmount) * 100}`,
         // percent: parseFloat(contractProvisionPercent),
         // percent: contractProvisionPercent,
-        payment_return_deposit: null,
+        ayment_return_deposit:
+          formValue.provision_contract_payment_return_deposit,
       },
       original_price: `${"RUB"} ${parseFloat(formValue.lot_start_price) * 100}`,
       lots: [

@@ -1,8 +1,9 @@
 import axios from "axios";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import {
+  Badge,
   Button,
   Message,
   Modal,
@@ -18,6 +19,7 @@ import fetchPurchasePlanPosition from "../../../../services/api/fetchPurchasePla
 import Money, { parseCurrency, parseDBMoney } from "../../../../utils/money";
 import { useNavigate } from "react-router-dom";
 import formatDate from "../../../../utils/formatDate";
+import { API_V1_URL } from "../../../../services/api";
 
 const LK_URL = import.meta.env.LK_URL;
 
@@ -41,6 +43,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
 
+  const [isBtnLoader, setBtnLoader] = useState<boolean>(false);
   const navigate = useNavigate();
 
   // console.log("procccccc 7", formGlobalValues);
@@ -83,12 +86,12 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   );
 
   const signAndSendNotice = async () => {
+    setBtnLoader(true);
     const signlib = window.signlib;
     const { data: hashData } = await axios.get(
-      `http://localhost:8001/api/v1/notice/${noticeId}/hash`
+      `${API_V1_URL}/notice/${noticeId}/hash`
     );
     const hash = hashData.hash;
-    console.log("hashhhhh", hash);
 
     try {
       const signData = await signlib.signStringHash(hash, cert_thumbprint);
@@ -96,7 +99,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
       const formData = new FormData();
       formData.append("sign", sign);
       await axios.post(
-        `http://localhost:8001/api/v1/notice/${noticeId}/sign-and-publish`,
+        `${API_V1_URL}/notice/${noticeId}/sign-and-publish`,
         formData,
         { withCredentials: true }
       );
@@ -110,6 +113,8 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
       return toaster.push(
         <Message type="error">Ошибка при подписании извещения</Message>
       );
+    } finally {
+      setBtnLoader(false);
     }
   };
 
@@ -145,7 +150,9 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                 </tr>
                 <tr>
                   <td style={{ width: "50%" }}>Статус</td>
-                  <td style={{ width: "50%" }}>Черновик</td>
+                  <td style={{ width: "50%" }}>
+                    <Badge content="Черновик" color="blue" />
+                  </td>
                 </tr>
                 <tr>
                   <td style={{ width: "50%" }}>Тип процедуры</td>
@@ -281,6 +288,8 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                       Сведения о позиции плана закупки:
                     </td>
                     <td style={{ width: "50%" }}>
+                      План закупки № {formGlobalServerData?.purсhasePlanNumber},
+                      позиция плана {formGlobalServerData?.planPositionNumber}
                       {/* {dateTime.start_bids} */}
                     </td>
                   </tr>
@@ -515,7 +524,11 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
           <Button appearance="subtle" onClick={handleEdit}>
             Редактировать
           </Button>
-          <Button appearance="primary" onClick={() => signAndSendNotice()}>
+          <Button
+            appearance="primary"
+            onClick={() => signAndSendNotice()}
+            loading={isBtnLoader}
+          >
             Опубликовать
           </Button>
           {/* </a> */}
