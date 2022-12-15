@@ -200,7 +200,20 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           <table className="table">
             <thead>
               <tr>
-                <th>Выбрать</th>
+                <th>
+                  <Checkbox
+                    indeterminate={
+                      selectedDocuments.length !== documents.length &&
+                      selectedDocuments.length
+                    }
+                    checked={selectedDocuments.length === documents.length}
+                    onChange={(value, checked) =>
+                      checked
+                        ? setSelectedDocuments(documents)
+                        : setSelectedDocuments([])
+                    }
+                  />
+                </th>
                 <th>Наименование</th>
                 <th>Статус</th>
                 <th>Действия</th>
@@ -264,23 +277,21 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                         onClick={() => removeDocument(doc)}
                         style={{ verticalAlign: "middle" }}
                       >
-                        {doc.status !== "STATUS_SIGNED" ? (
-                          <IconButton
-                            size="sm"
-                            color="red"
-                            appearance="subtle"
-                            onClick={() => removeDocument(doc)}
-                            // appearance="subtle"
-                            icon={
-                              <TrashIcon
-                                color="red"
-                                onClick={() => removeDocument(doc)}
-                              />
-                            }
-                          >
-                            Удалить
-                          </IconButton>
-                        ) : null}
+                        <IconButton
+                          size="sm"
+                          color="red"
+                          appearance="subtle"
+                          onClick={() => removeDocument(doc)}
+                          // appearance="subtle"
+                          icon={
+                            <TrashIcon
+                              color="red"
+                              onClick={() => removeDocument(doc)}
+                            />
+                          }
+                        >
+                          Удалить
+                        </IconButton>
                       </td>
                     </tr>
                   ))
