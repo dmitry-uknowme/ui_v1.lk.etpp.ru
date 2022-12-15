@@ -132,7 +132,10 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const purchasePlanQuery = useQuery(
     ["purchasePlan", formValue.purchase_plan_id],
     async () => await fetchPurchasePlan(formValue.purchase_plan_id),
-    { enabled: !!(isViaPlan && formValue.purchase_plan_id.trim().length) }
+    {
+      enabled: !!(isViaPlan && formValue.purchase_plan_id.trim().length),
+      refetchInterval: false,
+    }
   );
 
   const currentPurchasePlan = purchasePlansQuery?.data?.find(

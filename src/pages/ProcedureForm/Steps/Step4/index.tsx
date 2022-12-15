@@ -82,7 +82,9 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     lot_currency: "RUB",
     nds_type: "NO_NDS",
     provision_bid_is_specified: false,
-    provision_bid_type: "WITHOUT_COLLATERAL",
+    provision_bid_type: formGlobalValues?.provision_bid?.methods?.length
+      ? formGlobalValues?.provision_bid?.methods[0]
+      : "WITHOUT_COLLATERAL",
     provision_bid_amount: formGlobalValues?.provision_bid?.amount
       ? currency(
           parseDBAmount(formGlobalValues.provision_bid.amount)
@@ -141,7 +143,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         planId,
         planPositionId,
       });
-      if (!formValue.lot_start_price || !formGlobalValues.original_price) {
+      if (!formValue.lot_start_price) {
         setFormValue((state) => ({
           ...state,
           lot_start_price: new Money(
@@ -155,10 +157,9 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         }));
       }
       return planPosition;
-    }
+    },
+    { refetchInterval: false }
   );
-
-  const sessionQuery = useQuery("session", fetchSession);
 
   const handleSubmit = () => {
     setBtnLoader(true);
@@ -187,9 +188,11 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         ? `${"RUB"} ${parseFloat(formValue.lot_unit_start_price)}`
         : null,
       provision_bid: {
-        is_specified: true,
+        is_specified: isBidProvisionSpecified,
         // is_specified: isBidProvisionSpecified,
-        amount: `${"RUB"} ${parseFloat(bidProvisionAmount) * 100}`,
+        amount: parseFloat(bidProvisionAmount)
+          ? `${"RUB"} ${parseFloat(bidProvisionAmount) * 100}`
+          : "RUB 0",
         // percent: parseFloat(bidProvisionPercent),
         // percent: parseFloat(parseFloat(bidProvisionPercent).toFixed(2)),
         // percent: bidProvisionPercent,
@@ -201,7 +204,9 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         type: isContractProvisionSpecified
           ? contractProvisionType
           : "FROM_START_PRICE",
-        amount: `${"RUB"} ${parseFloat(contractProvisionAmount) * 100}`,
+        amount: parseFloat(contractProvisionAmount)
+          ? `${"RUB"} ${parseFloat(contractProvisionAmount) * 100}`
+          : "RUB 0",
         // percent: parseFloat(contractProvisionPercent),
         // percent: contractProvisionPercent,
         payment_return_deposit:
@@ -229,6 +234,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       document
         .querySelector(".rs-form-group .rs-form-error-message")
         ?.parentNode?.parentNode?.scrollIntoView();
+      document.querySelector(".rs-form-error-message-inner")?.scrollIntoView();
       return;
     }
     setBtnLoader(false);
@@ -295,7 +301,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         const startPrice = currency(parseFloat(formValue.lot_start_price));
         const provisionBidPercent =
           parseFloat(formValue.provision_bid_percent) ?? null;
-
+        console.log("startpriccceee", startPrice);
         const provisionBidDocs = formValue.provision_bid_payment_return_deposit;
         if (!provisionBidDocs) {
           setFormError((state) => ({
