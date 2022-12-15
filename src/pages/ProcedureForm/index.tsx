@@ -25,11 +25,11 @@ const ProcedureForm: React.FC<ProcedureFormProps> = ({ action }) => {
       setIsModalOpen(true);
     }
   }, [activeStep]);
-  console.log("stepppp", activeStep);
 
   return (
     <div>
       <MultiStepFormContextProvider
+        actionType={action}
         currentStepId={activeStep}
         setCurrentStepId={setActiveStep}
       >

@@ -185,31 +185,34 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       let organizations = await fetchProfileOrganizations({ profileId });
       const currentOrganization = await fetchProfile({ profileId });
       organizations = [...organizations, currentOrganization];
-      // const selectOrganization =formGlobalServerData.or
-      if (!formGlobalServerData?.organizerId) {
-        if (organizations?.length) {
-          setFormValue((state) => ({
-            ...state,
-            organizer_id: organizations[0].id,
-            organizer_org_full_name: organizations[0].full_title_organization,
-            organizer_org_short_name: organizations[0].short_title_organization,
-            organizer_org_inn: organizations[0].inn,
-            organizer_org_kpp: organizations[0].kpp,
-            organizer_org_ogrn: organizations[0].ogrn,
-            organizer_org_fact_address: organizations[0].fact_address,
-            organizer_org_legal_address: organizations[0].legal_address,
-            customer_id: organizations[0].id,
-            сustomer_org_full_name: organizations[0].full_title_organization,
-            customer_org_short_name: organizations[0].short_title_organization,
-            customer_org_inn: organizations[0].inn,
-            customer_org_kpp: organizations[0].kpp,
-            customer_org_ogrn: organizations[0].ogrn,
-            customer_org_fact_address: organizations[0].fact_address,
-            customer_org_legal_address: organizations[0].legal_address,
-          }));
-        }
-        return organizations;
+
+      if (organizations?.length) {
+        const selectOrganization =
+          organizations.find(
+            (org) => org.id === formGlobalServerData?.organizerId
+          ) || organizations[0];
+
+        setFormValue((state) => ({
+          ...state,
+          organizer_id: selectOrganization.id,
+          organizer_org_full_name: selectOrganization.full_title_organization,
+          organizer_org_short_name: selectOrganization.short_title_organization,
+          organizer_org_inn: selectOrganization.inn,
+          organizer_org_kpp: selectOrganization.kpp,
+          organizer_org_ogrn: selectOrganization.ogrn,
+          organizer_org_fact_address: selectOrganization.fact_address,
+          organizer_org_legal_address: selectOrganization.legal_address,
+          customer_id: selectOrganization.id,
+          сustomer_org_full_name: selectOrganization.full_title_organization,
+          customer_org_short_name: selectOrganization.short_title_organization,
+          customer_org_inn: selectOrganization.inn,
+          customer_org_kpp: selectOrganization.kpp,
+          customer_org_ogrn: selectOrganization.ogrn,
+          customer_org_fact_address: selectOrganization.fact_address,
+          customer_org_legal_address: selectOrganization.legal_address,
+        }));
       }
+      return organizations;
     }
   );
 
@@ -221,19 +224,19 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       const employees = await fetchOrganizationEmployees(
         formValue.organizer_id
       );
-      if (!formGlobalServerData?.organizerRepresentativeId) {
-        if (employees?.length) {
-          setFormValue((state) => ({
-            ...state,
-            organizer_representative_id: employees[0].id,
-          }));
-        }
-        return employees;
+      if (employees?.length) {
+        const selectEmployeeId =
+          formGlobalServerData?.organizerRepresentativeId || employees[0].id;
+        setFormValue((state) => ({
+          ...state,
+          organizer_representative_id: selectEmployeeId,
+        }));
       }
+      return employees;
     },
     {
       enabled:
-        formValue.organizer_id.trim().length &&
+        formValue.organizer_id?.trim()?.length &&
         formValue.organizer_id !== "MANUAL_INPUT"
           ? true
           : false,
@@ -245,19 +248,19 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     async () => {
       const employees = await fetchOrganizationEmployees(formValue.customer_id);
 
-      if (!formGlobalServerData?.customerRepresentativeId) {
-        if (employees?.length) {
-          setFormValue((state) => ({
-            ...state,
-            customer_representative_id: employees[0].id,
-          }));
-        }
-        return employees;
+      if (employees?.length) {
+        const selectEmployeeId =
+          formGlobalServerData?.customerRepresentativeId || employees[0].id;
+        setFormValue((state) => ({
+          ...state,
+          customer_representative_id: selectEmployeeId,
+        }));
       }
+      return employees;
     },
     {
       enabled:
-        formValue.customer_id.trim().length &&
+        formValue.customer_id?.trim()?.length &&
         formValue.customer_id !== "MANUAL_INPUT"
           ? true
           : false,
@@ -290,8 +293,8 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     },
     {
       enabled:
-        formValue.organizer_representative_id?.trim()?.length &&
-        formValue.organizer_representative_id !== "MANUAL_INPUT"
+        formValue?.organizer_representative_id?.trim()?.length &&
+        formValue?.organizer_representative_id !== "MANUAL_INPUT"
           ? true
           : false,
     }

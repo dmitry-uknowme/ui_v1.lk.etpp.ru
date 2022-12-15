@@ -124,8 +124,12 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
 
   const handleEdit = () => {
     setIsOpen(false);
-    setActiveStep(0);
-    window.history.pushState(null, null, `/procedure/edit/new/${procedure.id}`);
+    setActiveStep(5);
+    window.history.pushState(
+      null,
+      null,
+      `${LK_URL}/procedure/edit/new/${procedure.id}`
+    );
     // window.history.pushState()
     // navigate(`/procedure_edit/${procedure.id}`);
   };

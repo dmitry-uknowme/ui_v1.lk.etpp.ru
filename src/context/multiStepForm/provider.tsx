@@ -31,7 +31,7 @@ const MultiStepFormContextProvider: React.FC<
 
   const initServerData = async () => {
     const session = await fetchSession();
-    setServerData((state) => ({ ...state, session }));
+    setServerData((state) => ({ ...state, session, actionType }));
     setIsInited(true);
   };
 
