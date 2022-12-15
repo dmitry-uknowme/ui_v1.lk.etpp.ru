@@ -112,8 +112,10 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         ).toString()
       : "",
     provision_bid_payment_return_deposit:
+      formGlobalValues?.provision_bid?.payment_return_deposit ||
       "В соответствии с закупочной документацией",
     provision_contract_payment_return_deposit:
+      formGlobalValues?.provision_contract?.payment_return_deposit ||
       "В соответствии с закупочной документацией",
   });
 
@@ -202,7 +204,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         amount: `${"RUB"} ${parseFloat(contractProvisionAmount) * 100}`,
         // percent: parseFloat(contractProvisionPercent),
         // percent: contractProvisionPercent,
-        ayment_return_deposit:
+        payment_return_deposit:
           formValue.provision_contract_payment_return_deposit,
       },
       original_price: `${"RUB"} ${parseFloat(formValue.lot_start_price) * 100}`,
@@ -238,6 +240,15 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       const startPrice = currency(parseFloat(formValue.lot_start_price));
       const provisionContractPercent =
         parseFloat(formValue.provision_contract_percent) ?? null;
+      const provisionContractDocs =
+        formValue.provision_contract_payment_return_deposit;
+      if (!provisionContractDocs) {
+        setFormError((state) => ({
+          ...state,
+          provision_contract_payment_return_deposit:
+            "Поле обязательно для заполнения",
+        }));
+      }
       if (!parseFloat(formValue.lot_start_price)) {
         setFormError((state) => ({
           ...state,
@@ -248,10 +259,6 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       }
       if (!provisionContractPercent) {
         return;
-        // setFormError((state) => ({
-        //   ...state,
-        //   provision_contract_amount: "Введите процент",
-        // }));
       }
       if (
         !provisionContractPercent ||
@@ -288,6 +295,15 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         const startPrice = currency(parseFloat(formValue.lot_start_price));
         const provisionBidPercent =
           parseFloat(formValue.provision_bid_percent) ?? null;
+
+        const provisionBidDocs = formValue.provision_bid_payment_return_deposit;
+        if (!provisionBidDocs) {
+          setFormError((state) => ({
+            ...state,
+            provision_bid_payment_return_deposit:
+              "Поле обязательно для заполнения",
+          }));
+        }
 
         if (!parseFloat(formValue.lot_start_price)) {
           setFormError((state) => ({
@@ -544,6 +560,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 name="provision_contract_payment_return_deposit"
                 accepter={Input}
                 value={formValue.provision_contract_payment_return_deposit}
+                error={formError.provision_contract_payment_return_deposit}
                 onChange={(value) => setFormValue(value)}
                 as="textarea"
                 style={{ width: "100%" }}
