@@ -19,7 +19,6 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import CloseIcon from "@rsuite/icons/Close";
 import TrashIcon from "@rsuite/icons/Trash";
 import { useQuery } from "react-query";
-import MaskedInput from "react-text-mask";
 import createNumberMask from "text-mask-addons/dist/createNumberMask";
 import fetchSession from "../../../../services/api/fetchSession";
 import toBase64 from "../../../../utils/toBase64";

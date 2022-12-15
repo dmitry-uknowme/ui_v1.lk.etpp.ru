@@ -54,18 +54,26 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
-    start_acceipting_bids_date: formGlobalValues?.lots[0]?.date_time?.start_bids
-      ? new Date(formGlobalValues?.lots[0]?.date_time?.start_bids)
-      : new Date(),
-    end_acceipting_bids_date: formGlobalValues?.lots[0]?.date_time?.close_bids
-      ? new Date(formGlobalValues?.lots[0]?.date_time?.close_bids)
-      : new Date(),
-    reviewing_bids_date: formGlobalValues?.lots[0]?.date_time?.review_bids
-      ? new Date(formGlobalValues?.lots[0]?.date_time?.review_bids)
-      : new Date(),
-    summing_up_bids_date: formGlobalValues?.lots[0]?.date_time?.summing_up_end
-      ? new Date(formGlobalValues?.lots[0]?.date_time?.summing_up_end)
-      : new Date(),
+    start_acceipting_bids_date:
+      formGlobalValues?.lots?.length &&
+      formGlobalValues?.lots[0]?.date_time?.start_bids
+        ? new Date(formGlobalValues?.lots[0]?.date_time?.start_bids)
+        : new Date(),
+    end_acceipting_bids_date:
+      formGlobalValues?.lots?.length &&
+      formGlobalValues?.lots[0]?.date_time?.close_bids
+        ? new Date(formGlobalValues?.lots[0]?.date_time?.close_bids)
+        : new Date(),
+    reviewing_bids_date:
+      formGlobalValues?.lots?.length &&
+      formGlobalValues?.lots[0]?.date_time?.review_bids
+        ? new Date(formGlobalValues?.lots[0]?.date_time?.review_bids)
+        : new Date(),
+    summing_up_bids_date:
+      formGlobalValues?.lots?.length &&
+      formGlobalValues?.lots[0]?.date_time?.summing_up_end
+        ? new Date(formGlobalValues?.lots[0]?.date_time?.summing_up_end)
+        : new Date(),
     bidding_process:
       formGlobalValues?.bidding_process ||
       "В соответствии с закупочной документацией",
@@ -195,24 +203,24 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     nextStep();
   };
 
-  useEffect(() => {
-    setFormValue((state) => ({
-      ...state,
-      start_acceipting_bids_date: formGlobalValues?.lots[0]?.date_time
-        ?.start_bids
-        ? new Date(formGlobalValues?.lots[0]?.date_time?.start_bids)
-        : new Date(state.start_acceipting_bids_date),
-      end_acceipting_bids_date: formGlobalValues?.lots[0]?.date_time?.close_bids
-        ? new Date(formGlobalValues?.lots[0]?.date_time?.close_bids)
-        : new Date(state.end_acceipting_bids_date),
-      reviewing_bids_date: formGlobalValues?.lots[0]?.date_time?.review_bids
-        ? new Date(formGlobalValues?.lots[0]?.date_time?.review_bids)
-        : new Date(state.reviewing_bids_date),
-      summing_up_bids_date: formGlobalValues?.lots[0]?.date_time?.summing_up_end
-        ? new Date(formGlobalValues?.lots[0]?.date_time?.summing_up_end)
-        : new Date(state.summing_up_bids_date),
-    }));
-  }, [formGlobalValues.lots]);
+  // useEffect(() => {
+  //   setFormValue((state) => ({
+  //     ...state,
+  //     start_acceipting_bids_date: formGlobalValues?.lots[0]?.date_time
+  //       ?.start_bids
+  //       ? new Date(formGlobalValues?.lots[0]?.date_time?.start_bids)
+  //       : new Date(state.start_acceipting_bids_date),
+  //     end_acceipting_bids_date: formGlobalValues?.lots[0]?.date_time?.close_bids
+  //       ? new Date(formGlobalValues?.lots[0]?.date_time?.close_bids)
+  //       : new Date(state.end_acceipting_bids_date),
+  //     reviewing_bids_date: formGlobalValues?.lots[0]?.date_time?.review_bids
+  //       ? new Date(formGlobalValues?.lots[0]?.date_time?.review_bids)
+  //       : new Date(state.reviewing_bids_date),
+  //     summing_up_bids_date: formGlobalValues?.lots[0]?.date_time?.summing_up_end
+  //       ? new Date(formGlobalValues?.lots[0]?.date_time?.summing_up_end)
+  //       : new Date(state.summing_up_bids_date),
+  //   }));
+  // }, [formGlobalValues.lots]);
 
   return (
     <div className="col-md-8">

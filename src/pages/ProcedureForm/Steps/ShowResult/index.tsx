@@ -352,9 +352,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                         Размер обеспечения заявки
                       </td>
                       <td style={{ width: "50%" }}>
-                        {parseDBMoney(provisionBid.amount).localeFormat({
-                          style: "currency",
-                        })}
+                        {currency(parseDBAmount(provisionBid.amount)).format()}
                       </td>
                     </tr>
                   ) : null}
