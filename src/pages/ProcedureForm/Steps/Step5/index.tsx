@@ -343,6 +343,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     formValue.isOrganizerEqualsCustomer.includes("EQUAL");
 
   const handleSubmit = async () => {
+    console.log("vvvv", formValue);
     if (isOrganizerEqualsCustomer) {
       setFormValue((state) => ({
         ...state,
