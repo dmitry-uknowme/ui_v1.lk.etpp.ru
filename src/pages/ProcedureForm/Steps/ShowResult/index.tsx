@@ -177,9 +177,10 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     Начальная (максимальная) цена в рублях
                   </td>
                   <td style={{ width: "50%" }}>
-                    {currency(parseDBAmount(procedure.original_price)).format({
+                    {parseDBMoney(procedure.original_price).localeFormat({
                       style: "currency",
                     })}
+
                     {/* {currency(parseDBAmount(procedure.original_price)).format({
                       style: "currency",
                     })} */}

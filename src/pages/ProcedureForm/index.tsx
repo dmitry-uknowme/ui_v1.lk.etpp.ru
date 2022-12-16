@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
-import { Message, Steps, toaster } from "rsuite";
+import { Button, Message, Steps, toaster } from "rsuite";
 import MultiStepFormContextProvider from "../../context/multiStepForm/provider";
 import fetchProcedure from "../../services/api/fetchProcedure";
 import CurrentStep from "./Steps/CurrentStep";
@@ -61,7 +61,18 @@ const ProcedureForm: React.FC<ProcedureFormProps> = ({ action }) => {
                 // style={{ cursor: "pointer", display: "none" }}
               />
             </Steps>
+            <Button
+              appearance="ghost"
+              color="blue"
+              onClick={() => {
+                window.localStorage.removeItem("formContext");
+                window.location.reload();
+              }}
+            >
+              Очистить поля формы
+            </Button>
           </div>
+
           <div className="col-md-9">
             <hr />
 

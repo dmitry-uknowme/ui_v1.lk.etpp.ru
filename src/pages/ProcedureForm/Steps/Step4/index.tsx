@@ -194,7 +194,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         is_specified: isBidProvisionSpecified,
         // is_specified: isBidProvisionSpecified,
         amount: parseFloat(bidProvisionAmount)
-          ? `${"RUB"} ${parseFloat(bidProvisionAmount) * 100}`
+          ? `${"RUB"} ${currency(parseFloat(bidProvisionAmount)).intValue}`
           : "RUB 0",
         // percent: parseFloat(bidProvisionPercent),
         // percent: parseFloat(parseFloat(bidProvisionPercent).toFixed(2)),
@@ -208,20 +208,22 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           ? contractProvisionType
           : "FROM_START_PRICE",
         amount: parseFloat(contractProvisionAmount)
-          ? `${"RUB"} ${parseFloat(contractProvisionAmount) * 100}`
+          ? `${"RUB"} ${currency(parseFloat(contractProvisionAmount)).intValue}`
           : "RUB 0",
         // percent: parseFloat(contractProvisionPercent),
         // percent: contractProvisionPercent,
         payment_return_deposit:
           formValue.provision_contract_payment_return_deposit,
       },
-      original_price: `${"RUB"} ${parseFloat(formValue.lot_start_price) * 100}`,
+      original_price: `${"RUB"} ${
+        currency(parseFloat(formValue.lot_start_price)).intValue
+      }`,
       lots: [
         {
           ...(formGlobalValues?.lots?.length ? formGlobalValues?.lots[0] : {}),
           name: formValue.lot_title,
           starting_price: `${"RUB"} ${
-            parseFloat(formValue.lot_start_price) * 100
+            currency(parseFloat(formValue.lot_start_price)).intValue
           }`,
           positions: [],
         },
