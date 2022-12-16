@@ -50,12 +50,16 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const procedureId = formGlobalServerData?.procedureId;
   const procedureNumber = formGlobalServerData?.procedureNumber;
   const noticeId = formGlobalServerData?.noticeId;
+
   const procedure = {
     ...formGlobalValues,
     id: procedureId,
     number: procedureNumber,
     notice_id: noticeId,
   };
+
+  const organizer = procedure?.organizer;
+  const customer = procedure?.customer;
 
   const lot = procedure?.lots?.length ? procedure?.lots[0] : null;
   const dateTime = lot?.date_time;
@@ -540,6 +544,140 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                 </tbody>
               </table>
             </Panel>
+            <div className="row">
+              <div className="col-md-6">
+                <Panel header="Сведения об Организаторе">
+                  <table className="table table-responsive table-bordered">
+                    <tbody>
+                      <tr>
+                        <td style={{ width: "50%" }}>
+                          Сокращенное наименование
+                        </td>
+                        <td style={{ width: "50%" }}>
+                          {organizer?.short_title}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>Полное наименование</td>
+                        <td style={{ width: "50%" }}>
+                          {organizer?.full_title}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>ИНН</td>
+                        <td style={{ width: "50%" }}>{organizer?.inn}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>КПП</td>
+                        <td style={{ width: "50%" }}>{organizer?.kpp}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>Юридический адрес</td>
+                        <td style={{ width: "50%" }}>
+                          {organizer?.legal_address?.index}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>Фактический адрес</td>
+                        <td style={{ width: "50%" }}>
+                          {organizer?.fact_address?.index}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>
+                          Адрес электронной почты
+                        </td>
+                        <td style={{ width: "50%" }}>{organizer?.email}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>Контактное лицо</td>
+                        <td style={{ width: "50%" }}>
+                          {organizer?.last_name} {organizer?.first_name}{" "}
+                          {organizer?.middle_name}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>Номер телефона</td>
+                        <td style={{ width: "50%" }}>{organizer?.phone}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>
+                          Добавочный номер телефона
+                        </td>
+                        <td style={{ width: "50%" }}>
+                          {organizer?.additional_phone}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </Panel>
+              </div>
+              <div className="col-md-6">
+                <Panel header="Сведения о Заказчике">
+                  <table className="table table-responsive table-bordered">
+                    <tbody>
+                      <tr>
+                        <td style={{ width: "50%" }}>
+                          Сокращенное наименование
+                        </td>
+                        <td style={{ width: "50%" }}>
+                          {customer?.short_title}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>Полное наименование</td>
+                        <td style={{ width: "50%" }}>{customer?.full_title}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>ИНН</td>
+                        <td style={{ width: "50%" }}>{customer?.inn}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>КПП</td>
+                        <td style={{ width: "50%" }}>{customer?.kpp}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>Юридический адрес</td>
+                        <td style={{ width: "50%" }}>
+                          {customer?.legal_address?.index}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>Фактический адрес</td>
+                        <td style={{ width: "50%" }}>
+                          {customer?.fact_address?.index}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>
+                          Адрес электронной почты
+                        </td>
+                        <td style={{ width: "50%" }}>{customer?.email}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>Контактное лицо</td>
+                        <td style={{ width: "50%" }}>
+                          {customer?.last_name} {customer?.first_name}{" "}
+                          {customer?.middle_name}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>Номер телефона</td>
+                        <td style={{ width: "50%" }}>{customer?.phone}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: "50%" }}>
+                          Добавочный номер телефона
+                        </td>
+                        <td style={{ width: "50%" }}>
+                          {customer?.additional_phone}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </Panel>
+              </div>
+            </div>
             <Panel header="Перечень товаров, работ, услуг">
               <LotPositionsTable
                 data={
