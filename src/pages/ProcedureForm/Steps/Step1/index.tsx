@@ -153,12 +153,11 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       );
     }
     const profileId = session.profile_id;
-    console.log("sesss", session);
 
     setFormGlobalValues((state) => ({
       ...state,
       plan_position_id: planPositionId,
-      name: procedureTitle,
+      name: formValue.procedure_title,
       requirement_not_rnp: requirementRNPOption,
       is_for_smb: smbOption,
       is_subcontractor_requirement: subcontractorOption,

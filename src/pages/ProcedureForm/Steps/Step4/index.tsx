@@ -96,7 +96,9 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     provision_bid_percent: "",
     provision_bid_methods: formGlobalValues?.provision_bid?.methods || [],
     provision_contract_type:
-      formGlobalValues?.provision_contract?.type || "NOT_SPECIFIED",
+      formGlobalValues?.provision_contract?.is_specified === false
+        ? "NOT_SPECIFIED"
+        : formGlobalValues?.provision_contract?.type || "NOT_SPECIFIED",
     provision_contract_amount: formGlobalValues?.provision_contract?.amount
       ? currency(
           parseDBAmount(formGlobalValues.provision_contract.amount)
@@ -162,6 +164,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   );
 
   const handleSubmit = () => {
+    console.log("formvvvv", formValue);
     setBtnLoader(true);
     const bidProvisionAmount = formValue.provision_bid_amount;
     const bidProvisionPercent = formValue.provision_bid_percent;
@@ -367,31 +370,37 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     }
   }, [formValue.lot_unit_start_price]);
 
+  // useEffect(() => {
+  //   setFormValue((state) => ({
+  //     ...state,
+  //     lot_start_price: formGlobalValues?.original_price
+  //       ? parseDBAmount(formGlobalValues.original_price).toString()
+  //       : state.lot_start_price,
+  //     provision_bid_amount: formGlobalValues?.provision_bid?.amount
+  //       ? parseDBAmount(formGlobalValues.provision_bid.amount).toString()
+  //       : state.provision_bid_amount,
+  //     provision_bid_is_specified: formGlobalValues?.provision_bid?.is_specified
+  //       ? formGlobalValues.provision_bid.is_specified
+  //       : state.provision_bid_is_specified,
+  //     provision_contract_amount: formGlobalValues?.provision_contract?.amount
+  //       ? parseDBAmount(formGlobalValues.provision_contract.amount).toString()
+  //       : state.provision_contract_amount,
+  //     provision_contract_type: formGlobalValues?.provision_contract?.type
+  //       ? formGlobalValues.provision_contract.type
+  //       : state.provision_contract_type,
+  //     // provision_bid_is_specified: formGlobalValues.provision_bid.is_specified,
+  //   }));
+  // }, [
+  //   formGlobalValues.provision_bid,
+  //   formGlobalValues.provision_contract,
+  //   formGlobalValues.original_price,
+  // ]);
+
   useEffect(() => {
-    setFormValue((state) => ({
-      ...state,
-      lot_start_price: formGlobalValues?.original_price
-        ? parseDBAmount(formGlobalValues.original_price).toString()
-        : state.lot_start_price,
-      provision_bid_amount: formGlobalValues?.provision_bid?.amount
-        ? parseDBAmount(formGlobalValues.provision_bid.amount).toString()
-        : state.provision_bid_amount,
-      provision_bid_is_specified: formGlobalValues?.provision_bid?.is_specified
-        ? formGlobalValues.provision_bid.is_specified
-        : state.provision_bid_is_specified,
-      provision_contract_amount: formGlobalValues?.provision_contract?.amount
-        ? parseDBAmount(formGlobalValues.provision_contract.amount).toString()
-        : state.provision_contract_amount,
-      provision_contract_type: formGlobalValues?.provision_contract?.type
-        ? formGlobalValues.provision_contract.type
-        : state.provision_contract_type,
-      // provision_bid_is_specified: formGlobalValues.provision_bid.is_specified,
-    }));
-  }, [
-    formGlobalValues.provision_bid,
-    formGlobalValues.provision_contract,
-    formGlobalValues.original_price,
-  ]);
+    if (!Object.keys(formError).length) {
+      setBtnLoader(false);
+    }
+  }, [formError]);
 
   return (
     <div className="col-md-9">

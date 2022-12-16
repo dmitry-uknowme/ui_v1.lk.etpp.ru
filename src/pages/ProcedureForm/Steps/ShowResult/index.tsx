@@ -180,6 +180,9 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     {currency(parseDBAmount(procedure.original_price)).format({
                       style: "currency",
                     })}
+                    {/* {currency(parseDBAmount(procedure.original_price)).format({
+                      style: "currency",
+                    })} */}
                   </td>
                 </tr>
                 {procedure?.bidding_per_unit_amount ? (
@@ -188,13 +191,20 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                       Начальная (максимальная) цена за единицу в рублях
                     </td>
                     <td style={{ width: "50%" }}>
-                      {procedure?.bidding_per_unit_amount
+                      {procedure.bidding_per_unit_amount
+                        ? parseDBMoney(
+                            procedure.bidding_per_unit_amount
+                          ).localeFormat({
+                            style: "currency",
+                          })
+                        : "Не предусмотрено"}
+                      {/* {procedure?.bidding_per_unit_amount
                         ? currency(
                             parseDBAmount(procedure.bidding_per_unit_amount)
                           ).format({
                             style: "currency",
                           })
-                        : "Не предусмотрено"}
+                        : "Не предусмотрено"} */}
                     </td>
                   </tr>
                 ) : null}
@@ -304,7 +314,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                       Сведения о позиции плана закупки:
                     </td>
                     <td style={{ width: "50%" }}>
-                      План закупки № {formGlobalServerData?.purсhasePlanNumber},
+                      План закупки № {formGlobalServerData?.purchasePlanNumber},
                       позиция плана {formGlobalServerData?.planPositionNumber}
                       {/* {dateTime.start_bids} */}
                     </td>
@@ -321,6 +331,9 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                       {parseDBMoney(procedure.original_price).localeFormat({
                         style: "currency",
                       })}
+                      {/* {parseDBMoney(procedure.original_price).localeFormat({
+                        style: "currency",
+                      })} */}
                     </td>
                   </tr>
                 </tbody>
@@ -352,7 +365,11 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                         Размер обеспечения заявки
                       </td>
                       <td style={{ width: "50%" }}>
-                        {currency(parseDBAmount(provisionBid.amount)).format()}
+                        {parseDBMoney(provisionBid.amount).localeFormat({
+                          style: "currency",
+                        })}
+                        {/* {currency(parseDBAmount(provisionBid.amount)).format()}
+                         */}
                       </td>
                     </tr>
                   ) : null}

@@ -379,8 +379,8 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         email: formValue.customer_representative_email,
         phone: formValue.customer_representative_phone,
         additional_phone:
-          formValue.customer_representative_phone_extra.trim() === ""
-            ? "da"
+          formValue.customer_representative_phone_extra?.trim() === ""
+            ? null
             : formValue.customer_representative_phone_extra,
         // additional_phone:
         //   formValue.customer_representative_phone_extra.trim() === ""
@@ -406,8 +406,8 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         email: formValue.organizer_representative_email,
         phone: formValue.organizer_representative_phone,
         additional_phone:
-          formValue.organizer_representative_phone_extra.trim() === ""
-            ? "da"
+          formValue.organizer_representative_phone_extra?.trim() === ""
+            ? null
             : formValue.organizer_representative_phone_extra,
         // additional_phone:
         //   formValue.organizer_representative_phone_extra.trim() === ""

@@ -38,15 +38,17 @@ const MultiStepFormContextProvider: React.FC<
       const savedFormValues = savedFormContext.formValues;
       const activeStep = savedFormContext.currentStepId;
       const savedServerData = savedFormContext.serverData;
-
-      if (savedFormValues) {
-        setFormValues(savedFormValues);
-      }
-      if (activeStep) {
-        setCurrentStepId(activeStep);
-      }
-      if (savedServerData) {
-        setServerData(savedServerData);
+      const savedFormType = savedServerData.actionType;
+      if (savedFormType === actionType) {
+        if (savedFormValues) {
+          setFormValues(savedFormValues);
+        }
+        if (activeStep) {
+          setCurrentStepId(activeStep);
+        }
+        if (savedServerData) {
+          setServerData(savedServerData);
+        }
       }
     }
     setIsInited(true);
@@ -106,7 +108,7 @@ const MultiStepFormContextProvider: React.FC<
       const lot = procedure.lots[0];
       const provisionBid = procedure.provision_bid;
       const provisionContract = procedure.provision_contract;
-      console.log("ssssss", procedure, lot);
+      // console.log("ssssss", procedure, lot);
       setServerData((state) => ({
         ...state,
         actionType: actionType,
@@ -117,6 +119,9 @@ const MultiStepFormContextProvider: React.FC<
         name: procedure.name,
         plan_position_id: lot?.plan_position_id ?? null,
         original_price: `${procedure.price_original.currency} ${procedure.price_original.amount}`,
+        bidding_per_unit_amount: procedure.bidding_per_unit
+          ? `${lot.unit_price.currency} ${lot.unit_price.amount}`
+          : null,
         organizer: {
           inn: organizer.inn,
           short_title: organizer.inn,
@@ -129,6 +134,7 @@ const MultiStepFormContextProvider: React.FC<
           middle_name: organizer.middle_name,
           legal_address: { index: organizer.legal_address },
           fact_address: { index: organizer.fact_address },
+          additional_phone: organizer.phone_extra_number,
         },
         customer: {
           inn: customer.inn,
@@ -142,6 +148,7 @@ const MultiStepFormContextProvider: React.FC<
           middle_name: customer.middle_name,
           legal_address: { index: customer.legal_address },
           fact_address: { index: customer.fact_address },
+          additional_phone: customer.phone_extra_number,
         },
         lots: [
           {
@@ -172,7 +179,7 @@ const MultiStepFormContextProvider: React.FC<
         is_for_smb: procedure.requirements.only_for_smb,
         requirement_not_rnp: procedure.requirements.rnp,
         bidding_per_unit: procedure.bidding_per_unit,
-
+        // bidding_per_position_option: procedure.bidding_per_position_option,
         bidding_process: procedure.bidding_process,
         order_review_and_summing_up: procedure.order_review_and_summing_up,
         place_review_and_summing_up: procedure.place_review_and_summing_up,

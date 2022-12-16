@@ -65,6 +65,8 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     //TODO:options parser
     options: [
       formGlobalValues?.bidding_per_unit && "reduction_ratio_option",
+      formGlobalValues?.bidding_per_position_option &&
+        "bidding_per_position_option",
       formGlobalValues?.more_than_one_protocol && "protocols_count_more_option",
 
       "rnp_requirement_option",
