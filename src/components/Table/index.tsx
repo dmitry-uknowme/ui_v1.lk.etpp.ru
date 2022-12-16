@@ -51,7 +51,6 @@ const Table: React.FC<TableProps> = ({
     <BaseTable
       style={{ opacity: disabled ? "0.5" : "1" }}
       loading={isLoading}
-      height={500}
       hover
       showHeader
       data={data}

@@ -5,6 +5,7 @@ const PurchasePlanTable = (props) => {
   // console.log("dddddd", props);
   return (
     <Table
+      height={500}
       dataColumns={[
         {
           key: "select",

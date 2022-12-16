@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import {
@@ -22,6 +22,7 @@ import formatDate from "../../../../utils/formatDate";
 import { API_V1_URL, LK_URL } from "../../../../services/api";
 import currency from "currency.js";
 import { parseDBAmount } from "../../../../utils/newMoney";
+import fetchNoticeDocuments from "../../../../services/api/fetchNoticeDocuments";
 
 interface ShowResultModalProps {
   isOpen: boolean;
@@ -42,9 +43,10 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
     serverData: formGlobalServerData,
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
-
+  const [documents, setDocuments] = useState([]);
   const [isBtnLoader, setBtnLoader] = useState<boolean>(false);
   const navigate = useNavigate();
+  console.log("docss", documents);
 
   // console.log("procccccc 7", formGlobalValues);
   const procedureId = formGlobalServerData?.procedureId;
@@ -144,7 +146,13 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
 
     // navigate(`/procedure_edit/${procedure.id}`);
   };
-
+  const initDocuments = async () => {
+    const serverDocuments = await fetchNoticeDocuments({ noticeId });
+    setDocuments(serverDocuments);
+  };
+  useEffect(() => {
+    initDocuments();
+  }, []);
   return (
     <div>
       <Modal size="full" open={isOpen}>
@@ -695,6 +703,28 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                 }
                 isLoading={purchasePlanPositionQuery.isLoading}
               />
+            </Panel>
+            <Panel header="Документы извещения">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Наименование</th>
+                    <th>Статус</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {documents.map((doc) => (
+                    <tr key={doc.id}>
+                      <td style={{ verticalAlign: "middle" }}>
+                        {doc.file_real_name}
+                      </td>
+                      <td style={{ verticalAlign: "middle" }}>
+                        <Badge color="green" content={doc.status_localized} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </Panel>
           </Panel>
         </Modal.Body>

@@ -357,21 +357,13 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             renderFileInfo={() => null}
             fileListVisible={false}
             action={`${API_V1_URL}/notice/${noticeId}/document/upload`}
-            // action={`${API_V1_URL}/notice/${noticeId}/document/upload`}
             autoUpload={false}
             onUpload={(event) => {
               console.log("on uploadddd", event);
             }}
-            // onProgress={(event) => console.log("on progress", event)}
             onChange={async (files) => {
               console.log("on changeee", files);
               const formData = new FormData();
-              // const fileList = new DataTransfer();
-              // files.map((file) => fileList.items.add(file.blobFile));
-              // fileList.items.add(files[0].blobFile);
-              // fileList.items.add(files[0].blobFile);
-
-              // console.log("fileList", fileList);
               files.map((file) => formData.append("files[]", file.blobFile));
               try {
                 const { data } = await axios.post(
@@ -396,8 +388,6 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                     },
                   }
                 );
-                // console.log("refff", uploaderRer?.current);
-                // await initDocuments();
 
                 setDocuments(data.files);
                 setFileList([]);
@@ -406,23 +396,6 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                   <Message type="error">Ошибка при загрузке документа</Message>
                 );
               }
-              // formData.append("files[]", fileList.files);
-              // formData.append("files[]", files[0].blobFile);
-              // $.ajax({
-              //   url: `${API_V1_URL}/notice/${noticeId}/document/upload`,
-              //   data: formData,
-              //   cache: false,
-              //   contentType: false,
-              //   processData: false,
-              //   method: "POST",
-              //   xhrFields: {
-              //     withCredentials: true,
-              //   },
-              //   success: (response) => {
-              //     console.log("resss", response);
-              //     setDocuments((state) => [...response.files]);
-              //   },
-              // });
             }}
             draggable
             multiple
