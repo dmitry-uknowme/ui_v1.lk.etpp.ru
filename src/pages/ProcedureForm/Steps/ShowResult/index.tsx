@@ -104,11 +104,14 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
         { withCredentials: true }
       );
 
-      return toaster.push(
+      toaster.push(
         <Message type="success">
-          Извещение успешно подписано и отправлено в ЕИС
+          Извещение успешно подписано и отправлено в очередь на загрузку в ЕИС
         </Message>
       );
+      setTimeout(() => {
+        document.querySelector("#eisProcessLink")?.click();
+      }, 1000);
     } catch (err) {
       return toaster.push(
         <Message type="error">Ошибка при подписании извещения</Message>
@@ -231,7 +234,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     Заказчика, более 1
                   </td>
                   <td style={{ width: "50%" }}>
-                    {procedure?.more_than_one_protocol ? "Да" : "Нет"}
+                    {procedure?.more_than_one_protocol === true ? "Да" : "Нет"}
                   </td>
                 </tr>
                 <tr>
@@ -561,6 +564,22 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
           <Button appearance="subtle" onClick={handleEdit}>
             Редактировать
           </Button>
+          <a
+            className="d-none"
+            id="eisProcessLink"
+            href={`${LK_URL}/lot/notice/${noticeId}/process`}
+            target="_blank"
+          >
+            Процесс
+          </a>
+          {/* <a
+            className="d-none"
+            id="editProcedureLink"
+            href={`${LK_URL}/lot/notice/${noticeId}/process`}
+            target="_blank"
+          >
+            Процесс
+          </a> */}
           <Button
             appearance="primary"
             onClick={() => signAndSendNotice()}

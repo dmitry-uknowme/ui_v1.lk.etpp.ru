@@ -127,8 +127,6 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     { enabled: !!isViaPlan }
   );
 
-  const sessionQuery = useQuery("session", fetchSession);
-
   const purchasePlanQuery = useQuery(
     ["purchasePlan", formValue.purchase_plan_id],
     async () => await fetchPurchasePlan(formValue.purchase_plan_id),

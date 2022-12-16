@@ -209,7 +209,7 @@ const MultiStepFormContextProvider: React.FC<
         );
       }, 500);
     }
-  }, [formValues]);
+  }, [formValues, serverData]);
 
   return (
     <FormContext.Provider
