@@ -435,8 +435,8 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     </td>
                     <td style={{ width: "50%" }}>
                       {procedure.requirement_not_rnp
-                        ? "Не установлено"
-                        : "Установлено"}
+                        ? "Установлено"
+                        : "Не установлено"}
                     </td>
                   </tr>
                   <tr>
