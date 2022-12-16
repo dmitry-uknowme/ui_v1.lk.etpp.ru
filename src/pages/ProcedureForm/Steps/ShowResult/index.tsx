@@ -46,7 +46,6 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const [documents, setDocuments] = useState([]);
   const [isBtnLoader, setBtnLoader] = useState<boolean>(false);
   const navigate = useNavigate();
-  console.log("docss", documents);
 
   // console.log("procccccc 7", formGlobalValues);
   const procedureId = formGlobalServerData?.procedureId;
@@ -136,6 +135,8 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const handleEdit = () => {
     setIsOpen(false);
     setActiveStep(5);
+    document.querySelector("#editProcedureLink")?.click();
+
     // window.location.href = `${LK_URL}/procedure/edit/new/${procedure.id}`;
     // window.history.pushState(
     //   null,
@@ -740,14 +741,14 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
           >
             Процесс
           </a>
-          {/* <a
+          <a
             className="d-none"
             id="editProcedureLink"
-            href={`${LK_URL}/lot/notice/${noticeId}/process`}
+            href={`${LK_URL}/procedure/edit/new/${procedure.id}`}
             target="_blank"
           >
             Процесс
-          </a> */}
+          </a>
           <Button
             appearance="primary"
             onClick={() => signAndSendNotice()}

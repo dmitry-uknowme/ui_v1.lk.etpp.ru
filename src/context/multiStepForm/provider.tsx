@@ -41,8 +41,8 @@ const MultiStepFormContextProvider: React.FC<
       const savedProcedureId = savedServerData?.procedureId;
       const savedFormType = savedServerData?.actionType;
       if (
-        (savedFormType && savedFormType === actionType) ||
-        (savedProcedureId && savedProcedureId === procedureId)
+        (savedFormType && (savedFormType === actionType)) ||
+        (savedProcedureId && (savedProcedureId === procedureId))
       ) {
         if (savedFormValues) {
           setFormValues(savedFormValues);
