@@ -153,6 +153,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       );
     }
     const profileId = session.profile_id;
+    console.log("sesss", session);
 
     setFormGlobalValues((state) => ({
       ...state,

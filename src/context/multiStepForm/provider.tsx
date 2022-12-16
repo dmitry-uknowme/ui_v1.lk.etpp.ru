@@ -32,6 +32,23 @@ const MultiStepFormContextProvider: React.FC<
   const initServerData = async () => {
     const session = await fetchSession();
     setServerData((state) => ({ ...state, session, actionType }));
+    const savedFormContext = JSON.parse(localStorage.getItem("formContext"));
+
+    if (savedFormContext) {
+      const savedFormValues = savedFormContext.formValues;
+      const activeStep = savedFormContext.currentStepId;
+      const savedServerData = savedFormContext.serverData;
+
+      if (savedFormValues) {
+        setFormValues(savedFormValues);
+      }
+      if (activeStep) {
+        setCurrentStepId(activeStep);
+      }
+      if (savedServerData) {
+        setServerData(savedServerData);
+      }
+    }
     setIsInited(true);
   };
 
@@ -170,6 +187,22 @@ const MultiStepFormContextProvider: React.FC<
       }));
     }
   }, [procedureData]);
+
+  useEffect(() => {
+    if (isInited) {
+      console.log("saveddd", formValues);
+      setTimeout(() => {
+        localStorage.setItem(
+          "formContext",
+          JSON.stringify({
+            formValues,
+            serverData,
+            currentStepId,
+          })
+        );
+      }, 500);
+    }
+  }, [formValues]);
 
   return (
     <FormContext.Provider

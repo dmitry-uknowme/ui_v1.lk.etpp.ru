@@ -47,19 +47,6 @@ const CurrentStep: React.FC<CurrentStepProps> = ({ action }) => {
     setCurrentStepId((state) => state - 1);
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      localStorage.setItem(
-        "formContext",
-        JSON.stringify({
-          formGlobalValues,
-          formGlobalServerData,
-          currentStepId,
-        })
-      );
-    }, 500);
-  }, [formGlobalValues, formGlobalServerData]);
-
   // useEffect(() => {
   //   const savedFormContext = localStorage.getItem("formContext")
   //     ? (JSON.parse(
