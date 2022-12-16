@@ -188,7 +188,9 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       ...state,
       name: formValue.lot_title,
       bidding_per_unit_amount: isBiddingPerUnitOption
-        ? `${"RUB"} ${parseFloat(formValue.lot_unit_start_price)}`
+        ? `${"RUB"} ${
+            currency(parseFloat(formValue.lot_unit_start_price)).intValue
+          }`
         : null,
       provision_bid: {
         is_specified: isBidProvisionSpecified,

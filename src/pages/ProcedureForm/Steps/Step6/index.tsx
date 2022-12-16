@@ -72,9 +72,8 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   const procedure = formGlobalServerData.procedure;
   const cert_thumbprint = formGlobalServerData.session?.cert_thumbprint;
-  console.log("proceee 6", procedure);
   if (!procedure) {
-    toaster.push(<Message type="error">Извещение не создано </Message>);
+    toaster.push(<Message type="error">Извещение не создано</Message>);
     return prevStep();
   }
   const procedureId = procedure?.guid?.value;
@@ -87,8 +86,6 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     lot_currency: "RUB",
     nds_type: "NO_NDS",
   });
-
-  const sessionQuery = useQuery("session", fetchSession);
 
   const noticeId = formGlobalServerData.noticeId;
 
@@ -111,7 +108,6 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         document.file_hash,
         cert_thumbprint
       );
-      console.log("signnnnn", signData);
       await sendSignedDocuments({
         documents: [{ id: document.id, sign: signData.sign }],
       });
@@ -127,7 +123,6 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         <Message type="success">Документ успешно подписан</Message>
       );
     } catch (err) {
-      console.log("errr", err);
       return toaster.push(
         <Message type="error">
           Ошибка при подписании документа {JSON.stringify(err)}
@@ -195,108 +190,113 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         formValue={formValue}
         model={model}
       >
-        <Panel header="Документы процедуры">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>
-                  <Checkbox
-                    indeterminate={
-                      selectedDocuments.length !== documents.length &&
-                      selectedDocuments.length
-                    }
-                    checked={selectedDocuments.length === documents.length}
-                    onChange={(value, checked) =>
-                      checked
-                        ? setSelectedDocuments(documents)
-                        : setSelectedDocuments([])
-                    }
-                  />
-                </th>
-                <th>Наименование</th>
-                <th>Статус</th>
-                <th>Действия</th>
-              </tr>
-            </thead>
-            <tbody>
-              {documents?.length
-                ? documents.map((doc) => (
-                    <tr key={doc.id}>
-                      <td>
-                        <Checkbox
-                          value={doc.id}
-                          checked={
-                            !!selectedDocuments.find((d) => d.id === doc.id)
-                          }
-                          // checked={
-                          //   !!selectedDocuments.find((d) => d.id === doc.id)
-                          // }
-                          onChange={(value) => {
-                            const currentDocument = documents.find(
-                              (d) => d.id === value
-                            );
-                            const isChecked = !!selectedDocuments.find(
-                              (doc) => currentDocument.id === doc.id
-                            );
-
-                            if (isChecked) {
-                              setSelectedDocuments((state) => [
-                                ...state.filter(
-                                  (d) => d.id !== currentDocument.id
-                                ),
-                              ]);
-                            } else {
-                              setSelectedDocuments((state) => [
-                                ...state,
-                                currentDocument,
-                              ]);
+        <Panel header="Документы извещения">
+          {documents?.length ? (
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>
+                    <Checkbox
+                      indeterminate={
+                        selectedDocuments.length !== documents.length &&
+                        selectedDocuments.length
+                      }
+                      checked={selectedDocuments.length === documents.length}
+                      onChange={(value, checked) =>
+                        checked
+                          ? setSelectedDocuments(documents)
+                          : setSelectedDocuments([])
+                      }
+                    />
+                  </th>
+                  <th>Наименование</th>
+                  <th>Статус</th>
+                  <th>Действия</th>
+                </tr>
+              </thead>
+              <tbody>
+                {documents?.length
+                  ? documents.map((doc) => (
+                      <tr key={doc.id}>
+                        <td>
+                          <Checkbox
+                            value={doc.id}
+                            checked={
+                              !!selectedDocuments.find((d) => d.id === doc.id)
                             }
-                          }}
-                        />
-                      </td>
-                      <td style={{ verticalAlign: "middle" }}>
-                        {doc.file_real_name}
-                      </td>
-                      <td style={{ verticalAlign: "middle" }}>
-                        {doc.status === "STATUS_NEW" ? (
-                          <Button
-                            appearance="primary"
-                            color="blue"
-                            size="xs"
-                            onClick={() => signDocument(doc)}
-                            loading={doc?.isLoading}
-                          >
-                            Подписать
-                          </Button>
-                        ) : (
-                          <Badge color="green" content={doc.status_localized} />
-                        )}
-                      </td>
-                      <td
-                        onClick={() => removeDocument(doc)}
-                        style={{ verticalAlign: "middle" }}
-                      >
-                        <IconButton
-                          size="sm"
-                          color="red"
-                          appearance="subtle"
-                          onClick={() => removeDocument(doc)}
-                          // appearance="subtle"
-                          icon={
-                            <TrashIcon
-                              color="red"
-                              onClick={() => removeDocument(doc)}
+                            // checked={
+                            //   !!selectedDocuments.find((d) => d.id === doc.id)
+                            // }
+                            onChange={(value) => {
+                              const currentDocument = documents.find(
+                                (d) => d.id === value
+                              );
+                              const isChecked = !!selectedDocuments.find(
+                                (doc) => currentDocument.id === doc.id
+                              );
+
+                              if (isChecked) {
+                                setSelectedDocuments((state) => [
+                                  ...state.filter(
+                                    (d) => d.id !== currentDocument.id
+                                  ),
+                                ]);
+                              } else {
+                                setSelectedDocuments((state) => [
+                                  ...state,
+                                  currentDocument,
+                                ]);
+                              }
+                            }}
+                          />
+                        </td>
+                        <td style={{ verticalAlign: "middle" }}>
+                          {doc.file_real_name}
+                        </td>
+                        <td style={{ verticalAlign: "middle" }}>
+                          {doc.status === "STATUS_NEW" ? (
+                            <Button
+                              appearance="primary"
+                              color="blue"
+                              size="xs"
+                              onClick={() => signDocument(doc)}
+                              loading={doc?.isLoading}
+                            >
+                              Подписать
+                            </Button>
+                          ) : (
+                            <Badge
+                              color="green"
+                              content={doc.status_localized}
                             />
-                          }
+                          )}
+                        </td>
+                        <td
+                          onClick={() => removeDocument(doc)}
+                          style={{ verticalAlign: "middle" }}
                         >
-                          Удалить
-                        </IconButton>
-                      </td>
-                    </tr>
-                  ))
-                : null}
-            </tbody>
-          </table>
+                          <IconButton
+                            size="sm"
+                            color="red"
+                            appearance="subtle"
+                            onClick={() => removeDocument(doc)}
+                            // appearance="subtle"
+                            icon={
+                              <TrashIcon
+                                color="red"
+                                onClick={() => removeDocument(doc)}
+                              />
+                            }
+                          >
+                            Удалить
+                          </IconButton>
+                        </td>
+                      </tr>
+                    ))
+                  : null}
+              </tbody>
+            </table>
+          ) : null}
           {selectedDocuments?.length || documents?.length ? (
             <ButtonToolbar>
               <Button

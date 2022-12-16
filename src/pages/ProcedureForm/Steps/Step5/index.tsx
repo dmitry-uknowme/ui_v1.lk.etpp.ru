@@ -496,7 +496,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       if (procedureData) {
         console.log("created procedureeeeee", procedureData.procedure);
         toaster.push(
-          <Message type="success">Процедура успешно создана</Message>
+          <Message type="success">Извещение успешно создано</Message>
         );
         const noticeId = procedureData.notice_id;
         const procedureId = procedureData.procedure.guid.value;

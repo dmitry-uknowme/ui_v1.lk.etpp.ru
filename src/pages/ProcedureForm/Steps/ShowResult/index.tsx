@@ -19,11 +19,9 @@ import fetchPurchasePlanPosition from "../../../../services/api/fetchPurchasePla
 import Money, { parseCurrency, parseDBMoney } from "../../../../utils/money";
 import { useNavigate } from "react-router-dom";
 import formatDate from "../../../../utils/formatDate";
-import { API_V1_URL } from "../../../../services/api";
+import { API_V1_URL, LK_URL } from "../../../../services/api";
 import currency from "currency.js";
 import { parseDBAmount } from "../../../../utils/newMoney";
-
-const LK_URL = import.meta.env.LK_URL;
 
 interface ShowResultModalProps {
   isOpen: boolean;
@@ -116,21 +114,27 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
         <Message type="error">Ошибка при подписании извещения</Message>
       );
     } finally {
-      setBtnLoader(false);
+      setTimeout(() => {
+        setBtnLoader(false);
+      }, 500);
     }
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    signAndSendNotice();
+  };
 
   const handleEdit = () => {
     setIsOpen(false);
     setActiveStep(5);
-    window.history.pushState(
-      null,
-      null,
-      `${LK_URL}/procedure/edit/new/${procedure.id}`
-    );
+    // window.location.href = `${LK_URL}/procedure/edit/new/${procedure.id}`;
+    // window.history.pushState(
+    //   null,
+    //   null,
+    //   `${LK_URL}/procedure/edit/new/${procedure.id}`
+    // );
     // window.history.pushState()
+
     // navigate(`/procedure_edit/${procedure.id}`);
   };
 
@@ -488,13 +492,14 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     </td>
                   </tr>
                   <tr>
-                    <td style={{ width: "100%" }} rowSpan={2}>
+                    <td style={{ width: "100%" }} colSpan={2}>
                       Торги проводятся на электронной торговой площадке "ЕТП
                       ТПП", находящейся в сети интернет по адресу{" "}
                       <a href="https://etpp.ru" target="_blank">
                         https://etpp.ru
                       </a>
                     </td>
+                    <td></td>
                   </tr>
                 </tbody>
               </table>
