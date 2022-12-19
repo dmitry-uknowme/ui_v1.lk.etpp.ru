@@ -347,7 +347,9 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     if (isOrganizerEqualsCustomer) {
       setFormValue((state) => ({
         ...state,
+        customer_id: state.organizer_id,
         customer_org_ogrn: state.organizer_org_ogrn,
+        customer_representative_id: state.organizer_representative_id,
         customer_representative_name: state.organizer_representative_name,
         customer_representative_lastname:
           state.organizer_representative_lastname,
