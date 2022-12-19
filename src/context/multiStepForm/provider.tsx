@@ -41,8 +41,8 @@ const MultiStepFormContextProvider: React.FC<
       const savedProcedureId = savedServerData?.procedureId;
       const savedFormType = savedServerData?.actionType;
       if (
-        (savedFormType && (savedFormType === actionType)) ||
-        (savedProcedureId && (savedProcedureId === procedureId))
+        (savedFormType && savedFormType === actionType) ||
+        (savedProcedureId && savedProcedureId === procedureId)
       ) {
         if (savedFormValues) {
           setFormValues(savedFormValues);
@@ -183,7 +183,7 @@ const MultiStepFormContextProvider: React.FC<
         is_for_smb: procedure.requirements.only_for_smb,
         requirement_not_rnp: procedure.requirements.rnp,
         bidding_per_unit: procedure.bidding_per_unit,
-        // bidding_per_position_option: procedure.bidding_per_position_option,
+        position_purchase: procedure.bidding_per_position_option,
         bidding_process: procedure.bidding_process,
         order_review_and_summing_up: procedure.order_review_and_summing_up,
         place_review_and_summing_up: procedure.place_review_and_summing_up,

@@ -202,7 +202,6 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             organizer_org_legal_address: selectOrganizerOrganization.legal_address,
           }));
         }
-
         if (!formValue.customer_id?.trim()?.length) {
           const selectCustomerOrganization =
             organizations.find(
@@ -222,9 +221,9 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           }));
         }
         return organizations;
-      }, { refetchInterval: false }
+      }
     }
-  );
+    , { refetchInterval: false });
 
 
 
@@ -496,7 +495,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           noticeId,
           procedure: procedureData.procedure,
         }));
-        // nextStep();
+        nextStep();
       }
     } else {
       const procedureData = await createProcedure(
@@ -525,8 +524,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           procedureNumber,
         }));
 
-
-        // nextStep();
+        nextStep();
       }
     }
   };

@@ -68,7 +68,7 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       formGlobalValues?.bidding_per_position_option &&
         "bidding_per_position_option",
       formGlobalValues?.more_than_one_protocol && "protocols_count_more_option",
-
+      formGlobalValues?.position_purchase && "bidding_per_position_option",
       "rnp_requirement_option",
     ],
     reduction_ratio_from:
@@ -104,7 +104,7 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
     setFormGlobalValues((state) => ({
       ...state,
-      // bidding_per_unit: ,
+      position_purchase:biddingPerPositionOption,
       bidding_per_unit: reductionRatioOption,
       reduction_factor_purchase: reductionRatioOption,
       reduction_factor_purchase_to: parseFloat(formValue.reduction_ratio_to),
