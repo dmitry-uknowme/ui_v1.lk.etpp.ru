@@ -189,7 +189,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         amount: parseFloat(bidProvisionAmount)
           ? `${"RUB"} ${currency(parseFloat(bidProvisionAmount)).intValue}`
           : "RUB 0",
-        percent: parseFloat(bidProvisionPercent),
+        // percent: parseFloat(bidProvisionPercent),
         // percent: parseFloat(parseFloat(bidProvisionPercent).toFixed(2)),
         // percent: bidProvisionPercent,
         methods: [formValue.provision_bid_type],
