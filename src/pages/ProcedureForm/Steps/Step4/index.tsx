@@ -592,7 +592,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                   ...position,
                   okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
                   okved_field: `${position.okved_code}. ${position.okved_name}`,
-                  qty: `${position.qty}, ${position.unit_name}`,
+                  qty_count: `${position.qty}, ${position.unit_name}`,
                   region: "Респ. Башкортостан",
                 }))
                 : []
