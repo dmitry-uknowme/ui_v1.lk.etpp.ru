@@ -72,7 +72,6 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const isBiddingPerUnitOption = !!formGlobalValues?.bidding_per_unit;
   const serverProcedure = formGlobalServerData.procedure;
 
-  console.log("procedureee 4", formGlobalValues);
 
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
@@ -112,7 +111,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     provision_contract_percent: "",
     lot_unit_start_price: formGlobalValues?.bidding_per_unit_amount
       ? currency(
-        parseDBAmount(formGlobalValues.bidding_per_unit_amount)
+        parseDBAmount(formGlobalValues.bidding_per_unit_amount) / 100
       ).toString()
       : "",
     provision_bid_payment_return_deposit:
@@ -134,6 +133,8 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     formValue.provision_bid_type === "ACCORDING_DOCUMENTATION";
   const isContractProvisionFromStartPrice =
     formValue.provision_contract_type === "FROM_START_PRICE";
+  const isContractProvisionFromContractPrice =
+    formValue.provision_contract_type === "FROM_CONTRACT_PRICE";
 
   const planId = formGlobalServerData?.purchasePlanId;
   const planPositionId = formGlobalValues?.plan_position_id;
@@ -164,8 +165,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   );
 
   const handleSubmit = () => {
-    console.log("formvvvv", formValue);
-    setBtnLoader(true);
+    // setBtnLoader(true);
     const bidProvisionAmount = formValue.provision_bid_amount;
     const bidProvisionPercent = formValue.provision_bid_percent;
 
@@ -197,7 +197,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         amount: parseFloat(bidProvisionAmount)
           ? `${"RUB"} ${currency(parseFloat(bidProvisionAmount)).intValue}`
           : "RUB 0",
-        // percent: parseFloat(bidProvisionPercent),
+        percent: parseFloat(bidProvisionPercent),
         // percent: parseFloat(parseFloat(bidProvisionPercent).toFixed(2)),
         // percent: bidProvisionPercent,
         methods: [formValue.provision_bid_type],
@@ -208,10 +208,10 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         type: isContractProvisionSpecified
           ? contractProvisionType
           : "FROM_START_PRICE",
-        amount: parseFloat(contractProvisionAmount)
+        amount: isContractProvisionSpecified && isContractProvisionFromStartPrice ? parseFloat(contractProvisionAmount)
           ? `${"RUB"} ${currency(parseFloat(contractProvisionAmount)).intValue}`
-          : "RUB 0",
-        // percent: parseFloat(contractProvisionPercent),
+          : "RUB 0" : null,
+        percent: isContractProvisionSpecified && isContractProvisionFromContractPrice ? parseFloat(contractProvisionPercent) : null,
         // percent: contractProvisionPercent,
         payment_return_deposit:
           formValue.provision_contract_payment_return_deposit,
