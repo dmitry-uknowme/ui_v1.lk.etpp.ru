@@ -213,12 +213,15 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     </td>
                     <td style={{ width: "50%" }}>
                       {procedure.bidding_per_unit_amount
-                        ? parseDBMoney(
-                            procedure.bidding_per_unit_amount
-                          ).localeFormat({
-                            style: "currency",
-                          })
-                        : "Не предусмотрено"}
+                        ? currency(
+                            parseDBAmount(procedure.bidding_per_unit_amount)
+                          ).value
+                        : // ? parseDBMoney(
+                          //     procedure.bidding_per_unit_amount
+                          //   ).localeFormat({
+                          //     style: "currency",
+                          //   })
+                          "Не предусмотрено"}
                       {/* {procedure?.bidding_per_unit_amount
                         ? currency(
                             parseDBAmount(procedure.bidding_per_unit_amount)
