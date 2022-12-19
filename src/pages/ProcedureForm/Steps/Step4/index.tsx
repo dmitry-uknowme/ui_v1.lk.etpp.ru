@@ -77,7 +77,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
     lot_start_price: "",
-    lot_title: formGlobalValues?.name || "",
+    lot_title: formGlobalValues?.lots?.length ? formGlobalValues.lots[0].name : formGlobalValues?.name || "",
     lot_currency: "RUB",
     nds_type: "NO_NDS",
     provision_bid_is_specified: "false",
@@ -89,10 +89,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         parseDBAmount(formGlobalValues.provision_bid.amount) / 100
       ).toString()
       : "",
-    // provision_bid_amount: formGlobalValues?.provision_bid?.amount
-    //   ? parseFloat(formGlobalValues?.provision_bid?.amount / 100).toFixed(2)
-    //   : "",
-    provision_bid_percent: "",
+    provision_bid_percent: formGlobalValues?.provision_bid?.percent?.toString() || "",
     provision_bid_methods: formGlobalValues?.provision_bid?.methods || [],
     provision_contract_type:
       formGlobalValues?.provision_contract?.is_specified === false
@@ -103,12 +100,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         parseDBAmount(formGlobalValues.provision_contract.amount) / 100
       ).toString()
       : "",
-    // provision_contract_amount: formGlobalValues?.provision_contract?.amount
-    //   ? parseFloat(formGlobalValues?.provision_contract?.amount / 100).toFixed(
-    //       2
-    //     )
-    //   : "",
-    provision_contract_percent: "",
+    provision_contract_percent: formGlobalValues?.provision_contract?.percent?.toString() || "",
     lot_unit_start_price: formGlobalValues?.bidding_per_unit_amount
       ? currency(
         parseDBAmount(formGlobalValues.bidding_per_unit_amount) / 100

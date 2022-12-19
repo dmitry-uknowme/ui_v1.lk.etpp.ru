@@ -99,7 +99,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     }
     setFormValue((state) => ({
       ...state,
-      procedure_title: formGlobalValues?.name ? formGlobalValues?.name : "",
+      procedure_title: formGlobalValues?.lots?.length ? formGlobalValues.lots[0].name : formGlobalValues?.name || "",
     }));
   }, [
     formGlobalValues.lots,
@@ -273,9 +273,9 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               data={
                 purchasePlansQuery?.data?.length
                   ? purchasePlansQuery.data.map((plan) => ({
-                      value: plan.id,
-                      label: `План закупки №${plan.registration_number} (${plan.reporting_year})`,
-                    }))
+                    value: plan.id,
+                    label: `План закупки №${plan.registration_number} (${plan.reporting_year})`,
+                  }))
                   : []
               }
               loading={purchasePlansQuery.isLoading}
@@ -291,23 +291,23 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                   ...position,
                   maximum_contract_price: position.maximum_contract_price
                     ? new Money(
-                        parseInt(
-                          position.maximum_contract_price.replaceAll(
-                            parseCurrency(position.maximum_contract_price),
-                            ""
-                          )
-                        ),
-                        parseCurrency(position.maximum_contract_price)
-                      ).localeFormat({ style: "currency" })
+                      parseInt(
+                        position.maximum_contract_price.replaceAll(
+                          parseCurrency(position.maximum_contract_price),
+                          ""
+                        )
+                      ),
+                      parseCurrency(position.maximum_contract_price)
+                    ).localeFormat({ style: "currency" })
                     : "Не предусмотрено",
                   status_localized:
                     position.status === "STATUS_WAIT"
                       ? "Формируется"
                       : position.status === "STATUS_POSTED"
-                      ? "Размещена"
-                      : position.status === "STATUS_ANNULLED"
-                      ? "Аннулирована"
-                      : "Редактируется",
+                        ? "Размещена"
+                        : position.status === "STATUS_ANNULLED"
+                          ? "Аннулирована"
+                          : "Редактируется",
                 }))
                 .reverse()}
               isLoading={purchasePlanQuery?.isLoading}

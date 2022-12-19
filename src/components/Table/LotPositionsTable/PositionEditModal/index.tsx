@@ -73,7 +73,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({ position, setData
 
     }, [formValue.unit_amount, formValue.qty])
     return (
-        <Modal size="md" open={isOpen} onClose={handleClose} >
+        <Modal size="md" open={isOpen} onClose={handleClose} backdrop="static">
             <Form
                 onChange={setFormValue}
                 onCheck={setFormError}
