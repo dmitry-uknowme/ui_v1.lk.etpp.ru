@@ -214,10 +214,10 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     <td style={{ width: "50%" }}>
                       {procedure.bidding_per_unit_amount
                         ? parseDBMoney(
-                            procedure.bidding_per_unit_amount
-                          ).localeFormat({
-                            style: "currency",
-                          })
+                          procedure.bidding_per_unit_amount
+                        ).localeFormat({
+                          style: "currency",
+                        })
                         : "Не предусмотрено"}
                       {/* {procedure?.bidding_per_unit_amount
                         ? currency(
@@ -370,13 +370,13 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                         ? provisionBid.methods[0] === "PERCENTAGE_AMOUNT"
                           ? "Процент от НМЦ (с внесением д/с на эл. площадку или банковская гарантия на эл. площадку)"
                           : provisionBid.methods[0] === "FIXED_AMOUNT"
-                          ? "Фиксированная сумма (с внесением д/с на эл. площадку или банковская гарантия)"
-                          : provisionBid.methods[0] === "WITHOUT_COLLATERAL"
-                          ? "Без обеспечения"
-                          : provisionBid.methods[0] ===
-                            "ACCORDING_DOCUMENTATION"
-                          ? "В соответствии с документацией"
-                          : null
+                            ? "Фиксированная сумма (с внесением д/с на эл. площадку или банковская гарантия)"
+                            : provisionBid.methods[0] === "WITHOUT_COLLATERAL"
+                              ? "Без обеспечения"
+                              : provisionBid.methods[0] ===
+                                "ACCORDING_DOCUMENTATION"
+                                ? "В соответствии с документацией"
+                                : null
                         : null}
                     </td>
                   </tr>
@@ -412,10 +412,10 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                           "ACCORDING_PROCUREMENT_DOCUMENTS"
                           ? "В соответствии с закупочной документацией"
                           : provisionContract.type === "FROM_START_PRICE"
-                          ? "От начальной цены лота"
-                          : provisionContract.type === "FROM_CONTRACT_PRICE"
-                          ? "От цены договора"
-                          : null
+                            ? "От начальной цены лота"
+                            : provisionContract.type === "FROM_CONTRACT_PRICE"
+                              ? "От цены договора"
+                              : null
                         : null}
                     </td>
                   </tr>
@@ -692,14 +692,14 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                 data={
                   purchasePlanPositionQuery.data?.positions?.length
                     ? purchasePlanPositionQuery.data.positions.map(
-                        (position) => ({
-                          ...position,
-                          okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
-                          okved_field: `${position.okved_code}. ${position.okved_name}`,
-                          qty: `${position.qty}, ${position.unit_name}`,
-                          region: "Респ. Башкортостан",
-                        })
-                      )
+                      (position) => ({
+                        ...position,
+                        okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
+                        okved_field: `${position.okved_code}. ${position.okved_name}`,
+                        qty: `${position.qty}, ${position.unit_name}`,
+                        region: "Респ. Башкортостан",
+                      })
+                    )
                     : []
                 }
                 isLoading={purchasePlanPositionQuery.isLoading}
@@ -733,11 +733,12 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
           <Button appearance="subtle" onClick={handleEdit}>
             Редактировать
           </Button>
+
           <a
             className="d-none"
             id="eisProcessLink"
             href={`${LK_URL}/lot/notice/${noticeId}/process`}
-            // target="_blank"
+          // target="_blank"
           >
             Редактирование процедуры
           </a>
@@ -745,7 +746,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
             className="d-none"
             id="editProcedureLink"
             href={`${LK_URL}/procedure/edit/new/${procedure.id}`}
-            // target="_blank"
+          // target="_blank"
           >
             Процесс
           </a>
