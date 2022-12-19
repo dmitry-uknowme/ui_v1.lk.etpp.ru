@@ -66,7 +66,7 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     options: [
       formGlobalValues?.bidding_per_unit && "reduction_ratio_option",
       formGlobalValues?.bidding_per_position_option &&
-        "bidding_per_position_option",
+      "bidding_per_position_option",
       formGlobalValues?.more_than_one_protocol && "protocols_count_more_option",
       formGlobalValues?.position_purchase && "bidding_per_position_option",
       "rnp_requirement_option",
@@ -104,7 +104,7 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
     setFormGlobalValues((state) => ({
       ...state,
-      position_purchase:biddingPerPositionOption,
+      position_purchase: biddingPerPositionOption,
       bidding_per_unit: reductionRatioOption,
       reduction_factor_purchase: reductionRatioOption,
       reduction_factor_purchase_to: parseFloat(formValue.reduction_ratio_to),
@@ -196,12 +196,12 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           <Checkbox
             // value={"bidding_per_unit_option"}
             value={"reduction_ratio_option"}
-            // checked={
-            //   !!(
-            //     formValue.options.includes("bidding_per_unit_option") ||
-            //     formValue.options.includes("reduction_ratio_option")
-            //   )
-            // }
+          // checked={
+          //   !!(
+          //     formValue.options.includes("bidding_per_unit_option") ||
+          //     formValue.options.includes("reduction_ratio_option")
+          //   )
+          // }
           >
             Торги за единицу
           </Checkbox>
@@ -241,7 +241,7 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         <Form.Group>
           <Button onClick={prevStep}>Назад</Button>
           <Button appearance="primary" onClick={handleSubmit}>
-            Далее
+            Сохранить и продолжить
           </Button>
         </Form.Group>
       </Form>

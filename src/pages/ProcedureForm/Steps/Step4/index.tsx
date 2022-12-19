@@ -600,7 +600,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             onClick={handleSubmit}
             loading={isBtnLoader}
           >
-            Далее
+            Сохранить и продолжить
           </Button>
         </Form.Group>
       </Form>

@@ -346,7 +346,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         <Form.Group>
           <Button onClick={prevStep}>Назад</Button>
           <Button appearance="primary" onClick={handleSubmit}>
-            Далее
+            Сохранить и продолжить
           </Button>
         </Form.Group>
       </Form>
