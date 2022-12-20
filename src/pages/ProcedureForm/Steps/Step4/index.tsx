@@ -81,7 +81,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       formGlobalValues?.name || formGlobalValues?.lots?.length
         ? formGlobalValues.lots[0].name : "",
     lot_currency: "RUB",
-    nds_type: formGlobalValues?.nds_type || "NO_NDS",
+    nds_type: formGlobalValues?.lots?.length ? formGlobalValues?.lots[0]?.nds_type : "NO_NDS",
     provision_bid_type: formGlobalValues?.provision_bid?.methods?.length
       ? formGlobalValues?.provision_bid?.methods[0]
       : "WITHOUT_COLLATERAL",

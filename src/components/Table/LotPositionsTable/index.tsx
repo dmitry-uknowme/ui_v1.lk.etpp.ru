@@ -3,6 +3,7 @@ import { Button, Checkbox } from "rsuite";
 import { Table, Toggle, TagPicker } from "rsuite";
 import EditIcon from "@rsuite/icons/Edit";
 import PositionEditModal from "./PositionEditModal";
+import { ProcedureFormActionVariants } from "../../../pages/ProcedureForm";
 
 const { Cell, HeaderCell, Column } = Table;
 const dataColumns = [
@@ -73,7 +74,7 @@ const EditableCell = ({ rowData, dataKey, onChange, ...props }) => {
   );
 };
 
-const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableData }) => {
+const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableData, actionType, activeStep }) => {
   const [data, setData] = useState(defaultData);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [editingPosition, setEditingPosition] = useState<any>(null);
@@ -111,10 +112,10 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
         />
       ) : null}
       <Table height={420} data={data} >
-        <Column width={120}>
+        {actionType === ProcedureFormActionVariants.EDIT ? <Column width={120}>
           <HeaderCell>Действия</HeaderCell>
           <ActionCell dataKey="id" onClick={openEditModal} />
-        </Column>
+        </Column> : null}
         <Column width={60}>
           <HeaderCell>№</HeaderCell>
           <Cell dataKey="number" onChange={handleChange} />
