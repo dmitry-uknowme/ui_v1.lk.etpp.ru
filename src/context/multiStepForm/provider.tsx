@@ -30,6 +30,7 @@ const MultiStepFormContextProvider: React.FC<
   const [isInited, setIsInited] = useState<boolean>(false);
 
   const initServerData = async () => {
+    setIsInited(false);
     const session = await fetchSession();
     setServerData((state) => ({ ...state, session, actionType }));
     const savedFormContext = JSON.parse(localStorage.getItem("formContext"));
@@ -40,9 +41,10 @@ const MultiStepFormContextProvider: React.FC<
       const savedServerData = savedFormContext?.serverData;
       const savedProcedureId = savedServerData?.procedureId;
       const savedFormType = savedServerData?.actionType;
+      const savedSession = savedServerData?.session
       if (
-        (savedFormType && savedFormType === actionType) ||
-        (savedProcedureId && savedProcedureId === procedureId)
+        (savedFormType && (savedFormType === actionType)) ||
+        (savedProcedureId && (savedProcedureId === procedureId))
       ) {
         if (savedFormValues) {
           setFormValues(savedFormValues);
@@ -52,6 +54,10 @@ const MultiStepFormContextProvider: React.FC<
         }
         if (savedServerData) {
           setServerData(savedServerData);
+        }
+
+        if (savedSession.profile_id !== session.profile_id) {
+          setServerData(state => ({ ...state, session }))
         }
       }
     }
