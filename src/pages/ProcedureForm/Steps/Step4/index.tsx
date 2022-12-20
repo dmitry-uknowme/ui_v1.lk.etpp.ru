@@ -637,6 +637,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               ],
             }))}
             setPositionsTableData={setPositionsTableData}
+            options={formGlobalServerData.options}
             isLoading={purchasePlanPositionQuery.isLoading}
           />
         </Panel>

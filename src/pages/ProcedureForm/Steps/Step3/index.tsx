@@ -201,6 +201,7 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       document
         .querySelector(".rs-form-group .rs-form-error-message")
         ?.parentNode?.parentNode?.scrollIntoView();
+      document.querySelector('.rs-form-error-message-inner')?.parentNode?.parentNode?.parentNode?.parentNode?.scrollIntoView()
       return;
     }
     nextStep();
