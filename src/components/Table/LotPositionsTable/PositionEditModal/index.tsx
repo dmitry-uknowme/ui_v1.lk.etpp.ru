@@ -149,11 +149,11 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
     if (newPosition) {
       setData((state) => [
         ...state?.filter(
-          (pos) => pos.id !== position.id
+          (pos) => parseInt(pos.number) !== parseInt(position.number)
         ),
         { ...newPosition, number: position.number },
       ]);
-      // setOpen(false)
+      setOpen(false)
       addPositions([{ id: position.id, amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`, name: newPosition.name, address: newPosition.region_address }])
     }
 
