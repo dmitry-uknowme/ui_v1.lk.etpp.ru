@@ -632,7 +632,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               ...state, lots: [
                 {
                   ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}),
-                  plan_positions: [...(state?.lots[0]?.plan_positions?.length ? state?.lots[0]?.plan_positions?.filter(pos => pos.id !== positions[0].id) : []), ...positions],
+                  plan_positions: [...(state?.lots[0]?.plan_positions?.length ? state?.lots[0]?.plan_positions?.filter(pos => pos.id !== positions.id) : []), positions],
                 },
               ],
             }))}
