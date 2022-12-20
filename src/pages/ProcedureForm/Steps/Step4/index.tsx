@@ -90,8 +90,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         parseDBAmount(formGlobalValues.provision_bid.amount) / 100
       ).toString()
       : "",
-    provision_bid_percent: formGlobalValues?.provision_bid?.amount && formGlobalValues?.original_price ? currency(parseDBAmount(formGlobalValues?.provision_bid?.amount) / 100).divide(currency(parseDBAmount(formGlobalValues.original_price)) / 100).multiply(100) : "",
-    // formGlobalValues?.provision_bid?.percent?.toString() || "",
+    provision_bid_percent: formGlobalValues?.provision_bid?.amount && formGlobalValues?.original_price ? currency(parseDBAmount(formGlobalValues?.provision_bid?.amount) / 100).divide(currency(parseDBAmount(formGlobalValues.original_price) / 100)).multiply(100) : "",
     provision_bid_methods: formGlobalValues?.provision_bid?.methods || [],
     provision_contract_type:
       formGlobalValues?.provision_contract?.is_specified === false
@@ -102,7 +101,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         parseDBAmount(formGlobalValues.provision_contract.amount) / 100
       ).toString()
       : "",
-    provision_contract_percent: formGlobalValues?.provision_contract?.percent ? formGlobalValues?.provision_contract?.percent : formGlobalValues?.provision_contract?.amount && formGlobalValues?.original_price ? currency(parseDBAmount(formGlobalValues?.provision_contract?.amount) / 100).divide(currency(parseDBAmount(formGlobalValues.original_price)) / 100).multiply(100) : "",
+    provision_contract_percent: /* formGlobalValues?.provision_contract?.percent ? formGlobalValues?.provision_contract?.percent : formGlobalValues?.provision_contract?.amount && formGlobalValues?.original_price ? currency(parseDBAmount(formGlobalValues?.provision_contract?.amount) / 100).divide(currency(parseDBAmount(formGlobalValues.original_price) / 100)).multiply(100) : */ "",
     lot_unit_start_price: formGlobalValues?.bidding_per_unit_amount
       ? currency(
         parseDBAmount(formGlobalValues.bidding_per_unit_amount) / 100
@@ -158,7 +157,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       return planPosition;
     },
     {
-      refetchInterval: false, refetchOnMount: false, refetchIntervalInBackground: false, refetchOnWindowFocus: false
+      refetchInterval: false, refetchIntervalInBackground: false, refetchOnWindowFocus: false
     }
   );
 
@@ -175,11 +174,11 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     const contractProvisionAmount = formValue.provision_contract_amount;
     const contractProvisionPercent = formValue.provision_contract_percent;
     if (biddingPerPositionOption) {
-      const defaultPlanPositions = purchasePlanPositionQuery?.data?.positions
-      if (defaultPlanPositions.length !== formGlobalValues?.lots[0]?.positions?.length) {
-        toaster.push(<Message type='error'>Не всем позициям лота проставлена цена</Message>)
-        return
-      }
+      const defaultPlanPositions = positionsTableData
+      // if (defaultPlanPositions.length !== formGlobalValues?.lots[0]?.positions?.length) {
+      //   toaster.push(<Message type='error'>Не всем позициям лота проставлена цена</Message>)
+      //   return
+      // }
     }
     if (isBiddingPerUnitOption) {
       if (!parseFloat(formValue.lot_unit_start_price)) {
