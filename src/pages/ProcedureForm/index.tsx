@@ -40,25 +40,30 @@ const ProcedureForm: React.FC<ProcedureFormProps> = ({ action }) => {
               <Steps.Item
                 title="Основные сведения процедуры"
                 style={{ cursor: "pointer" }}
+                onClick={() => setActiveStep(0)}
               />
               <Steps.Item
                 title="Настройки хода процедуры"
                 style={{ cursor: "pointer" }}
+                onClick={() => setActiveStep(1)}
               />
               <Steps.Item
                 title="Сроки и порядок проведения"
                 style={{ cursor: "pointer" }}
+                onClick={() => setActiveStep(2)}
               />
-              <Steps.Item title="Лоты" style={{ cursor: "pointer" }} />
+              <Steps.Item title="Лоты" style={{ cursor: "pointer" }} onClick={() => setActiveStep(3)} />
               <Steps.Item
                 title="Ответственные"
                 // title="Ответственные и приглашенные"
                 style={{ cursor: "pointer" }}
+                onClick={() => setActiveStep(4)}
               />
-              <Steps.Item title="Документация" style={{ cursor: "pointer" }} />
+              <Steps.Item title="Документация" style={{ cursor: "pointer" }} onClick={() => setActiveStep(5)} />
               <Steps.Item
                 title="Предпросмотр извещения"
-                // style={{ cursor: "pointer", display: "none" }}
+                onClick={() => setActiveStep(6)}
+              // style={{ cursor: "pointer", display: "none" }}
               />
             </Steps>
             <Button

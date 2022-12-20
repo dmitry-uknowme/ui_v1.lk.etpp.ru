@@ -88,8 +88,8 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       : "WITHOUT_COLLATERAL",
     provision_bid_amount: formGlobalValues?.provision_bid?.amount
       ? currency(
-          parseDBAmount(formGlobalValues.provision_bid.amount) / 100
-        ).toString()
+        parseDBAmount(formGlobalValues.provision_bid.amount) / 100
+      ).toString()
       : "",
     provision_bid_percent:
       formGlobalValues?.provision_bid?.percent?.toString() || "",
@@ -100,15 +100,15 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         : formGlobalValues?.provision_contract?.type || "NOT_SPECIFIED",
     provision_contract_amount: formGlobalValues?.provision_contract?.amount
       ? currency(
-          parseDBAmount(formGlobalValues.provision_contract.amount) / 100
-        ).toString()
+        parseDBAmount(formGlobalValues.provision_contract.amount) / 100
+      ).toString()
       : "",
     provision_contract_percent:
       formGlobalValues?.provision_contract?.percent?.toString() || "",
     lot_unit_start_price: formGlobalValues?.bidding_per_unit_amount
       ? currency(
-          parseDBAmount(formGlobalValues.bidding_per_unit_amount) / 100
-        ).toString()
+        parseDBAmount(formGlobalValues.bidding_per_unit_amount) / 100
+      ).toString()
       : "",
     provision_bid_payment_return_deposit:
       formGlobalValues?.provision_bid?.payment_return_deposit ||
@@ -192,9 +192,8 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       ...state,
       name: formValue.lot_title,
       bidding_per_unit_amount: isBiddingPerUnitOption
-        ? `${"RUB"} ${
-            currency(parseFloat(formValue.lot_unit_start_price)).intValue
-          }`
+        ? `${"RUB"} ${currency(parseFloat(formValue.lot_unit_start_price)).intValue
+        }`
         : null,
       provision_bid: {
         is_specified: isBidProvisionSpecified,
@@ -216,9 +215,8 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         amount:
           isContractProvisionSpecified && isContractProvisionFromStartPrice
             ? parseFloat(contractProvisionAmount)
-              ? `${"RUB"} ${
-                  currency(parseFloat(contractProvisionAmount)).intValue
-                }`
+              ? `${"RUB"} ${currency(parseFloat(contractProvisionAmount)).intValue
+              }`
               : "RUB 0"
             : null,
         percent:
@@ -229,16 +227,14 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         payment_return_deposit:
           formValue.provision_contract_payment_return_deposit,
       },
-      original_price: `${"RUB"} ${
-        currency(parseFloat(formValue.lot_start_price)).intValue
-      }`,
+      original_price: `${"RUB"} ${currency(parseFloat(formValue.lot_start_price)).intValue
+        }`,
       lots: [
         {
           ...(formGlobalValues?.lots?.length ? formGlobalValues?.lots[0] : {}),
           name: formValue.lot_title,
-          starting_price: `${"RUB"} ${
-            currency(parseFloat(formValue.lot_start_price)).intValue
-          }`,
+          starting_price: `${"RUB"} ${currency(parseFloat(formValue.lot_start_price)).intValue
+            }`,
           positions: isBiddingPerUnitOption ? [] : [],
         },
       ],
@@ -540,7 +536,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 name="provision_bid_payment_return_deposit"
                 accepter={Input}
                 value={formValue.provision_bid_payment_return_deposit}
-                onChange={(value) => setFormValue(value)}
+                onChange={(value) => setFormValue(state => ({ ...state, provision_bid_payment_return_deposit: value }))}
                 as="textarea"
                 style={{ width: "100%" }}
               />
@@ -592,7 +588,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 accepter={Input}
                 value={formValue.provision_contract_payment_return_deposit}
                 error={formError.provision_contract_payment_return_deposit}
-                onChange={(value) => setFormValue(value)}
+                onChange={(value) => setFormValue(state => ({ ...state, provision_contract_payment_return_deposit: value }))}
                 as="textarea"
                 style={{ width: "100%" }}
               />
@@ -604,11 +600,11 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             data={
               purchasePlanPositionQuery.data?.positions?.length
                 ? purchasePlanPositionQuery.data.positions.map((position) => ({
-                    ...position,
-                    okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
-                    okved_field: `${position.okved_code}. ${position.okved_name}`,
-                    qty_count: `${position.qty}, ${position.unit_name}`,
-                  }))
+                  ...position,
+                  okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
+                  okved_field: `${position.okved_code}. ${position.okved_name}`,
+                  qty_count: `${position.qty}, ${position.unit_name}`,
+                }))
                 : []
             }
             isLoading={purchasePlanPositionQuery.isLoading}
