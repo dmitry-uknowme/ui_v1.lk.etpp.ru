@@ -180,6 +180,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       const positionsSum = positions.reduce((acc, curr) => acc.add(curr.amount), currency(0))
       if (positionsSum > currency(parseFloat(formValue.lot_start_price))) {
         toaster.push(<Message type="error">Сумма позиций превышает НМЦ</Message>)
+        return
       }
       console.log('summm ', positionsSum, currency(parseFloat(formValue.lot_start_price)))
       // if (defaultPlanPositions.length !== formGlobalValues?.lots[0]?.positions?.length) {
