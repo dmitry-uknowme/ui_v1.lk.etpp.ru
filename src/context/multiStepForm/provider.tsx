@@ -121,7 +121,7 @@ const MultiStepFormContextProvider: React.FC<
       setFormValues((state) => ({
         ...state,
         name: procedure.name,
-        plan_position_id: lot?.plan_position_id ?? null,
+        plan_position_id: lot?.plan_position_id ? lot.plan_position_id : null,
         original_price: `${procedure.price_original.currency} ${procedure.price_original.amount}`,
         bidding_per_unit_amount: procedure.bidding_per_unit
           ? `${lot.unit_price.currency} ${lot.unit_price.amount}`
@@ -133,6 +133,7 @@ const MultiStepFormContextProvider: React.FC<
           phone: organizer.phone_number,
           email: organizer.email,
           kpp: organizer.kpp,
+          ogrn: organizer.ogrn,
           last_name: organizer.last_name,
           first_name: organizer.first_name,
           middle_name: organizer.middle_name,
@@ -142,11 +143,12 @@ const MultiStepFormContextProvider: React.FC<
         },
         customer: {
           inn: customer.inn,
-          short_title: customer.inn,
+          short_title: customer.short_title,
           full_title: customer.full_title,
           phone: customer.phone_number,
           email: customer.email,
           kpp: customer.kpp,
+          ogrn: customer.ogrn,
           last_name: customer.last_name,
           first_name: customer.first_name,
           middle_name: customer.middle_name,
@@ -176,6 +178,7 @@ const MultiStepFormContextProvider: React.FC<
           amount: `${provisionContract.amount.currency} ${provisionContract.amount.amount}`,
           is_specified: provisionContract.is_specified,
           // methods: provisionContract.methods,
+          percent: provisionContract.percent,
           type: provisionContract.type,
           payment_return_deposit: null,
         },
@@ -196,6 +199,7 @@ const MultiStepFormContextProvider: React.FC<
         provision_procurement_documentation:
           procedure.provision_procurement_documentation,
       }));
+      // setServerData(state => ({ ...state, procedureId: procedure.id }))
     }
   }, [procedureData]);
 
@@ -233,4 +237,4 @@ const MultiStepFormContextProvider: React.FC<
   );
 };
 
-export default MultiStepFormContextProvider;
+export default MultiStepFormContextProvider
