@@ -89,12 +89,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   const noticeId = formGlobalServerData.noticeId;
 
-  // const purchasePlanQuery = useQuery(
-  //   ["purchasePlan", formValue.purchase_plan_id, isViaPlan],
-  //   () =>
-  //     formValue.purchase_plan_id.trim().length &&
-  //     fetchPurchasePlan(formValue.purchase_plan_id)
-  // );
+
 
   const initDocuments = async () => {
     const serverDocuments = await fetchNoticeDocuments({ noticeId });
@@ -217,82 +212,82 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               <tbody>
                 {documents?.length
                   ? documents.map((doc) => (
-                      <tr key={doc.id}>
-                        <td>
-                          <Checkbox
-                            value={doc.id}
-                            checked={
-                              !!selectedDocuments.find((d) => d.id === doc.id)
-                            }
-                            // checked={
-                            //   !!selectedDocuments.find((d) => d.id === doc.id)
-                            // }
-                            onChange={(value) => {
-                              const currentDocument = documents.find(
-                                (d) => d.id === value
-                              );
-                              const isChecked = !!selectedDocuments.find(
-                                (doc) => currentDocument.id === doc.id
-                              );
+                    <tr key={doc.id}>
+                      <td>
+                        <Checkbox
+                          value={doc.id}
+                          checked={
+                            !!selectedDocuments.find((d) => d.id === doc.id)
+                          }
+                          // checked={
+                          //   !!selectedDocuments.find((d) => d.id === doc.id)
+                          // }
+                          onChange={(value) => {
+                            const currentDocument = documents.find(
+                              (d) => d.id === value
+                            );
+                            const isChecked = !!selectedDocuments.find(
+                              (doc) => currentDocument.id === doc.id
+                            );
 
-                              if (isChecked) {
-                                setSelectedDocuments((state) => [
-                                  ...state.filter(
-                                    (d) => d.id !== currentDocument.id
-                                  ),
-                                ]);
-                              } else {
-                                setSelectedDocuments((state) => [
-                                  ...state,
-                                  currentDocument,
-                                ]);
-                              }
-                            }}
-                          />
-                        </td>
-                        <td style={{ verticalAlign: "middle" }}>
-                          {doc.file_real_name}
-                        </td>
-                        <td style={{ verticalAlign: "middle" }}>
-                          {doc.status === "STATUS_NEW" ? (
-                            <Button
-                              appearance="primary"
-                              color="blue"
-                              size="xs"
-                              onClick={() => signDocument(doc)}
-                              loading={doc?.isLoading}
-                            >
-                              Подписать
-                            </Button>
-                          ) : (
-                            <Badge
-                              color="green"
-                              content={doc.status_localized}
-                            />
-                          )}
-                        </td>
-                        <td
-                          onClick={() => removeDocument(doc)}
-                          style={{ verticalAlign: "middle" }}
-                        >
-                          <IconButton
-                            size="sm"
-                            color="red"
-                            appearance="subtle"
-                            onClick={() => removeDocument(doc)}
-                            // appearance="subtle"
-                            icon={
-                              <TrashIcon
-                                color="red"
-                                onClick={() => removeDocument(doc)}
-                              />
+                            if (isChecked) {
+                              setSelectedDocuments((state) => [
+                                ...state.filter(
+                                  (d) => d.id !== currentDocument.id
+                                ),
+                              ]);
+                            } else {
+                              setSelectedDocuments((state) => [
+                                ...state,
+                                currentDocument,
+                              ]);
                             }
+                          }}
+                        />
+                      </td>
+                      <td style={{ verticalAlign: "middle" }}>
+                        {doc.file_real_name}
+                      </td>
+                      <td style={{ verticalAlign: "middle" }}>
+                        {doc.status === "STATUS_NEW" ? (
+                          <Button
+                            appearance="primary"
+                            color="blue"
+                            size="xs"
+                            onClick={() => signDocument(doc)}
+                            loading={doc?.isLoading}
                           >
-                            Удалить
-                          </IconButton>
-                        </td>
-                      </tr>
-                    ))
+                            Подписать
+                          </Button>
+                        ) : (
+                          <Badge
+                            color="green"
+                            content={doc.status_localized}
+                          />
+                        )}
+                      </td>
+                      <td
+                        onClick={() => removeDocument(doc)}
+                        style={{ verticalAlign: "middle" }}
+                      >
+                        <IconButton
+                          size="sm"
+                          color="red"
+                          appearance="subtle"
+                          onClick={() => removeDocument(doc)}
+                          // appearance="subtle"
+                          icon={
+                            <TrashIcon
+                              color="red"
+                              onClick={() => removeDocument(doc)}
+                            />
+                          }
+                        >
+                          Удалить
+                        </IconButton>
+                      </td>
+                    </tr>
+                  ))
                   : null}
               </tbody>
             </table>
@@ -376,11 +371,11 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                       const totalLength = progressEvent?.total
                         ? progressEvent.total
                         : progressEvent?.event.target.getResponseHeader(
-                            "content-length"
-                          ) ||
-                          progressEvent?.target.getResponseHeader(
-                            "x-decompressed-content-length"
-                          );
+                          "content-length"
+                        ) ||
+                        progressEvent?.target.getResponseHeader(
+                          "x-decompressed-content-length"
+                        );
                       console.log(
                         "progressss value",
                         Math.round((progressEvent.loaded * 100) / totalLength)

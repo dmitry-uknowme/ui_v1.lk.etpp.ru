@@ -73,11 +73,10 @@ const EditableCell = ({ rowData, dataKey, onChange, ...props }) => {
   );
 };
 
-const LotPositionsTable = ({ data: defaultData, addPositions }) => {
+const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableData }) => {
   const [data, setData] = useState(defaultData);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [editingPosition, setEditingPosition] = useState<any>(null);
-
   useEffect(() => {
     setData(defaultData);
   }, [defaultData]);
@@ -107,11 +106,11 @@ const LotPositionsTable = ({ data: defaultData, addPositions }) => {
           isOpen={isEditModalOpen}
           setOpen={setEditModalOpen}
           position={editingPosition}
-          setData={setData}
+          setData={setPositionsTableData}
           addPositions={addPositions}
         />
       ) : null}
-      <Table height={420} data={data} sortColumn="number" sortType="asc">
+      <Table height={420} data={data} >
         <Column width={120}>
           <HeaderCell>Действия</HeaderCell>
           <ActionCell dataKey="id" onClick={openEditModal} />

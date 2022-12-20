@@ -72,7 +72,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const [isBtnLoader, setBtnLoader] = useState<boolean>(false);
   const isBiddingPerUnitOption = !!formGlobalValues?.bidding_per_unit;
   const serverProcedure = formGlobalServerData.procedure;
-
+  const [positionsTableData, setPositionsTableData] = useState([])
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
@@ -132,6 +132,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   const planId = formGlobalServerData?.purchasePlanId;
   const planPositionId = formGlobalValues?.plan_position_id;
+
   const purchasePlanPositionQuery = useQuery(
     ["purchasePlanPosition"],
     async () => {
@@ -139,6 +140,9 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         planId,
         planPositionId,
       });
+      if (planPosition?.positions?.length) {
+        setPositionsTableData(planPosition.positions)
+      }
       if (!formValue.lot_start_price) {
         setFormValue((state) => ({
           ...state,
@@ -148,22 +152,19 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               ""
             ),
             "RUB"
-            // parseCurrency(planPosition.maximum_contract_price_from_budget)
           ).localeFormat(),
         }));
       }
       return planPosition;
     },
     {
-      refetchInterval: false,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
+      refetchInterval: false, refetchOnMount: false, refetchIntervalInBackground: false, refetchOnWindowFocus: false
     }
   );
 
-  const biddingPerPositionOption = formGlobalServerData?.options?.includes(
-    "bidding_per_position_option"
-  );
+  const biddingPerPositionOption = formGlobalServerData?.options?.includes("bidding_per_position_option") ?? false
+
+
 
   const handleSubmit = () => {
     // setBtnLoader(true);
@@ -173,7 +174,13 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     const contractProvisionType = formValue.provision_contract_type;
     const contractProvisionAmount = formValue.provision_contract_amount;
     const contractProvisionPercent = formValue.provision_contract_percent;
-
+    if (biddingPerPositionOption) {
+      const defaultPlanPositions = purchasePlanPositionQuery?.data?.positions
+      if (defaultPlanPositions.length !== formGlobalValues?.lots[0]?.positions?.length) {
+        toaster.push(<Message type='error'>Не всем позициям лота проставлена цена</Message>)
+        return
+      }
+    }
     if (isBiddingPerUnitOption) {
       if (!parseFloat(formValue.lot_unit_start_price)) {
         setFormError((state) => ({
@@ -411,12 +418,13 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   //   formGlobalValues.original_price,
   // ]);
 
+
+  console.log('table dataaa', positionsTableData)
   useEffect(() => {
     if (!Object.keys(formError).length) {
       setBtnLoader(false);
     }
   }, [formError]);
-
   return (
     <div className="col-md-9">
       <Form
@@ -602,8 +610,8 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           <Header>Перечень товаров, работ, услуг</Header>
           <LotPositionsTable
             data={
-              purchasePlanPositionQuery.data?.positions?.length
-                ? purchasePlanPositionQuery.data.positions.map((position) => ({
+              positionsTableData?.length
+                ? positionsTableData.map((position) => ({
                   ...position,
                   okato: purchasePlanPositionQuery.data.okato,
                   okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
@@ -621,6 +629,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 },
               ],
             }))}
+            setPositionsTableData={setPositionsTableData}
             isLoading={purchasePlanPositionQuery.isLoading}
           />
         </Panel>

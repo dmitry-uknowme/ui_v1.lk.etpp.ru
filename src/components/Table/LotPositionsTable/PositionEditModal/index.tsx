@@ -76,11 +76,11 @@ const model = Schema.Model({
   unit_amount: NumberType("Поле должно быть числом").isRequired(
     "Поле обязательно для заполнения"
   ),
-  amount: NumberType("Поле должно быть числом").isRequired(
-    "Поле обязательно для заполнения"
-  ),
+  // amount: NumberType("Поле должно быть числом").isRequired(
+  //   "Поле обязательно для заполнения"
+  // ),
   // region_okato: StringType().isRequired("Поле обязательно для заполнения"),
-  // address: StringType().isRequired("Поле обязательно для заполнения"),
+  address: StringType().isRequired("Поле обязательно для заполнения"),
 });
 
 const PositionEditModal: React.FC<PositionEditModalProps> = ({
@@ -110,7 +110,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
       }
       return regions;
     },
-    { refetchInterval: false }
+    { refetchInterval: false, refetchOnMount: false, refetchIntervalInBackground: false, refetchOnWindowFocus: false }
   );
 
   const handleSubmit = () => {
@@ -147,7 +147,6 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
       qty_count: `${position.qty}, ${position.unit_name}`,
     };
     if (newPosition) {
-      addPositions([{ id: position.id, amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`, name: newPosition.name, address: newPosition.region_address }])
       setData((state) => [
         ...state?.filter(
           (pos) => pos.id !== position.id
@@ -155,6 +154,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
         { ...newPosition, number: position.number },
       ]);
       // setOpen(false)
+      addPositions([{ id: position.id, amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`, name: newPosition.name, address: newPosition.region_address }])
     }
 
     console.log("pos", position);
