@@ -73,7 +73,7 @@ const EditableCell = ({ rowData, dataKey, onChange, ...props }) => {
   );
 };
 
-const LotPositionsTable = ({ data: defaultData }) => {
+const LotPositionsTable = ({ data: defaultData, addPositions }) => {
   const [data, setData] = useState(defaultData);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [editingPosition, setEditingPosition] = useState<any>(null);
@@ -99,11 +99,7 @@ const LotPositionsTable = ({ data: defaultData }) => {
     setEditingPosition(position);
     setEditModalOpen(true);
   };
-  // okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
-  //   okved_field: `${position.okved_code}. ${position.okved_name}`,
-  //     qty: `${position.qty}, ${position.unit_name}`,
-  //       region: "Респ. Башкортостан",
-  console.log("dddd", data);
+
   return (
     <>
       {editingPosition ? (
@@ -112,6 +108,7 @@ const LotPositionsTable = ({ data: defaultData }) => {
           setOpen={setEditModalOpen}
           position={editingPosition}
           setData={setData}
+          addPositions={addPositions}
         />
       ) : null}
       <Table height={420} data={data} sortColumn="number" sortType="asc">
@@ -125,21 +122,9 @@ const LotPositionsTable = ({ data: defaultData }) => {
         </Column>
         <Column width={60}>
           <HeaderCell>Наименование</HeaderCell>
-          <Cell dataKey="label" onChange={handleChange} />
-        </Column>
-        <Column width={120}>
-          <HeaderCell>ОКПД 2</HeaderCell>
-          <Cell dataKey="okpd_field" onChange={handleChange} />
+          <Cell dataKey="name" onChange={handleChange} />
         </Column>
 
-        <Column width={120}>
-          <HeaderCell wordWrap="break-all">ОКВЭД 2</HeaderCell>
-          <Cell
-            dataKey="okved_field"
-            onChange={handleChange}
-            wordWrap="break-all"
-          />
-        </Column>
 
         <Column width={100}>
           <HeaderCell>Количество, Ед. изм.</HeaderCell>
@@ -152,6 +137,18 @@ const LotPositionsTable = ({ data: defaultData }) => {
         <Column width={100}>
           <HeaderCell>Сумма</HeaderCell>
           <EditableCell dataKey="amount" onChange={handleChange} />
+        </Column>
+        <Column width={120}>
+          <HeaderCell>ОКПД 2</HeaderCell>
+          <Cell dataKey="okpd_field" onChange={handleChange} />
+        </Column>
+        <Column width={120}>
+          <HeaderCell wordWrap="break-all">ОКВЭД 2</HeaderCell>
+          <Cell
+            dataKey="okved_field"
+            onChange={handleChange}
+            wordWrap="break-all"
+          />
         </Column>
         <Column width={100}>
           <HeaderCell wordWrap="break-all">Регион поставки</HeaderCell>

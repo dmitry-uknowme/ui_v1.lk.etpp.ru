@@ -230,7 +230,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     НДС
                   </td>
                   <td style={{ width: "50%" }}>
-                    {procedure?.lots[0].nds_type === 'NO_NDS' ? "Без НДС" : procedure?.lots[0].nds_type}
+                    {procedure?.lots[0].nds_type === 'NO_NDS' ? "Без НДС" : procedure?.lots[0].nds_type == "FIX_10" ? '10%' : procedure?.lots[0].nds_type === 'FIX_18' ? "18%" : procedure?.lots[0].nds_type === 'FIX_20%' ? '20%' : null}
                   </td>
                 </tr>
 

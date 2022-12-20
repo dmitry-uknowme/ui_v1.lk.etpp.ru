@@ -187,7 +187,6 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
     setFormGlobalValues((state) => ({
       ...state,
-
       name: formValue.lot_title,
       bidding_per_unit_amount: isBiddingPerUnitOption
         ? `${"RUB"} ${currency(parseFloat(formValue.lot_unit_start_price)).intValue
@@ -606,12 +605,22 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               purchasePlanPositionQuery.data?.positions?.length
                 ? purchasePlanPositionQuery.data.positions.map((position) => ({
                   ...position,
+                  okato: purchasePlanPositionQuery.data.okato,
                   okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
                   okved_field: `${position.okved_code}. ${position.okved_name}`,
-                  qty_count: `${position.qty}, ${position.unit_name}`,
+                  qty_count: `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"}`,
                 }))
                 : []
             }
+            // addPositions={(positions) => setFormGlobalValues(state => ({ ...state, lots: [{ ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}), },] }))}
+            addPositions={(positions) => setFormGlobalValues(state => ({
+              ...state, lots: [
+                {
+                  ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}),
+                  plan_positions: [...(state?.lots[0]?.plan_positions?.length ? state?.lots[0]?.plan_positions?.filter(pos => pos.id !== positions[0].id) : []), ...positions],
+                },
+              ],
+            }))}
             isLoading={purchasePlanPositionQuery.isLoading}
           />
         </Panel>

@@ -26,7 +26,6 @@ export interface ILotPosition {
   number: string;
   name?: string;
   item_id: string;
-  number: string;
   okato: string;
   okpd_code: string;
   okpd_name: string;
@@ -74,11 +73,14 @@ const Field = React.forwardRef((props, ref) => {
 
 const { ArrayType, NumberType, StringType } = Schema.Types;
 const model = Schema.Model({
-  //   unit_amount: NumberType("Поле должно быть числом").isRequired(
-  //     "Поле обязательно для заполнения"
-  //   ),
-  //   region_okato: StringType().isRequired("Поле обязательно для заполнения"),
-  //   address: StringType().isRequired("Поле обязательно для заполнения"),
+  unit_amount: NumberType("Поле должно быть числом").isRequired(
+    "Поле обязательно для заполнения"
+  ),
+  amount: NumberType("Поле должно быть числом").isRequired(
+    "Поле обязательно для заполнения"
+  ),
+  // region_okato: StringType().isRequired("Поле обязательно для заполнения"),
+  // address: StringType().isRequired("Поле обязательно для заполнения"),
 });
 
 const PositionEditModal: React.FC<PositionEditModalProps> = ({
@@ -86,6 +88,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
   setData,
   isOpen,
   setOpen,
+  addPositions
 }) => {
   const [formValue, setFormValue] = useState<ILotPosition>(position);
   const [formError, setFormError] = useState<ILotPosition>({});
@@ -101,7 +104,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
         if (!formValue.region_okato) {
           setFormValue((state) => ({
             ...state,
-            region_okato: regions[0]?.okato,
+            region_okato: position?.okato || regions[0]?.okato,
           }));
         }
       }
@@ -144,12 +147,14 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
       qty_count: `${position.qty}, ${position.unit_name}`,
     };
     if (newPosition) {
+      addPositions([{ id: position.id, amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`, name: newPosition.name, address: newPosition.region_address }])
       setData((state) => [
-        ...state.filter(
-          (pos) => parseFloat(pos.number) !== parseFloat(position.number)
+        ...state?.filter(
+          (pos) => pos.id !== position.id
         ),
         { ...newPosition, number: position.number },
       ]);
+      // setOpen(false)
     }
 
     console.log("pos", position);
@@ -247,12 +252,13 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
             data={
               regionsQuery?.data?.length
                 ? regionsQuery.data.map((region) => ({
-                    value: region.okato,
-                    label: region.nameWithType,
-                  }))
+                  value: region.okato,
+                  label: region.nameWithType,
+                }))
                 : []
             }
             loading={regionsQuery?.isLoading}
+            disabled
           />
           <Field
             label="Адрес"

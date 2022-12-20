@@ -170,7 +170,6 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         // ...formGlobalValues.lots,
         {
           ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}),
-          plan_positions: [],
           date_time: {
             start_bids: formatDate(
               formValue.start_acceipting_bids_date,
