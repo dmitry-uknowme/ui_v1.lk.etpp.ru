@@ -66,7 +66,7 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     options: [
       formGlobalValues?.bidding_per_unit && "reduction_ratio_option",
       formGlobalValues?.bidding_per_position_option &&
-      "bidding_per_position_option",
+        "bidding_per_position_option",
       formGlobalValues?.more_than_one_protocol && "protocols_count_more_option",
       formGlobalValues?.position_purchase && "bidding_per_position_option",
       "rnp_requirement_option",
@@ -124,12 +124,11 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       platform: "SECTION_223_FZ",
       contract_by_any_participant: true,
     }));
+    setFormGlobalServerData((state) => ({
+      ...state,
+      options: formValue.options,
+    }));
     if (isReductionRatioOption) {
-      // console.log(
-      //   "formvvv",
-      //   parseFloat(formValue.reduction_ratio_from),
-      //   parseFloat(formValue.reduction_ratio_to)
-      // );
       if (
         !formValue.reduction_ratio_from.trim().length ||
         !formValue.reduction_ratio_to.trim().length
@@ -196,12 +195,12 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           <Checkbox
             // value={"bidding_per_unit_option"}
             value={"reduction_ratio_option"}
-          // checked={
-          //   !!(
-          //     formValue.options.includes("bidding_per_unit_option") ||
-          //     formValue.options.includes("reduction_ratio_option")
-          //   )
-          // }
+            // checked={
+            //   !!(
+            //     formValue.options.includes("bidding_per_unit_option") ||
+            //     formValue.options.includes("reduction_ratio_option")
+            //   )
+            // }
           >
             Торги за единицу
           </Checkbox>

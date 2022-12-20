@@ -388,7 +388,6 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       lots: [
         {
           ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}),
-          positions: [],
         },
       ],
 
