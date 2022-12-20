@@ -14,6 +14,7 @@ import {
   Message,
   InputNumber,
 } from "rsuite";
+import CurrencyInput from "react-currency-masked-input";
 import React, { useContext, useEffect, useState } from "react";
 import currency from "currency.js";
 
@@ -72,25 +73,40 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const [isBtnLoader, setBtnLoader] = useState<boolean>(false);
   const isBiddingPerUnitOption = !!formGlobalValues?.bidding_per_unit;
   const serverProcedure = formGlobalServerData.procedure;
-  const [positionsTableData, setPositionsTableData] = useState([])
+  const [positionsTableData, setPositionsTableData] = useState([]);
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
-    lot_start_price: formGlobalValues?.original_price ? currency(parseDBAmount(formGlobalValues.original_price) / 100).toString() : "",
+    lot_start_price: formGlobalValues?.original_price
+      ? currency(
+          parseDBAmount(formGlobalValues.original_price) / 100
+        ).toString()
+      : "",
     lot_title:
       formGlobalValues?.name || formGlobalValues?.lots?.length
-        ? formGlobalValues.lots[0].name : "",
+        ? formGlobalValues.lots[0].name
+        : "",
     lot_currency: "RUB",
-    nds_type: formGlobalValues?.lots?.length ? formGlobalValues?.lots[0]?.nds_type : "NO_NDS",
+    nds_type:
+      formGlobalValues?.lots?.length && formGlobalValues?.lots[0]?.nds_type
+        ? formGlobalValues?.lots[0]?.nds_type
+        : "NO_NDS",
     provision_bid_type: formGlobalValues?.provision_bid?.methods?.length
       ? formGlobalValues?.provision_bid?.methods[0]
       : "WITHOUT_COLLATERAL",
     provision_bid_amount: formGlobalValues?.provision_bid?.amount
       ? currency(
-        parseDBAmount(formGlobalValues.provision_bid.amount) / 100
-      ).toString()
+          parseDBAmount(formGlobalValues.provision_bid.amount) / 100
+        ).toString()
       : "",
-    provision_bid_percent: formGlobalValues?.provision_bid?.amount && formGlobalValues?.original_price ? currency(parseDBAmount(formGlobalValues?.provision_bid?.amount) / 100).divide(currency(parseDBAmount(formGlobalValues.original_price) / 100)).multiply(100) : "",
+    provision_bid_percent: formGlobalValues?.provision_bid?.percent
+      ? formGlobalValues?.provision_bid?.percent
+      : formGlobalValues?.provision_bid?.amount &&
+        formGlobalValues?.original_price
+      ? ((parseDBAmount(formGlobalValues?.provision_bid?.amount) /
+        100) /
+        ((parseDBAmount(formGlobalValues.original_price) / 100)) * 100)
+      : "",
     provision_bid_methods: formGlobalValues?.provision_bid?.methods || [],
     provision_contract_type:
       formGlobalValues?.provision_contract?.is_specified === false
@@ -98,14 +114,21 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         : formGlobalValues?.provision_contract?.type || "NOT_SPECIFIED",
     provision_contract_amount: formGlobalValues?.provision_contract?.amount
       ? currency(
-        parseDBAmount(formGlobalValues.provision_contract.amount) / 100
-      ).toString()
+          parseDBAmount(formGlobalValues.provision_contract.amount) / 100
+        ).toString()
       : "",
-    provision_contract_percent: /* formGlobalValues?.provision_contract?.percent ? formGlobalValues?.provision_contract?.percent : formGlobalValues?.provision_contract?.amount && formGlobalValues?.original_price ? currency(parseDBAmount(formGlobalValues?.provision_contract?.amount) / 100).divide(currency(parseDBAmount(formGlobalValues.original_price) / 100)).multiply(100) : */ "",
+    provision_contract_percent: formGlobalValues?.provision_contract?.percent
+      ? formGlobalValues?.provision_contract?.percent
+      : formGlobalValues?.provision_contract?.amount &&
+        formGlobalValues?.original_price
+      ? parseDBAmount(formGlobalValues?.provision_contract?.amount) /
+        100 /
+        ((parseDBAmount(formGlobalValues.original_price) / 100) * 100)
+      : "",
     lot_unit_start_price: formGlobalValues?.bidding_per_unit_amount
       ? currency(
-        parseDBAmount(formGlobalValues.bidding_per_unit_amount) / 100
-      ).toString()
+          parseDBAmount(formGlobalValues.bidding_per_unit_amount) / 100
+        ).toString()
       : "",
     provision_bid_payment_return_deposit:
       formGlobalValues?.provision_bid?.payment_return_deposit ||
@@ -140,7 +163,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         planPositionId,
       });
       if (planPosition?.positions?.length) {
-        setPositionsTableData(planPosition.positions)
+        setPositionsTableData(planPosition.positions);
       }
       if (!formValue.lot_start_price) {
         setFormValue((state) => ({
@@ -157,13 +180,16 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       return planPosition;
     },
     {
-      refetchInterval: false, refetchIntervalInBackground: false, refetchOnWindowFocus: false
+      refetchInterval: false,
+      refetchIntervalInBackground: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
     }
   );
 
-  const biddingPerPositionOption = formGlobalServerData?.options?.includes("bidding_per_position_option") ?? false
-
-
+  const biddingPerPositionOption =
+    formGlobalServerData?.options?.includes("bidding_per_position_option") ??
+    false;
 
   const handleSubmit = () => {
     // setBtnLoader(true);
@@ -174,15 +200,33 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     const contractProvisionAmount = formValue.provision_contract_amount;
     const contractProvisionPercent = formValue.provision_contract_percent;
     if (biddingPerPositionOption) {
-      const defaultPlanPositions = positionsTableData
-      const positions = formGlobalValues?.lots[0]?.plan_positions
-      // if (positions?.length) return
-      const positionsSum = positions.reduce((acc, curr) => acc.add(curr.amount), currency(0))
-      if (positionsSum > currency(parseFloat(formValue.lot_start_price))) {
-        toaster.push(<Message type="error">Сумма позиций превышает НМЦ</Message>)
-        return
+      const defaultPlanPositions = positionsTableData;
+      const positions = formGlobalValues?.lots[0]?.plan_positions;
+      console.log("ppppp", positions);
+      if (!positions) {
+        toaster.push(
+          <Message type="error">
+            Не всем позициям проставлена цена за единицу
+          </Message>
+        );
+        return;
       }
-      console.log('summm ', positionsSum, currency(parseFloat(formValue.lot_start_price)))
+      const positionsSum = positions.reduce(
+        (acc, curr) => acc.add(currency(parseDBAmount(curr.amount) / 100)),
+        currency(0)
+      );
+      console.log(
+        "summm ",
+        positionsSum,
+        currency(parseFloat(formValue.lot_start_price))
+      );
+      if (positionsSum > currency(parseFloat(formValue.lot_start_price))) {
+        toaster.push(
+          <Message type="error">Сумма позиций превышает НМЦ лота</Message>
+        );
+        return;
+      }
+
       // if (defaultPlanPositions.length !== formGlobalValues?.lots[0]?.positions?.length) {
       //   toaster.push(<Message type='error'>Не всем позициям лота проставлена цена</Message>)
       //   return
@@ -203,8 +247,9 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       ...state,
       name: formValue.lot_title,
       bidding_per_unit_amount: isBiddingPerUnitOption
-        ? `${"RUB"} ${currency(parseFloat(formValue.lot_unit_start_price)).intValue
-        }`
+        ? `${"RUB"} ${
+            currency(parseFloat(formValue.lot_unit_start_price)).intValue
+          }`
         : null,
       provision_bid: {
         is_specified: isBidProvisionSpecified,
@@ -226,8 +271,9 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         amount:
           isContractProvisionSpecified && isContractProvisionFromStartPrice
             ? parseFloat(contractProvisionAmount)
-              ? `${"RUB"} ${currency(parseFloat(contractProvisionAmount)).intValue
-              }`
+              ? `${"RUB"} ${
+                  currency(parseFloat(contractProvisionAmount)).intValue
+                }`
               : "RUB 0"
             : null,
         percent:
@@ -238,14 +284,16 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         payment_return_deposit:
           formValue.provision_contract_payment_return_deposit,
       },
-      original_price: `${"RUB"} ${currency(parseFloat(formValue.lot_start_price)).intValue
-        }`,
+      original_price: `${"RUB"} ${
+        currency(parseFloat(formValue.lot_start_price)).intValue
+      }`,
       lots: [
         {
           ...(formGlobalValues?.lots?.length ? formGlobalValues?.lots[0] : {}),
           name: formValue.lot_title,
-          starting_price: `${"RUB"} ${currency(parseFloat(formValue.lot_start_price)).intValue
-            }`,
+          starting_price: `${"RUB"} ${
+            currency(parseFloat(formValue.lot_start_price)).intValue
+          }`,
           positions: isBiddingPerUnitOption ? [] : [],
           nds_type: formValue.nds_type,
         },
@@ -270,7 +318,8 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   useEffect(() => {
     if (isContractProvisionSpecified) {
-      const startPrice = currency(parseFloat(formValue.lot_start_price));
+      const startPrice = parseFloat(formValue.lot_start_price);
+      // const startPrice = currency(parseFloat(formValue.lot_start_price));
       const provisionContractPercent =
         parseFloat(formValue.provision_contract_percent) ?? null;
       const provisionContractDocs =
@@ -308,10 +357,12 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
       setFormValue((state) => ({
         ...state,
-        provision_contract_amount: startPrice
-          .multiply(provisionContractPercent)
-          .divide(100)
-          .toString(),
+        provision_contract_amount: parseFloat(
+          startPrice * (provisionContractPercent / 100)
+        ).toFixed(2),
+        // .multiply(provisionContractPercent)
+        // .divide(100)
+        // .toString(),
       }));
       // }
     }
@@ -325,7 +376,8 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   useEffect(() => {
     if (isBidProvisionSpecified) {
       if (isBidProvisionPercent || isBidProvisionByDocumentation) {
-        const startPrice = currency(parseFloat(formValue.lot_start_price));
+        const startPrice = parseFloat(formValue.lot_start_price);
+        // const startPrice = currency(parseFloat(formValue.lot_start_price));
         const provisionBidPercent =
           parseFloat(formValue.provision_bid_percent) ?? null;
         const provisionBidDocs = formValue.provision_bid_payment_return_deposit;
@@ -368,10 +420,14 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
         setFormValue((state) => ({
           ...state,
-          provision_bid_amount: startPrice
-            .multiply(provisionBidPercent)
-            .divide(100)
-            .toString(),
+          provision_bid_amount: parseFloat(
+            startPrice * (provisionBidPercent / 100)
+          ).toFixed(2),
+
+          // provision_bid_amount: startPrice
+          //   .multiply(provisionBidPercent)
+          //   .divide(100)
+          //   .toString(),
         }));
       }
     }
@@ -395,38 +451,11 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   useEffect(() => {
     if (formGlobalValues?.name) {
-      setFormValue(state => ({ ...state, lot_title: formGlobalValues.name }))
+      setFormValue((state) => ({ ...state, lot_title: formGlobalValues.name }));
     }
-  }, [formGlobalValues.name])
+  }, [formGlobalValues.name]);
 
-  // useEffect(() => {
-  //   setFormValue((state) => ({
-  //     ...state,
-  //     lot_start_price: formGlobalValues?.original_price
-  //       ? parseDBAmount(formGlobalValues.original_price).toString()
-  //       : state.lot_start_price,
-  //     provision_bid_amount: formGlobalValues?.provision_bid?.amount
-  //       ? parseDBAmount(formGlobalValues.provision_bid.amount).toString()
-  //       : state.provision_bid_amount,
-  //     provision_bid_is_specified: formGlobalValues?.provision_bid?.is_specified
-  //       ? formGlobalValues.provision_bid.is_specified
-  //       : state.provision_bid_is_specified,
-  //     provision_contract_amount: formGlobalValues?.provision_contract?.amount
-  //       ? parseDBAmount(formGlobalValues.provision_contract.amount).toString()
-  //       : state.provision_contract_amount,
-  //     provision_contract_type: formGlobalValues?.provision_contract?.type
-  //       ? formGlobalValues.provision_contract.type
-  //       : state.provision_contract_type,
-  //     // provision_bid_is_specified: formGlobalValues.provision_bid.is_specified,
-  //   }));
-  // }, [
-  //   formGlobalValues.provision_bid,
-  //   formGlobalValues.provision_contract,
-  //   formGlobalValues.original_price,
-  // ]);
-
-
-  console.log('table dataaa', positionsTableData)
+  console.log("table dataaa", positionsTableData);
   useEffect(() => {
     if (!Object.keys(formError).length) {
       setBtnLoader(false);
@@ -453,8 +482,12 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           <Field
             name="lot_start_price"
             label="Начальная (максимальная) цена"
+            className="rs-input"
             value={formValue.lot_start_price}
-            accepter={Input}
+            onChange={(e, value) =>
+              setFormValue((state) => ({ ...state, lot_start_price: value }))
+            }
+            accepter={CurrencyInput}
             error={formError.lot_start_price}
           />
           {isBiddingPerUnitOption ? (
@@ -554,7 +587,12 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 name="provision_bid_payment_return_deposit"
                 accepter={Input}
                 value={formValue.provision_bid_payment_return_deposit}
-                onChange={(value) => setFormValue(state => ({ ...state, provision_bid_payment_return_deposit: value }))}
+                onChange={(value) =>
+                  setFormValue((state) => ({
+                    ...state,
+                    provision_bid_payment_return_deposit: value,
+                  }))
+                }
                 as="textarea"
                 style={{ width: "100%" }}
               />
@@ -607,7 +645,12 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 accepter={Input}
                 value={formValue.provision_contract_payment_return_deposit}
                 error={formError.provision_contract_payment_return_deposit}
-                onChange={(value) => setFormValue(state => ({ ...state, provision_contract_payment_return_deposit: value }))}
+                onChange={(value) =>
+                  setFormValue((state) => ({
+                    ...state,
+                    provision_contract_payment_return_deposit: value,
+                  }))
+                }
                 as="textarea"
                 style={{ width: "100%" }}
               />
@@ -619,23 +662,37 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             data={
               positionsTableData?.length
                 ? positionsTableData.map((position) => ({
-                  ...position,
-                  okato: purchasePlanPositionQuery.data.okato,
-                  okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
-                  okved_field: `${position.okved_code}. ${position.okved_name}`,
-                  qty_count: `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"}`,
-                }))
+                    ...position,
+                    okato: purchasePlanPositionQuery.data.okato,
+                    okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
+                    okved_field: `${position.okved_code}. ${position.okved_name}`,
+                    qty_count: `${position.qty || "Не определено"}, ${
+                      position.unit_name || "Не определено"
+                    }`,
+                  }))
                 : []
             }
             // addPositions={(positions) => setFormGlobalValues(state => ({ ...state, lots: [{ ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}), },] }))}
-            addPositions={(positions) => setFormGlobalValues(state => ({
-              ...state, lots: [
-                {
-                  ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}),
-                  plan_positions: [...(state?.lots[0]?.plan_positions?.length ? state?.lots[0]?.plan_positions?.filter(pos => pos.id !== positions.id) : []), positions],
-                },
-              ],
-            }))}
+            addPositions={(positions) =>
+              setFormGlobalValues((state) => ({
+                ...state,
+                lots: [
+                  {
+                    ...(formGlobalValues?.lots?.length
+                      ? formGlobalValues.lots[0]
+                      : {}),
+                    plan_positions: [
+                      ...(state?.lots[0]?.plan_positions?.length
+                        ? state?.lots[0]?.plan_positions?.filter(
+                            (pos) => pos.id !== positions.id
+                          )
+                        : []),
+                      positions,
+                    ],
+                  },
+                ],
+              }))
+            }
             setPositionsTableData={setPositionsTableData}
             options={formGlobalServerData.options}
             isLoading={purchasePlanPositionQuery.isLoading}

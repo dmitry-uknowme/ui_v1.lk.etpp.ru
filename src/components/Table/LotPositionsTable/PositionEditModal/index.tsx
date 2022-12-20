@@ -12,6 +12,7 @@ import {
   SelectPicker,
   toaster,
 } from "rsuite";
+import CurrencyInput from "react-currency-masked-input";
 import fetchRegions from "../../../../services/api/fetchRegions";
 
 interface PositionEditModalProps {
@@ -73,9 +74,9 @@ const Field = React.forwardRef((props, ref) => {
 
 const { ArrayType, NumberType, StringType } = Schema.Types;
 const model = Schema.Model({
-  unit_amount: NumberType("Поле должно быть числом").isRequired(
-    "Поле обязательно для заполнения"
-  ),
+  // unit_amount: NumberType("Поле должно быть числом").isRequired(
+  //   "Поле обязательно для заполнения"
+  // ),
   // amount: NumberType("Поле должно быть числом").isRequired(
   //   "Поле обязательно для заполнения"
   // ),
@@ -88,7 +89,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
   setData,
   isOpen,
   setOpen,
-  addPositions
+  addPositions,
 }) => {
   const [formValue, setFormValue] = useState<ILotPosition>(position);
   const [formError, setFormError] = useState<ILotPosition>({});
@@ -110,7 +111,12 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
       }
       return regions;
     },
-    { refetchInterval: false, refetchOnMount: false, refetchIntervalInBackground: false, refetchOnWindowFocus: false }
+    {
+      refetchInterval: false,
+      refetchOnMount: false,
+      refetchIntervalInBackground: false,
+      refetchOnWindowFocus: false,
+    }
   );
 
   const handleSubmit = () => {
@@ -153,8 +159,13 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
         ),
         { ...newPosition, number: position.number },
       ]);
-      setOpen(false)
-      addPositions({ id: position.id, amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`, name: newPosition.name, address: newPosition.region_address })
+      setOpen(false);
+      addPositions({
+        id: position.id,
+        amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
+        name: newPosition.name,
+        address: newPosition.region_address,
+      });
     }
 
     console.log("pos", position);
@@ -233,8 +244,12 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
             placeholder="0.00"
             min={0}
             step={0.5}
+            className="rs-input"
             name="unit_amount"
-            accepter={InputNumber}
+            accepter={CurrencyInput}
+            onChange={(e, value) =>
+              setFormValue((state) => ({ ...state, unit_amount: value }))
+            }
             error={formError.unit_amount}
           />
           <Field
@@ -252,9 +267,9 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
             data={
               regionsQuery?.data?.length
                 ? regionsQuery.data.map((region) => ({
-                  value: region.okato,
-                  label: region.nameWithType,
-                }))
+                    value: region.okato,
+                    label: region.nameWithType,
+                  }))
                 : []
             }
             loading={regionsQuery?.isLoading}

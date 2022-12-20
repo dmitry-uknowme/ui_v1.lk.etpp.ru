@@ -13,6 +13,7 @@ specifiers:
   dinero.js: 2.0.0-alpha.11
   jquery: ^3.6.1
   react: ^18.2.0
+  react-currency-masked-input: ^2.5.0
   react-dom: ^18.2.0
   react-json-tree: ^0.17.0
   react-query: ^3.39.2
@@ -33,6 +34,7 @@ dependencies:
   dinero.js: 2.0.0-alpha.11
   jquery: 3.6.2
   react: 18.2.0
+  react-currency-masked-input: 2.5.0
   react-dom: 18.2.0_react@18.2.0
   react-json-tree: 0.17.0_kzbn2opkn2327fwg5yzwzya5o4
   react-query: 3.39.2_biqbaboplfbrettd7655fr4n2y
@@ -1131,6 +1133,13 @@ packages:
       lodash.curry: 4.1.1
     dev: false
 
+  /react-currency-masked-input/2.5.0:
+    resolution: {integrity: sha512-ezFGzc0fK/ncXxf1SUO7y5gvmrVXX/dI30MEP7l1SNlXJM52jqPU7eYe1qFZ8zDrgxyyFmAjN+jx6BLq6bLJ1g==}
+    dependencies:
+      prop-types: 15.8.1
+      react: 16.14.0
+    dev: false
+
   /react-dom/18.2.0_react@18.2.0:
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
     peerDependencies:
@@ -1231,6 +1240,15 @@ packages:
       memoize-one: 5.2.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+    dev: false
+
+  /react/16.14.0:
+    resolution: {integrity: sha512-0X2CImDkJGApiAlcf0ODKIneSwBPhqJawOa5wCtKbu7ZECrmS26NvtSILynQ66cgkT/RJ4LidJOc3bUESwmU8g==}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      loose-envify: 1.4.0
+      object-assign: 4.1.1
+      prop-types: 15.8.1
     dev: false
 
   /react/18.2.0:
