@@ -166,10 +166,11 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       provision_procurement_documentation,
       other_info_by_customer,
       lots: [
+
         // ...formGlobalValues.lots,
         {
           ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}),
-          //TODO:da
+          plan_positions: [],
           date_time: {
             start_bids: formatDate(
               formValue.start_acceipting_bids_date,

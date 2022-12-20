@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
-import { Message, toaster } from "rsuite";
+import { Loader, Message, toaster } from "rsuite";
 import { ProcedureFormActionVariants } from "../../pages/ProcedureForm";
 import fetchProcedure from "../../services/api/fetchProcedure";
 import fetchSession from "../../services/api/fetchSession";
@@ -220,20 +220,22 @@ const MultiStepFormContextProvider: React.FC<
   }, [formValues, serverData]);
 
   return (
-    <FormContext.Provider
-      value={{
-        formValues,
-        setFormValues,
-        formErrors,
-        setFormErrors,
-        serverData,
-        setServerData,
-        currentStepId,
-        setCurrentStepId,
-      }}
-    >
-      {children}
-    </FormContext.Provider>
+    <>
+      {isInited ? <FormContext.Provider
+        value={{
+          formValues,
+          setFormValues,
+          formErrors,
+          setFormErrors,
+          serverData,
+          setServerData,
+          currentStepId,
+          setCurrentStepId,
+        }}
+      >
+        {children}
+      </FormContext.Provider> : <Loader size="lg" />}
+    </>
   );
 };
 

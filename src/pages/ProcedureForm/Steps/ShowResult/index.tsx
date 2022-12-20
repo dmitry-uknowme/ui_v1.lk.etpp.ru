@@ -225,6 +225,14 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     </td>
                   </tr>
                 ) : null}
+                <tr>
+                  <td style={{ width: "50%" }}>
+                    НДС
+                  </td>
+                  <td style={{ width: "50%" }}>
+                    {procedure?.lots[0].nds_type === 'NO_NDS' ? "Без НДС" : procedure?.lots[0].nds_type}
+                  </td>
+                </tr>
 
                 {procedure?.reduction_factor_purchase ? (
                   <tr>
