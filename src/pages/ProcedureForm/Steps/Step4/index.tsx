@@ -175,6 +175,13 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     const contractProvisionPercent = formValue.provision_contract_percent;
     if (biddingPerPositionOption) {
       const defaultPlanPositions = positionsTableData
+      const positions = formGlobalValues?.lots[0]?.plan_positions
+      // if (positions?.length) return
+      const positionsSum = positions.reduce((acc, curr) => acc.add(curr.amount), currency(0))
+      if (positionsSum > currency(parseFloat(formValue.lot_start_price))) {
+        toaster.push(<Message type="error">Сумма позиций превышает НМЦ</Message>)
+      }
+      console.log('summm ', positionsSum, currency(parseFloat(formValue.lot_start_price)))
       // if (defaultPlanPositions.length !== formGlobalValues?.lots[0]?.positions?.length) {
       //   toaster.push(<Message type='error'>Не всем позициям лота проставлена цена</Message>)
       //   return
