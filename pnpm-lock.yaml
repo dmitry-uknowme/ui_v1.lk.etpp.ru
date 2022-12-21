@@ -32,15 +32,15 @@ dependencies:
   currency.js: 2.0.4
   date-fns: 2.29.3
   dinero.js: 2.0.0-alpha.11
-  jquery: 3.6.2
+  jquery: 3.6.3
   react: 18.2.0
   react-currency-masked-input: 2.5.0
   react-dom: 18.2.0_react@18.2.0
   react-json-tree: 0.17.0_kzbn2opkn2327fwg5yzwzya5o4
   react-query: 3.39.2_biqbaboplfbrettd7655fr4n2y
-  react-router-dom: 6.4.5_biqbaboplfbrettd7655fr4n2y
+  react-router-dom: 6.5.0_biqbaboplfbrettd7655fr4n2y
   react-text-mask: 5.5.0_react@18.2.0
-  rsuite: 5.23.2_biqbaboplfbrettd7655fr4n2y
+  rsuite: 5.23.3_biqbaboplfbrettd7655fr4n2y
   text-mask-addons: 3.8.0
 
 devDependencies:
@@ -89,7 +89,7 @@ packages:
       convert-source-map: 1.9.0
       debug: 4.3.4
       gensync: 1.0.0-beta.2
-      json5: 2.2.1
+      json5: 2.2.2
       semver: 6.3.0
     transitivePeerDependencies:
       - supports-color
@@ -402,8 +402,8 @@ packages:
     resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
     dev: false
 
-  /@remix-run/router/1.0.5:
-    resolution: {integrity: sha512-my0Mycd+jruq/1lQuO5LBB6WTlL/e8DTCYWp44DfMTDcXz8DcTlgF0ISaLsGewt+ctHN+yA8xMq3q/N7uWJPug==}
+  /@remix-run/router/1.1.0:
+    resolution: {integrity: sha512-rGl+jH/7x1KBCQScz9p54p0dtPLNeKGb3e0wD2H5/oZj41bwQUnXdzbj2TbUAFhvD7cp9EyEQA4dEgpUFa1O7Q==}
     engines: {node: '>=14'}
     dev: false
 
@@ -547,7 +547,7 @@ packages:
     dependencies:
       caniuse-lite: 1.0.30001439
       electron-to-chromium: 1.4.284
-      node-releases: 2.0.7
+      node-releases: 2.0.8
       update-browserslist-db: 1.0.10_browserslist@4.21.4
     dev: true
 
@@ -974,8 +974,8 @@ packages:
       has: 1.0.3
     dev: true
 
-  /jquery/3.6.2:
-    resolution: {integrity: sha512-/e7ulNIEEYk1Z/l4X0vpxGt+B/dNsV8ghOPAWZaJs8pkGvsSC0tm33aMGylXcj/U7y4IcvwtMXPMyBFZn/gK9A==}
+  /jquery/3.6.3:
+    resolution: {integrity: sha512-bZ5Sy3YzKo9Fyc8wH2iIQK4JImJ6R0GWI9kL1/k7Z91ZBNgkRXE6U0JfHIizZbort8ZunhSI3jw9I6253ahKfg==}
     dev: false
 
   /js-sha3/0.8.0:
@@ -991,8 +991,8 @@ packages:
     hasBin: true
     dev: true
 
-  /json5/2.2.1:
-    resolution: {integrity: sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==}
+  /json5/2.2.2:
+    resolution: {integrity: sha512-46Tk9JiOL2z7ytNQWFLpj99RZkVgeHf87yGQKsIkaPz1qSH9UczKH1rO7K3wgRselo0tYMUNfecYpm/p1vC7tQ==}
     engines: {node: '>=6'}
     hasBin: true
     dev: true
@@ -1068,8 +1068,8 @@ packages:
     hasBin: true
     dev: true
 
-  /node-releases/2.0.7:
-    resolution: {integrity: sha512-EJ3rzxL9pTWPjk5arA0s0dgXpnyiAbJDE6wHT62g7VsgrgQgmmZ+Ru++M1BFofncWja+Pnn3rEr3fieRySAdKQ==}
+  /node-releases/2.0.8:
+    resolution: {integrity: sha512-dFSmB8fFHEH/s81Xi+Y/15DQY6VHW81nXRj86EMSL3lmuTmK1e+aT4wrFCkTbm+gSwkw4KpX+rT/pMM2c1mF+A==}
     dev: true
 
   /object-assign/4.1.1:
@@ -1197,26 +1197,26 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /react-router-dom/6.4.5_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-a7HsgikBR0wNfroBHcZUCd9+mLRqZS8R5U1Z1mzLWxFXEkUT3vR1XXmSIVoVpxVX8Bar0nQYYYc9Yipq8dWwAA==}
+  /react-router-dom/6.5.0_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-/XzRc5fq80gW1ctiIGilyKFZC/j4kfe75uivMsTChFbkvrK4ZrF3P3cGIc1f/SSkQ4JiJozPrf+AwUHHWVehVg==}
     engines: {node: '>=14'}
     peerDependencies:
       react: '>=16.8'
       react-dom: '>=16.8'
     dependencies:
-      '@remix-run/router': 1.0.5
+      '@remix-run/router': 1.1.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      react-router: 6.4.5_react@18.2.0
+      react-router: 6.5.0_react@18.2.0
     dev: false
 
-  /react-router/6.4.5_react@18.2.0:
-    resolution: {integrity: sha512-1RQJ8bM70YEumHIlNUYc6mFfUDoWa5EgPDenK/fq0bxD8DYpQUi/S6Zoft+9DBrh2xmtg92N5HMAJgGWDhKJ5Q==}
+  /react-router/6.5.0_react@18.2.0:
+    resolution: {integrity: sha512-fqqUSU0NC0tSX0sZbyuxzuAzvGqbjiZItBQnyicWlOUmzhAU8YuLgRbaCL2hf3sJdtRy4LP/WBrWtARkMvdGPQ==}
     engines: {node: '>=14'}
     peerDependencies:
       react: '>=16.8'
     dependencies:
-      '@remix-run/router': 1.0.5
+      '@remix-run/router': 1.1.0
       react: 18.2.0
     dev: false
 
@@ -1309,8 +1309,8 @@ packages:
       react-is: 17.0.2
     dev: false
 
-  /rsuite/5.23.2_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-/ExSbYzhSU5gHupc3t15Sfw+1p2W0haCZJGgp13Y1b3n51lpZdGj4WwVijKfSy4BpXXkL/EUttynYxYPAZg2Dw==}
+  /rsuite/5.23.3_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-f8vj3tmRjDJhYyNNAmnh1/eFQmLXN0rsZX2rhzgUFSi9xcGsAhVzkw8jO60Gup3jYiEsBgzi9pBY7HjpQtII0A==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'

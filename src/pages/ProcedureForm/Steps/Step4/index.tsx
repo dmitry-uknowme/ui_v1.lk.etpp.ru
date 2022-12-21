@@ -79,8 +79,8 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const [formValue, setFormValue] = React.useState({
     lot_start_price: formGlobalValues?.original_price
       ? currency(
-          parseDBAmount(formGlobalValues.original_price) / 100
-        ).toString()
+        parseDBAmount(formGlobalValues.original_price) / 100
+      ).toString()
       : "",
     lot_title:
       formGlobalValues?.name || formGlobalValues?.lots?.length
@@ -94,41 +94,19 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     provision_bid_type: formGlobalValues?.provision_bid?.methods?.length
       ? formGlobalValues?.provision_bid?.methods[0]
       : "WITHOUT_COLLATERAL",
-    provision_bid_amount: formGlobalValues?.provision_bid?.amount
-      ? currency(
-          parseDBAmount(formGlobalValues.provision_bid.amount) / 100
-        ).toString()
-      : "",
-    provision_bid_percent: formGlobalValues?.provision_bid?.percent
-      ? formGlobalValues?.provision_bid?.percent
-      : formGlobalValues?.provision_bid?.amount &&
-        formGlobalValues?.original_price
-      ? ((parseDBAmount(formGlobalValues?.provision_bid?.amount) /
-        100) /
-        ((parseDBAmount(formGlobalValues.original_price) / 100)) * 100)
-      : "",
+    provision_bid_amount: formGlobalServerData?.provision_bid?.amount ? currency(parseDBAmount(formGlobalServerData?.provision_bid?.amount) / 100).toString() : "",
+    provision_bid_percent: formGlobalServerData?.provision_bid?.percent ? parseFloat(formGlobalServerData.provision_bid.percent).toFixed(2) : "",
     provision_bid_methods: formGlobalValues?.provision_bid?.methods || [],
     provision_contract_type:
       formGlobalValues?.provision_contract?.is_specified === false
         ? "NOT_SPECIFIED"
         : formGlobalValues?.provision_contract?.type || "NOT_SPECIFIED",
-    provision_contract_amount: formGlobalValues?.provision_contract?.amount
-      ? currency(
-          parseDBAmount(formGlobalValues.provision_contract.amount) / 100
-        ).toString()
-      : "",
-    provision_contract_percent: formGlobalValues?.provision_contract?.percent
-      ? formGlobalValues?.provision_contract?.percent
-      : formGlobalValues?.provision_contract?.amount &&
-        formGlobalValues?.original_price
-      ? parseDBAmount(formGlobalValues?.provision_contract?.amount) /
-        100 /
-        ((parseDBAmount(formGlobalValues.original_price) / 100) * 100)
-      : "",
+    provision_contract_amount: formGlobalServerData?.provision_contract?.amount ? currency(parseDBAmount(formGlobalServerData.provision_contract.amount) / 100).toString() : "",
+    provision_contract_percent: formGlobalServerData?.provision_contract?.percent ? parseFloat(formGlobalServerData.provision_contract.percent).toFixed(2) : "",
     lot_unit_start_price: formGlobalValues?.bidding_per_unit_amount
       ? currency(
-          parseDBAmount(formGlobalValues.bidding_per_unit_amount) / 100
-        ).toString()
+        parseDBAmount(formGlobalValues.bidding_per_unit_amount) / 100
+      ).toString()
       : "",
     provision_bid_payment_return_deposit:
       formGlobalValues?.provision_bid?.payment_return_deposit ||
@@ -243,13 +221,18 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       }
     }
 
+    setFormGlobalServerData(state => ({
+      ...state,
+      provision_bid: { amount: `RUB ${currency(parseFloat(formValue.provision_bid_amount)).intValue}`, percent: parseFloat(formValue.provision_bid_percent) },
+      provision_contract: { amount: `RUB ${currency(parseFloat(formValue.provision_contract_amount)).intValue}`, percent: parseFloat(formValue.provision_contract_percent) }
+    }))
+
     setFormGlobalValues((state) => ({
       ...state,
       name: formValue.lot_title,
       bidding_per_unit_amount: isBiddingPerUnitOption
-        ? `${"RUB"} ${
-            currency(parseFloat(formValue.lot_unit_start_price)).intValue
-          }`
+        ? `${"RUB"} ${currency(parseFloat(formValue.lot_unit_start_price)).intValue
+        }`
         : null,
       provision_bid: {
         is_specified: isBidProvisionSpecified,
@@ -271,9 +254,8 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         amount:
           isContractProvisionSpecified && isContractProvisionFromStartPrice
             ? parseFloat(contractProvisionAmount)
-              ? `${"RUB"} ${
-                  currency(parseFloat(contractProvisionAmount)).intValue
-                }`
+              ? `${"RUB"} ${currency(parseFloat(contractProvisionAmount)).intValue
+              }`
               : "RUB 0"
             : null,
         percent:
@@ -284,16 +266,14 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         payment_return_deposit:
           formValue.provision_contract_payment_return_deposit,
       },
-      original_price: `${"RUB"} ${
-        currency(parseFloat(formValue.lot_start_price)).intValue
-      }`,
+      original_price: `${"RUB"} ${currency(parseFloat(formValue.lot_start_price)).intValue
+        }`,
       lots: [
         {
           ...(formGlobalValues?.lots?.length ? formGlobalValues?.lots[0] : {}),
           name: formValue.lot_title,
-          starting_price: `${"RUB"} ${
-            currency(parseFloat(formValue.lot_start_price)).intValue
-          }`,
+          starting_price: `${"RUB"} ${currency(parseFloat(formValue.lot_start_price)).intValue
+            }`,
           positions: isBiddingPerUnitOption ? [] : [],
           nds_type: formValue.nds_type,
         },
@@ -662,14 +642,13 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             data={
               positionsTableData?.length
                 ? positionsTableData.map((position) => ({
-                    ...position,
-                    okato: purchasePlanPositionQuery.data.okato,
-                    okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
-                    okved_field: `${position.okved_code}. ${position.okved_name}`,
-                    qty_count: `${position.qty || "Не определено"}, ${
-                      position.unit_name || "Не определено"
+                  ...position,
+                  okato: purchasePlanPositionQuery.data.okato,
+                  okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
+                  okved_field: `${position.okved_code}. ${position.okved_name}`,
+                  qty_count: `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
                     }`,
-                  }))
+                }))
                 : []
             }
             // addPositions={(positions) => setFormGlobalValues(state => ({ ...state, lots: [{ ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}), },] }))}
@@ -684,8 +663,8 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                     plan_positions: [
                       ...(state?.lots[0]?.plan_positions?.length
                         ? state?.lots[0]?.plan_positions?.filter(
-                            (pos) => pos.id !== positions.id
-                          )
+                          (pos) => pos.id !== positions.id
+                        )
                         : []),
                       positions,
                     ],
