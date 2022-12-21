@@ -196,28 +196,30 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep, actionType }) 
     if (biddingPerPositionOption) {
       const defaultPlanPositions = positionsTableData;
       const positions = formGlobalValues?.lots[0]?.plan_positions;
-      if (!positions || positions?.length !== defaultPlanPositions?.length) {
-        toaster.push(
-          <Message type="error">
-            Не всем позициям проставлена цена за единицу
-          </Message>
+      if (actionType !== ProcedureFormActionVariants.EDIT) {
+        if (!positions || positions?.length !== defaultPlanPositions?.length) {
+          toaster.push(
+            <Message type="error">
+              Не всем позициям проставлена цена за единицу
+            </Message>
+          );
+          return;
+        }
+        const positionsSum = positions.reduce(
+          (acc, curr) => acc.add(currency(parseDBAmount(curr.amount) / 100)),
+          currency(0)
         );
-        return;
-      }
-      const positionsSum = positions.reduce(
-        (acc, curr) => acc.add(currency(parseDBAmount(curr.amount) / 100)),
-        currency(0)
-      );
-      console.log(
-        "summm ",
-        positionsSum,
-        currency(parseFloat(formValue.lot_start_price))
-      );
-      if (positionsSum > currency(parseFloat(formValue.lot_start_price))) {
-        toaster.push(
-          <Message type="error">Сумма позиций превышает НМЦ лота</Message>
+        console.log(
+          "summm ",
+          positionsSum,
+          currency(parseFloat(formValue.lot_start_price))
         );
-        return;
+        if (positionsSum > currency(parseFloat(formValue.lot_start_price))) {
+          toaster.push(
+            <Message type="error">Сумма позиций превышает НМЦ лота</Message>
+          );
+          return;
+        }
       }
 
       // if (defaultPlanPositions.length !== formGlobalValues?.lots[0]?.positions?.length) {
