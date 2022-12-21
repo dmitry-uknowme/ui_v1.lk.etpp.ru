@@ -699,10 +699,11 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                   positionsTableData?.map(
                     (position) => ({
                       ...position,
+                      okato: purchasePlanPositionQuery.data.okato,
                       okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
                       okved_field: `${position.okved_code}. ${position.okved_name}`,
-                      qty: `${position.qty}, ${position.unit_name}`,
-                      region: "Респ. Башкортостан",
+                      qty_count: `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
+                        }`,
                     })
                   )
                 }
