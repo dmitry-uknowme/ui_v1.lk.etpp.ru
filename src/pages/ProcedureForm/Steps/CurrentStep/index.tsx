@@ -68,6 +68,7 @@ const CurrentStep: React.FC<CurrentStepProps> = ({ action }) => {
       setCurrentStep={setCurrentStepId}
       nextStep={nextStep}
       prevStep={prevStep}
+      actionType={action}
     />
   );
 };

@@ -30,6 +30,8 @@ import { RUB } from "@dinero.js/currencies";
 import LotPositionsTable from "../../../../components/Table/LotPositionsTable";
 import Money, { parseCurrency, parseDBMoney } from "../../../../utils/money";
 import { parseDBAmount } from "../../../../utils/newMoney";
+import { ProcedureFormActionVariants } from "../..";
+import fetchLotPositions from "../../../../services/api/fetchLotPositions";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -62,7 +64,7 @@ const model = Schema.Model({
   lot_title: StringType().isRequired("Поле обязательно для заполнения"),
 });
 
-const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
+const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep, actionType }) => {
   const {
     formValues: formGlobalValues,
     setFormValues: setFormGlobalValues,
@@ -136,28 +138,38 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const purchasePlanPositionQuery = useQuery(
     ["purchasePlanPosition"],
     async () => {
-      const planPosition = await fetchPurchasePlanPosition({
-        planId,
-        planPositionId,
-      });
-      if (planPosition?.positions?.length) {
-        if (!positionsTableData?.length) {
-          setPositionsTableData(planPosition.positions);
+      const lotId = formGlobalServerData?.lotId ?? null
+      console.log('actttt', actionType)
+      if (actionType === ProcedureFormActionVariants.EDIT && lotId) {
+        const positions = await fetchLotPositions({ lotId })
+        if (positions?.length) {
+          return positions.map(pos => ({ ...pos, region: `${pos.region_name} ${pos.region_address}` }))
         }
       }
-      if (!formValue.lot_start_price) {
-        setFormValue((state) => ({
-          ...state,
-          lot_start_price: new Money(
-            planPosition.maximum_contract_price_from_budget.replaceAll(
-              parseCurrency(planPosition.maximum_contract_price_from_budget),
-              ""
-            ),
-            "RUB"
-          ).localeFormat(),
-        }));
+      else {
+        const planPosition = await fetchPurchasePlanPosition({
+          planId,
+          planPositionId,
+        });
+        if (planPosition?.positions?.length) {
+          if (!positionsTableData?.length) {
+            setPositionsTableData(planPosition.positions);
+          }
+        }
+        if (!formValue.lot_start_price) {
+          setFormValue((state) => ({
+            ...state,
+            lot_start_price: new Money(
+              planPosition.maximum_contract_price_from_budget.replaceAll(
+                parseCurrency(planPosition.maximum_contract_price_from_budget),
+                ""
+              ),
+              "RUB"
+            ).localeFormat(),
+          }));
+        }
+        return planPosition;
       }
-      return planPosition;
     },
     {
       refetchInterval: false,

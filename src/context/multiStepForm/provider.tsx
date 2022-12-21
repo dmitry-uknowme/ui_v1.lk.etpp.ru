@@ -176,6 +176,9 @@ const MultiStepFormContextProvider: React.FC<
         },
         lots: [
           {
+            nds_type: procedure.nds_type,
+            plan_positions: [],
+            positions: [],
             date_time: {
               start_bids: lot.start_bid_date,
               close_bids: lot.close_bid_date,
@@ -217,17 +220,18 @@ const MultiStepFormContextProvider: React.FC<
         provision_procurement_documentation:
           procedure.provision_procurement_documentation,
         bid_part: procedure.bid_part,
-        contract_by_any_participant: procedure.contract_by_any_participant,
+        contract_by_any_participant: true,
+        // contract_by_any_participant: procedure.contract_by_any_participant,
         contract_type: procedure.contract_type,
         currency: procedure.currency,
-        currency_rate: procedure.currency_rate,
+        currency_rate: 1,
+        // currency_rate: procedure.currency_rate,
         currency_rate_date: procedure.currency_rate_date,
         criteria_evaluation: null,
         count_participant_ranked_lower_than_first: null,
         is_rebidding: true,
-        nds_type: procedure.nds_type,
-        positions: [],
-        plan_positions: [],
+
+
         more_than_one_protocol: procedure.more_than_one_protocol,
         platform: procedure.platform_type,
         reduction_factor_purchase: procedure.reduction_factor_purchase,
