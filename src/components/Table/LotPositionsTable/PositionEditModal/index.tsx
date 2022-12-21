@@ -194,8 +194,8 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
         addPositions({
           id: newPosition.id,
           amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
-          name: newPosition.name,
-          address: newPosition.region_address,
+          name: newPosition?.name || null,
+          address: newPosition?.region_address || null,
         });
         setOpen(false);
 
