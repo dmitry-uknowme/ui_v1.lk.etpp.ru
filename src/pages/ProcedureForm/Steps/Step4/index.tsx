@@ -142,8 +142,10 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep, actionType }) 
       console.log('actttt', actionType)
       if (actionType === ProcedureFormActionVariants.EDIT && lotId) {
         const positions = await fetchLotPositions({ lotId })
+        console.log('positionssss', positions)
         if (positions?.length) {
-          return positions.map(pos => ({ ...pos, region: `${pos.region_name} ${pos.region_address}` }))
+          setPositionsTableData(positions);
+          // return { positions: positions.map(pos => ({ ...pos, region: `${pos.region_name} ${pos.region_address}` })) }
         }
       }
       else {
@@ -652,7 +654,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep, actionType }) 
               positionsTableData?.length
                 ? positionsTableData.map((position) => ({
                   ...position,
-                  okato: purchasePlanPositionQuery.data.okato,
+                  okato: position?.region_okato || purchasePlanPositionQuery?.data?.okato || null,
                   okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
                   okved_field: `${position.okved_code}. ${position.okved_name}`,
                   qty_count: `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"

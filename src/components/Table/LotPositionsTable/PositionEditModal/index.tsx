@@ -15,6 +15,8 @@ import {
 import CurrencyInput from "react-currency-masked-input";
 import fetchRegions from "../../../../services/api/fetchRegions";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
+import { ProcedureFormActionVariants } from "../../../../pages/ProcedureForm";
+import updateLotPosition from "../../../../services/api/updateLotPosition";
 
 interface PositionEditModalProps {
   position: ILotPosition;
@@ -93,6 +95,16 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
   addPositions,
   options
 }) => {
+  const {
+    formValues: formGlobalValues,
+    setFormValues: setFormGlobalValues,
+    serverData: formGlobalServerData,
+    setServerData: setFormGlobalServerData,
+  } = useContext(MultiStepFormContext);
+
+  const actionType = formGlobalServerData?.actionType
+  const lotId = formGlobalServerData?.lotId
+
 
   const biddingPerPositionOption = options?.includes("bidding_per_position_option") ?? false;
   const [formValue, setFormValue] = useState<ILotPosition>(position);
@@ -123,7 +135,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
     }
   );
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formRef.current.check()) {
       toaster.push(<Message type="error">Пожалуйста исправьте ошибки</Message>);
       document
@@ -164,13 +176,20 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
         ),
         { ...newPosition, number: position.number },
       ]);
-      setOpen(false);
-      addPositions({
-        id: newPosition.id,
-        amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
-        name: newPosition.name,
-        address: newPosition.region_address,
-      });
+      if (actionType === ProcedureFormActionVariants.EDIT) {
+        await updateLotPosition(lotId, { amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`, info: formValue.extra_info, region_address: formValue.address })
+        setOpen(false)
+      }
+      else {
+        addPositions({
+          id: newPosition.id,
+          amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
+          name: newPosition.name,
+          address: newPosition.region_address,
+        });
+        setOpen(false);
+
+      }
     }
 
   };
@@ -243,7 +262,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
             error={formError.qty}
             disabled
           />
-          <Field
+          {biddingPerPositionOption ? <><Field
             label="Цена за единицу"
             placeholder="0.00"
             min={0}
@@ -256,13 +275,14 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
             }
             error={formError.unit_amount}
           />
-          <Field
-            label="Итоговая цена"
-            name="amount"
-            accepter={InputNumber}
-            error={formError.amount}
-            disabled
-          />
+            <Field
+              label="Итоговая цена"
+              name="amount"
+              accepter={InputNumber}
+              error={formError.amount}
+              disabled
+            />
+          </> : null}
           <Field
             label="Регион поставки"
             name="region_okato"

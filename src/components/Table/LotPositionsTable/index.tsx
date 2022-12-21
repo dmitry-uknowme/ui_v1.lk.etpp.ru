@@ -108,7 +108,6 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
     "regions",
     async () => {
       const regions = await fetchRegions();
-      console.log('reggggss', regions)
       if (regions.length) {
         if (!currentRegionOkato) {
           setCurrentRegionOkato(regions[0]?.okato)
