@@ -401,7 +401,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         setFormValue((state) => ({
           ...state,
           provision_bid_amount: parseFloat(
-            startPrice * (provisionBidPercent / 100)
+            startPrice * provisionBidPercent / 100
           ).toFixed(2),
 
           // provision_bid_amount: startPrice
