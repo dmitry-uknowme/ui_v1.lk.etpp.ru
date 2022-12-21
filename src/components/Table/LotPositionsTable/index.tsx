@@ -119,8 +119,8 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
     {
       refetchInterval: false,
       // refetchOnMount: false,
-      refetchIntervalInBackground: false,
-      refetchOnWindowFocus: false,
+      // refetchIntervalInBackground: false,
+      // refetchOnWindowFocus: false,
     }
   );
 
@@ -190,22 +190,6 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
                 : []
             }
               loading={regionsQuery?.isLoading} disabled />
-            {/* <Field
-              label="Регион поставки"
-              name="region_okato"
-              accepter={SelectPicker}
-              error={formError.region_okato}
-              data={
-                regionsQuery?.data?.length
-                  ? regionsQuery.data.map((region) => ({
-                    value: region.okato,
-                    label: region.nameWithType,
-                  }))
-                  : []
-              }
-              loading={regionsQuery?.isLoading}
-              disabled
-            /> */}
           </Cell>
         </Column>
       </Table>

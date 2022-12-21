@@ -63,6 +63,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const customer = procedure?.customer;
 
   const lot = procedure?.lots?.length ? procedure?.lots[0] : null;
+  const positionsTableData = formGlobalServerData?.positionsTableData
   const dateTime = lot?.date_time;
 
   if (!procedureId || !noticeId || !lot) {
@@ -230,7 +231,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     НДС
                   </td>
                   <td style={{ width: "50%" }}>
-                    {procedure?.lots[0].nds_type === 'NO_NDS' ? "Без НДС" : procedure?.lots[0].nds_type == "FIX_10" ? '10%' : procedure?.lots[0].nds_type === 'FIX_18' ? "18%" : procedure?.lots[0].nds_type === 'FIX_20%' ? '20%' : procedure?.lots[0]?.nds_type}
+                    {procedure?.lots[0].nds_type === 'NO_NDS' ? "Без НДС" : procedure?.lots[0].nds_type == "FIX_10" ? '10%' : procedure?.lots[0].nds_type === 'FIX_18' ? "18%" : procedure?.lots[0].nds_type === 'FIX_20' ? '20%' : procedure?.lots[0]?.nds_type}
                   </td>
                 </tr>
 
@@ -693,18 +694,17 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
             </div>
             <Panel header="Перечень товаров, работ, услуг">
               <LotPositionsTable
+                activeStep={activeStep}
                 data={
-                  purchasePlanPositionQuery.data?.positions?.length
-                    ? purchasePlanPositionQuery.data.positions.map(
-                      (position) => ({
-                        ...position,
-                        okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
-                        okved_field: `${position.okved_code}. ${position.okved_name}`,
-                        qty: `${position.qty}, ${position.unit_name}`,
-                        region: "Респ. Башкортостан",
-                      })
-                    )
-                    : []
+                  positionsTableData?.map(
+                    (position) => ({
+                      ...position,
+                      okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
+                      okved_field: `${position.okved_code}. ${position.okved_name}`,
+                      qty: `${position.qty}, ${position.unit_name}`,
+                      region: "Респ. Башкортостан",
+                    })
+                  )
                 }
                 isLoading={purchasePlanPositionQuery.isLoading}
               />

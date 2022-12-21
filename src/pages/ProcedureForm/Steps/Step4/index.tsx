@@ -225,6 +225,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
     setFormGlobalServerData(state => ({
       ...state,
+      positionsTableData: positionsTableData,
       provision_bid: { amount: `RUB ${currency(parseFloat(formValue.provision_bid_amount)).intValue}`, percent: parseFloat(formValue.provision_bid_percent) },
       provision_contract: { amount: `RUB ${currency(parseFloat(formValue.provision_contract_amount)).intValue}`, percent: parseFloat(formValue.provision_contract_percent) }
     }))
@@ -649,7 +650,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 : []
             }
             // addPositions={(positions) => setFormGlobalValues(state => ({ ...state, lots: [{ ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}), },] }))}
-            addPositions={(positions) =>
+            addPositions={(positions) => {
               setFormGlobalValues((state) => ({
                 ...state,
                 lots: [
@@ -668,6 +669,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                   },
                 ],
               }))
+            }
             }
             setPositionsTableData={setPositionsTableData}
             options={formGlobalServerData.options}
