@@ -169,6 +169,7 @@ const MultiStepFormContextProvider: React.FC<
           legal_address: { index: customer.legal_address },
           fact_address: { index: customer.fact_address },
           additional_phone: customer.phone_extra_number,
+          // subject_type:""
         },
         lots: [
           {
@@ -212,6 +213,13 @@ const MultiStepFormContextProvider: React.FC<
         other_info_by_customer: procedure.other_info_by_customer,
         provision_procurement_documentation:
           procedure.provision_procurement_documentation,
+        bid_part: procedure.bid_part,
+        contract_by_any_participant: procedure.contract_by_any_participant,
+        contract_type: procedure.contract_type,
+        currency: procedure.currency,
+        currency_rate: procedure.currency_rate,
+        currency_rate_date: procedure.currency_rate_date,
+        criteria_evaluation: null,
       }));
       // setServerData(state => ({ ...state, procedureId: procedure.id }))
     }

@@ -169,7 +169,6 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
       });
     }
 
-    console.log("pos", position);
   };
 
   useEffect(() => {
