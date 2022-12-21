@@ -136,10 +136,10 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
         />
       ) : null}
       <Table height={420} data={data} >
-        <Column width={120}>
+        {activeStep > 3 ? null : <Column width={120}>
           <HeaderCell>Действия</HeaderCell>
           <ActionCell dataKey="id" onClick={openEditModal} />
-        </Column>
+        </Column>}
         <Column width={60}>
           <HeaderCell>№</HeaderCell>
           <Cell dataKey="number" onChange={handleChange} />
