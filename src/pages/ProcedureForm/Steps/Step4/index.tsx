@@ -141,7 +141,9 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         planPositionId,
       });
       if (planPosition?.positions?.length) {
-        setPositionsTableData(planPosition.positions);
+        if (!positionsTableData?.length) {
+          setPositionsTableData(planPosition.positions);
+        }
       }
       if (!formValue.lot_start_price) {
         setFormValue((state) => ({
@@ -161,7 +163,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       refetchInterval: false,
       refetchIntervalInBackground: false,
       refetchOnWindowFocus: false,
-      refetchOnMount: false,
+      // refetchOnMount: false,
     }
   );
 
