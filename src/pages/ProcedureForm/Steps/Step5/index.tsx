@@ -385,8 +385,11 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       }));
     }
     const finalData = {
-      ...(formGlobalValues?.plan_positions?.length ? { plan_positions: formGlobalValues?.plan_positions } : { plan_positions: [] }),
+
       lots: [
+        {
+          ...(formGlobalValues?.lots?.length && formGlobalValues?.lots[0]?.plan_positions?.length ? { plan_positions: formGlobalValues?.lots[0]?.plan_positions } : { plan_positions: [] }),
+        },
         {
           ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}),
         },
