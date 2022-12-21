@@ -142,9 +142,9 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep, actionType }) 
       console.log('actttt', actionType)
       if (actionType === ProcedureFormActionVariants.EDIT && lotId) {
         const positions = await fetchLotPositions({ lotId })
-        console.log('positionssss', positions)
+        // console.log('positionssss', positions.map(pos => ({ ...pos, amount: `${pos?.price?.currency} ${pos?.price?.amount}` })))
         if (positions?.length) {
-          setPositionsTableData(positions);
+          setPositionsTableData(positions.map(pos => ({ ...pos, amount: `${currency(parseDBAmount(pos?.price?.amount) / 100)}` })));
           // return { positions: positions.map(pos => ({ ...pos, region: `${pos.region_name} ${pos.region_address}` })) }
         }
       }
