@@ -176,7 +176,18 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
         { ...newPosition, number: position.number },
       ]);
       if (actionType === ProcedureFormActionVariants.EDIT) {
-        await updateLotPosition(position.id_legacy, { amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`, info: formValue.extra_info, region_address: formValue.address })
+        await updateLotPosition(position.id_legacy, {
+          amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
+          unit_price: `RUB ${currency(parseFloat(newPosition.unit_amount)).intValue}`,
+          info: formValue.extra_info,
+          region_address: newPosition.region_address,
+          unit_value: newPosition.unit_id,
+          okpd_code: newPosition.okpd_code,
+          okpd_name: newPosition.okpd_name,
+          okved_code: newPosition.okved_code,
+          okved_name: newPosition.okved_name,
+          qty: newPosition.qty
+        })
         setOpen(false)
       }
       else {
