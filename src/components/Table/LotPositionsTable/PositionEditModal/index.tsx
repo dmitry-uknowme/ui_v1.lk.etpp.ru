@@ -113,7 +113,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
     },
     {
       refetchInterval: false,
-      refetchOnMount: false,
+      // refetchOnMount: false,
       refetchIntervalInBackground: false,
       refetchOnWindowFocus: false,
     }
@@ -267,9 +267,9 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
             data={
               regionsQuery?.data?.length
                 ? regionsQuery.data.map((region) => ({
-                    value: region.okato,
-                    label: region.nameWithType,
-                  }))
+                  value: region.okato,
+                  label: region.nameWithType,
+                }))
                 : []
             }
             loading={regionsQuery?.isLoading}

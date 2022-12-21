@@ -121,6 +121,14 @@ const MultiStepFormContextProvider: React.FC<
       // console.log("ssssss", procedure, lot);
       setServerData((state) => ({
         ...state,
+        provision_bid: {
+          amount: `${provisionBid.amount.currency} ${provisionBid.amount.amount}`,
+          percent: provisionBid.percent,
+        },
+        provision_contract: {
+          amount: `${provisionContract.amount.currency} ${provisionContract.amount.amount}`,
+          percent: provisionContract.percent,
+        },
         actionType: actionType,
         procedureId: procedure.id,
       }));

@@ -238,13 +238,9 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         : null,
       provision_bid: {
         is_specified: isBidProvisionSpecified,
-        // is_specified: isBidProvisionSpecified,
         amount: parseFloat(bidProvisionAmount)
           ? `${"RUB"} ${currency(parseFloat(bidProvisionAmount)).intValue}`
           : "RUB 0",
-        // percent: parseFloat(bidProvisionPercent),
-        // percent: parseFloat(parseFloat(bidProvisionPercent).toFixed(2)),
-        // percent: bidProvisionPercent,
         methods: [formValue.provision_bid_type],
         payment_return_deposit: formValue.provision_bid_payment_return_deposit,
       },
@@ -264,7 +260,6 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           isContractProvisionSpecified && isContractProvisionFromContractPrice
             ? parseFloat(contractProvisionPercent)
             : null,
-        // percent: contractProvisionPercent,
         payment_return_deposit:
           formValue.provision_contract_payment_return_deposit,
       },

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { Button, Checkbox } from "rsuite";
+import { Button, Checkbox, SelectPicker } from "rsuite";
 import { Table, Toggle, TagPicker } from "rsuite";
 import EditIcon from "@rsuite/icons/Edit";
 import PositionEditModal from "./PositionEditModal";
 import { ProcedureFormActionVariants } from "../../../pages/ProcedureForm";
+import { useQuery } from "react-query";
+import fetchRegions from "../../../services/api/fetchRegions";
 
 const { Cell, HeaderCell, Column } = Table;
 const dataColumns = [
@@ -79,6 +81,7 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
   const [data, setData] = useState(defaultData);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [editingPosition, setEditingPosition] = useState<any>(null);
+  const [currentRegionOkato, setCurrentRegionOkato] = useState("")
   useEffect(() => {
     setData(defaultData);
   }, [defaultData]);
@@ -100,6 +103,26 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
     setEditingPosition(position);
     setEditModalOpen(true);
   };
+
+  const regionsQuery = useQuery(
+    "regions",
+    async () => {
+      const regions = await fetchRegions();
+      if (regions.length) {
+        if (!currentRegionOkato) {
+          setCurrentRegionOkato(regions[0]?.okato)
+        }
+
+      }
+      return regions;
+    },
+    {
+      refetchInterval: false,
+      // refetchOnMount: false,
+      refetchIntervalInBackground: false,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   return (
     <>
@@ -151,13 +174,39 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
             wordWrap="break-all"
           />
         </Column>
-        <Column width={100}>
+        <Column width={210}>
           <HeaderCell wordWrap="break-all">Регион поставки</HeaderCell>
-          <EditableCell
+          <Cell
             dataKey="region"
             onChange={handleChange}
             wordWrap="break-all"
-          />
+          >
+            <SelectPicker style={{ fontSize: "0.6rem" }} label="" value={data?.length ? data[0].okato : null} data={
+              regionsQuery?.data?.length
+                ? regionsQuery.data.map((region) => ({
+                  value: region.okato,
+                  label: region.nameWithType,
+                }))
+                : []
+            }
+              loading={regionsQuery?.isLoading} disabled />
+            {/* <Field
+              label="Регион поставки"
+              name="region_okato"
+              accepter={SelectPicker}
+              error={formError.region_okato}
+              data={
+                regionsQuery?.data?.length
+                  ? regionsQuery.data.map((region) => ({
+                    value: region.okato,
+                    label: region.nameWithType,
+                  }))
+                  : []
+              }
+              loading={regionsQuery?.isLoading}
+              disabled
+            /> */}
+          </Cell>
         </Column>
       </Table>
     </>
