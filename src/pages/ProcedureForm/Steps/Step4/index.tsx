@@ -239,8 +239,8 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep, actionType }) 
     setFormGlobalServerData(state => ({
       ...state,
       positionsTableData: positionsTableData,
-      provision_bid: { amount: `RUB ${currency(parseFloat(formValue.provision_bid_amount)).intValue}`, percent: parseFloat(formValue.provision_bid_percent) },
-      provision_contract: { amount: `RUB ${currency(parseFloat(formValue.provision_contract_amount)).intValue}`, percent: parseFloat(formValue.provision_contract_percent) }
+      provision_bid: { amount: `RUB ${currency(parseFloat(formValue.provision_bid_amount)).intValue}`, percent: parseFloat(bidProvisionPercent) },
+      provision_contract: { amount: `RUB ${currency(parseFloat(formValue.provision_contract_amount)).intValue}`, percent: parseFloat(contractProvisionPercent) }
     }))
 
     setFormGlobalValues((state) => ({
@@ -657,12 +657,11 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep, actionType }) 
                   okato: position?.region_okato || purchasePlanPositionQuery?.data?.okato || null,
                   okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
                   okved_field: `${position.okved_code}. ${position.okved_name}`,
-                  qty_count: `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
-                    }`,
+                  qty_count: `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"}`,
+                  region: `${position?.region || position?.region_name} , ${position?.region_address}`
                 }))
                 : []
             }
-            // addPositions={(positions) => setFormGlobalValues(state => ({ ...state, lots: [{ ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}), },] }))}
             addPositions={(positions) => {
               setFormGlobalValues((state) => ({
                 ...state,
