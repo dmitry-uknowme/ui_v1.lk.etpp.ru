@@ -48,7 +48,7 @@ const ActionCell = ({ rowData, dataKey, onClick, ...props }) => {
         {rowData.status === "EDIT" ? (
           "Сохранить"
         ) : (
-          <div className="d-flex flex-column justify-content-center">
+          <div className="d-flex flex-column justify-content-center" style={{ fontSize: "0.8rem" }}>
             <EditIcon style={{ display: "block", margin: "auto" }} />
             Редактировать
           </div>
@@ -108,6 +108,7 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
     "regions",
     async () => {
       const regions = await fetchRegions();
+      console.log('reggggss', regions)
       if (regions.length) {
         if (!currentRegionOkato) {
           setCurrentRegionOkato(regions[0]?.okato)
@@ -133,35 +134,35 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
           position={editingPosition}
           setData={setPositionsTableData}
           addPositions={addPositions}
+          options={options}
         />
       ) : null}
-      <Table height={420} data={data} >
+      <Table height={420} headerHeight={50} data={data} wordWrap="break-word" style={{ fontSize: "0.8rem" }}>
         {activeStep > 3 ? null : <Column width={120}>
-          <HeaderCell>Действия</HeaderCell>
+          <HeaderCell >Действия</HeaderCell>
           <ActionCell dataKey="id" onClick={openEditModal} />
         </Column>}
         <Column width={60}>
           <HeaderCell>№</HeaderCell>
           <Cell dataKey="number" onChange={handleChange} />
         </Column>
-        <Column width={60}>
+        <Column width={80}>
           <HeaderCell>Наименование</HeaderCell>
           <Cell dataKey="name" onChange={handleChange} />
         </Column>
-
-
         <Column width={100}>
           <HeaderCell>Количество, Ед. изм.</HeaderCell>
           <Cell dataKey="qty_count" onChange={handleChange} />
         </Column>
-        <Column width={100}>
-          <HeaderCell>Цена за единицу</HeaderCell>
-          <EditableCell dataKey="unit_amount" onChange={handleChange} />
-        </Column>
-        <Column width={100}>
-          <HeaderCell>Сумма</HeaderCell>
-          <EditableCell dataKey="amount" onChange={handleChange} />
-        </Column>
+        {biddingPerPositionOption ? <>
+          <Column width={100}>
+            <HeaderCell>Цена за единицу</HeaderCell>
+            <EditableCell dataKey="unit_amount" onChange={handleChange} />
+          </Column>
+          <Column width={100}>
+            <HeaderCell>Сумма</HeaderCell>
+            <EditableCell dataKey="amount" onChange={handleChange} />
+          </Column></> : null}
         <Column width={120}>
           <HeaderCell>ОКПД 2</HeaderCell>
           <Cell dataKey="okpd_field" onChange={handleChange} />

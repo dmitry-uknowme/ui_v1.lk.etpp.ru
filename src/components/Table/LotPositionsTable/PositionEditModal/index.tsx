@@ -1,5 +1,5 @@
 import currency from "currency.js";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import {
   Button,
@@ -14,6 +14,7 @@ import {
 } from "rsuite";
 import CurrencyInput from "react-currency-masked-input";
 import fetchRegions from "../../../../services/api/fetchRegions";
+import MultiStepFormContext from "../../../../context/multiStepForm/context";
 
 interface PositionEditModalProps {
   position: ILotPosition;
@@ -90,7 +91,10 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
   isOpen,
   setOpen,
   addPositions,
+  options
 }) => {
+
+  const biddingPerPositionOption = options?.includes("bidding_per_position_option") ?? false;
   const [formValue, setFormValue] = useState<ILotPosition>(position);
   const [formError, setFormError] = useState<ILotPosition>({});
   const formRef = React.useRef();

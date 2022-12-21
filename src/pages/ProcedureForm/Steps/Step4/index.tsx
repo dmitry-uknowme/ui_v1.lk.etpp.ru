@@ -182,8 +182,7 @@ const Step4 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     if (biddingPerPositionOption) {
       const defaultPlanPositions = positionsTableData;
       const positions = formGlobalValues?.lots[0]?.plan_positions;
-      console.log("ppppp", positions);
-      if (!positions) {
+      if (!positions || positions?.length !== defaultPlanPositions?.length) {
         toaster.push(
           <Message type="error">
             Не всем позициям проставлена цена за единицу

@@ -64,6 +64,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
 
   const lot = procedure?.lots?.length ? procedure?.lots[0] : null;
   const positionsTableData = formGlobalServerData?.positionsTableData
+  console.log('tableeee', positionsTableData)
   const dateTime = lot?.date_time;
 
   if (!procedureId || !noticeId || !lot) {
@@ -699,7 +700,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                   positionsTableData?.map(
                     (position) => ({
                       ...position,
-                      okato: purchasePlanPositionQuery.data.okato,
+                      okato: positionsTableData[0].region_okato,
                       okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
                       okved_field: `${position.okved_code}. ${position.okved_name}`,
                       qty_count: `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"

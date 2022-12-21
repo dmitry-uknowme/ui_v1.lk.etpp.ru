@@ -131,6 +131,8 @@ const MultiStepFormContextProvider: React.FC<
         },
         actionType: actionType,
         procedureId: procedure.id,
+        noticeId: procedure?.notices?.length ? procedure.notices[0].id : null,
+        lotId: procedure?.lots?.length ? procedure.lots[0].id : null,
       }));
       setFormValues((state) => ({
         ...state,
@@ -154,6 +156,7 @@ const MultiStepFormContextProvider: React.FC<
           legal_address: { index: organizer.legal_address },
           fact_address: { index: organizer.fact_address },
           additional_phone: organizer.phone_extra_number,
+          subject_type: "INDIVIDUAL_ENTREPRENEUR",
         },
         customer: {
           inn: customer.inn,
@@ -169,7 +172,7 @@ const MultiStepFormContextProvider: React.FC<
           legal_address: { index: customer.legal_address },
           fact_address: { index: customer.fact_address },
           additional_phone: customer.phone_extra_number,
-          // subject_type:""
+          subject_type: "INDIVIDUAL_ENTREPRENEUR",
         },
         lots: [
           {
@@ -220,6 +223,16 @@ const MultiStepFormContextProvider: React.FC<
         currency_rate: procedure.currency_rate,
         currency_rate_date: procedure.currency_rate_date,
         criteria_evaluation: null,
+        count_participant_ranked_lower_than_first: null,
+        is_rebidding: true,
+        nds_type: procedure.nds_type,
+        positions: [],
+        plan_positions: [],
+        more_than_one_protocol: procedure.more_than_one_protocol,
+        platform: procedure.platform_type,
+        reduction_factor_purchase: procedure.reduction_factor_purchase,
+        reduction_factor_purchase_from: procedure.reduction_factor_purchase_from,
+        reduction_factor_purchase_to: procedure.reduction_factor_purchase_to
       }));
       // setServerData(state => ({ ...state, procedureId: procedure.id }))
     }
