@@ -387,10 +387,11 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     const finalData = {
       lots: [
         {
-          ...(formGlobalValues?.lots?.length && formGlobalValues?.lots[0]?.plan_positions?.length ? { plan_positions: formGlobalValues?.lots[0]?.plan_positions } : { plan_positions: [] })
+          plan_positions: formGlobalValues?.lots?.length && formGlobalValues?.lots[0]?.plan_positions?.length ? formGlobalValues?.lots[0]?.plan_positions : []
         },
+        // ...(formGlobalValues?.lots?.length && formGlobalValues?.lots[0]?.plan_positions?.length ? { plan_positions: formGlobalValues?.lots[0]?.plan_positions } : { plan_positions: [] })
         {
-          ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}),
+          ...(formGlobalValues?.lots?.length ? { ...formGlobalValues?.lots[0], plan_positions: formGlobalValues?.lots[0]?.plan_positions?.length ? formGlobalValues?.lots[0]?.plan_positions : [] } : {}),
         },
       ],
       customer: {
