@@ -172,8 +172,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
     if (newPosition) {
       setData((state) => [
         ...state?.filter(
-          (pos) => parseInt(pos.number) !== parseInt(position.number)
-        ),
+          (pos) => pos.id !== position.id),
         { ...newPosition, number: position.number },
       ]);
       if (actionType === ProcedureFormActionVariants.EDIT) {
