@@ -6,13 +6,16 @@ import { CustomProvider } from "rsuite";
 import ru_RU from "rsuite/locales/ru_RU";
 import Money from "./utils/money";
 import App from "./App";
+import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "rsuite/dist/rsuite.min.css";
+import { ToastContainer } from "react-toastify";
 window.Money = Money;
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
+    <ToastContainer />
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
       <CustomProvider locale={ru_RU}>
