@@ -33,6 +33,7 @@ import { parseDBAmount } from "../../../../utils/newMoney";
 import { ProcedureFormActionVariants } from "../..";
 import fetchLotPositions from "../../../../services/api/fetchLotPositions";
 import { toast } from "react-toastify";
+import sendToast from "../../../../utils/sendToast";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -88,8 +89,8 @@ const Step4 = ({
   const [formValue, setFormValue] = React.useState({
     lot_start_price: formGlobalValues?.original_price
       ? currency(
-          parseDBAmount(formGlobalValues.original_price) / 100
-        ).toString()
+        parseDBAmount(formGlobalValues.original_price) / 100
+      ).toString()
       : "",
     lot_title:
       formGlobalValues?.name || formGlobalValues?.lots?.length
@@ -105,8 +106,8 @@ const Step4 = ({
       : "WITHOUT_COLLATERAL",
     provision_bid_amount: formGlobalServerData?.provision_bid?.amount
       ? currency(
-          parseDBAmount(formGlobalServerData?.provision_bid?.amount) / 100
-        ).toString()
+        parseDBAmount(formGlobalServerData?.provision_bid?.amount) / 100
+      ).toString()
       : "",
     provision_bid_percent: formGlobalServerData?.provision_bid?.percent
       ? parseFloat(formGlobalServerData.provision_bid.percent).toFixed(2)
@@ -118,8 +119,8 @@ const Step4 = ({
         : formGlobalValues?.provision_contract?.type || "NOT_SPECIFIED",
     provision_contract_amount: formGlobalServerData?.provision_contract?.amount
       ? currency(
-          parseDBAmount(formGlobalServerData.provision_contract.amount) / 100
-        ).toString()
+        parseDBAmount(formGlobalServerData.provision_contract.amount) / 100
+      ).toString()
       : "",
     provision_contract_percent: formGlobalServerData?.provision_contract
       ?.percent
@@ -127,8 +128,8 @@ const Step4 = ({
       : "",
     lot_unit_start_price: formGlobalValues?.bidding_per_unit_amount
       ? currency(
-          parseDBAmount(formGlobalValues.bidding_per_unit_amount) / 100
-        ).toString()
+        parseDBAmount(formGlobalValues.bidding_per_unit_amount) / 100
+      ).toString()
       : "",
     provision_bid_payment_return_deposit:
       formGlobalValues?.provision_bid?.payment_return_deposit ||
@@ -224,9 +225,7 @@ const Step4 = ({
       const positions = formGlobalValues?.lots[0]?.plan_positions;
       if (actionType !== ProcedureFormActionVariants.EDIT) {
         if (!positions || positions?.length !== defaultPlanPositions?.length) {
-          window.parent.toastr.error(
-            "Не всем позициям проставлена цена за единицу"
-          );
+          sendToast("error", "Не всем позициям проставлена цена за единицу")
           // toaster.push(
           //   <Message type="error">
           //     Не всем позициям проставлена цена за единицу
@@ -244,9 +243,10 @@ const Step4 = ({
           currency(parseFloat(formValue.lot_start_price))
         );
         if (positionsSum > currency(parseFloat(formValue.lot_start_price))) {
-          toaster.push(
-            <Message type="error">Сумма позиций превышает НМЦ лота</Message>
-          );
+          sendToast("error", "Сумма позиций превышает НМЦ лота")
+          // toaster.push(
+          //   <Message type="error">Сумма позиций превышает НМЦ лота</Message>
+          // );
           return;
         }
       }
@@ -271,15 +271,13 @@ const Step4 = ({
       ...state,
       positionsTableData: positionsTableData,
       provision_bid: {
-        amount: `RUB ${
-          currency(parseFloat(formValue.provision_bid_amount)).intValue
-        }`,
+        amount: `RUB ${currency(parseFloat(formValue.provision_bid_amount)).intValue
+          }`,
         percent: parseFloat(bidProvisionPercent),
       },
       provision_contract: {
-        amount: `RUB ${
-          currency(parseFloat(formValue.provision_contract_amount)).intValue
-        }`,
+        amount: `RUB ${currency(parseFloat(formValue.provision_contract_amount)).intValue
+          }`,
         percent: parseFloat(contractProvisionPercent),
       },
     }));
@@ -288,9 +286,8 @@ const Step4 = ({
       ...state,
       name: formValue.lot_title,
       bidding_per_unit_amount: isBiddingPerUnitOption
-        ? `${"RUB"} ${
-            currency(parseFloat(formValue.lot_unit_start_price)).intValue
-          }`
+        ? `${"RUB"} ${currency(parseFloat(formValue.lot_unit_start_price)).intValue
+        }`
         : null,
       provision_bid: {
         is_specified: isBidProvisionSpecified,
@@ -308,9 +305,8 @@ const Step4 = ({
         amount:
           isContractProvisionSpecified && isContractProvisionFromStartPrice
             ? parseFloat(contractProvisionAmount)
-              ? `${"RUB"} ${
-                  currency(parseFloat(contractProvisionAmount)).intValue
-                }`
+              ? `${"RUB"} ${currency(parseFloat(contractProvisionAmount)).intValue
+              }`
               : "RUB 0"
             : null,
         percent:
@@ -320,16 +316,14 @@ const Step4 = ({
         payment_return_deposit:
           formValue.provision_contract_payment_return_deposit,
       },
-      original_price: `${"RUB"} ${
-        currency(parseFloat(formValue.lot_start_price)).intValue
-      }`,
+      original_price: `${"RUB"} ${currency(parseFloat(formValue.lot_start_price)).intValue
+        }`,
       lots: [
         {
           ...(formGlobalValues?.lots?.length ? formGlobalValues?.lots[0] : {}),
           name: formValue.lot_title,
-          starting_price: `${"RUB"} ${
-            currency(parseFloat(formValue.lot_start_price)).intValue
-          }`,
+          starting_price: `${"RUB"} ${currency(parseFloat(formValue.lot_start_price)).intValue
+            }`,
           positions: isBiddingPerUnitOption ? [] : [],
           nds_type: formValue.nds_type,
         },
@@ -337,11 +331,12 @@ const Step4 = ({
     }));
 
     if (!formRef.current.check()) {
-      toaster.push(
-        <Message type="error">
-          Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг
-        </Message>
-      );
+      sendToast("error", "Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг")
+      // toaster.push(
+      //   <Message type="error">
+      //     Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг
+      //   </Message>
+      // );
       document
         .querySelector(".rs-form-group .rs-form-error-message")
         ?.parentNode?.parentNode?.scrollIntoView();
@@ -698,20 +693,18 @@ const Step4 = ({
             data={
               positionsTableData?.length
                 ? positionsTableData.map((position) => ({
-                    ...position,
-                    okato:
-                      position?.region_okato ||
-                      purchasePlanPositionQuery?.data?.okato ||
-                      null,
-                    okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
-                    okved_field: `${position.okved_code}. ${position.okved_name}`,
-                    qty_count: `${position.qty || "Не определено"}, ${
-                      position.unit_name || "Не определено"
+                  ...position,
+                  okato:
+                    position?.region_okato ||
+                    purchasePlanPositionQuery?.data?.okato ||
+                    null,
+                  okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
+                  okved_field: `${position.okved_code}. ${position.okved_name}`,
+                  qty_count: `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
                     }`,
-                    region: `${position?.region || position?.region_name} , ${
-                      position?.region_address
+                  region: `${position?.region || position?.region_name} , ${position?.region_address
                     }`,
-                  }))
+                }))
                 : []
             }
             addPositions={(positions) => {
@@ -725,8 +718,8 @@ const Step4 = ({
                     plan_positions: [
                       ...(state?.lots[0]?.plan_positions?.length
                         ? state?.lots[0]?.plan_positions?.filter(
-                            (pos) => pos.id !== positions.id
-                          )
+                          (pos) => pos.id !== positions.id
+                        )
                         : []),
                       positions,
                     ],

@@ -15,6 +15,7 @@ import PurchasePlanTable from "../../../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
 import fetchPurchasePlan from "../../../../services/api/fetchPurchasePlan";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
+import sendToast from "../../../../utils/sendToast";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -193,11 +194,12 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     }));
     // onNext();
     if (!formRef.current.check()) {
-      toaster.push(
-        <Message type="error">
-          Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг
-        </Message>
-      );
+      sendToast("error", "Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг")
+      // toaster.push(
+      //   <Message type="error">
+      //     Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг
+      //   </Message>
+      // );
       document
         .querySelector(".rs-form-group .rs-form-error-message")
         ?.parentNode?.parentNode?.scrollIntoView();

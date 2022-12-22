@@ -23,6 +23,7 @@ import fetchOrganizationEmployees from "../../../../services/api/fetchOrganizati
 import fetchOrganizationEmployee from "../../../../services/api/fetchOrganizationEmployee";
 import { ProcedureFormActionVariants } from "../..";
 import fetchProfile from "../../../../services/api/fetchProfile";
+import sendToast from "../../../../utils/sendToast";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -451,11 +452,17 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     };
 
     if (!formRef.current.check()) {
-      toaster.push(
-        <Message type="error">
-          Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг
-        </Message>
-      );
+      sendToast("error", "Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг")
+      // toaster.push(
+      //   <Message type="error">
+      //     Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг
+      //   </Message>
+      // );
+      // toaster.push(
+      //   <Message type="error">
+      //     Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг
+      //   </Message>
+      // );
       document
         .querySelector(".rs-form-group .rs-form-error-message")
         ?.parentNode?.parentNode?.scrollIntoView();
@@ -481,11 +488,13 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         procedureId,
         { ...finalData, ...formGlobalValues },
         (err) => {
-          toaster.push(
-            <Message type="error">
-              Ошибка при создании процедуры {JSON.stringify(err, null, 2)}
-            </Message>
-          );
+          sendToast("error", `Ошибка при обновлении процедуры ${JSON.stringify(err, null, 2)}`)
+          return
+          // toaster.push(
+          //   <Message type="error">
+          //     Ошибка при создании процедуры {JSON.stringify(err, null, 2)}
+          //   </Message>
+          // );
         }
       );
       if (procedureData) {
@@ -509,18 +518,22 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       const procedureData = await createProcedure(
         { ...finalData, ...formGlobalValues },
         (err) => {
-          toaster.push(
-            <Message type="error">
-              Ошибка при создании процедуры {JSON.stringify(err, null, 2)}
-            </Message>
-          );
+          sendToast("error", `Ошибка при создании процедуры ${JSON.stringify(err, null, 2)}`)
+          return
+          // toaster.push(
+          //   <Message type="error">
+          //     Ошибка при создании процедуры {JSON.stringify(err, null, 2)}
+          //   </Message>
+          // );
         }
       );
       if (procedureData) {
         console.log("created procedureeeeee", procedureData.procedure);
-        toaster.push(
-          <Message type="success">Извещение успешно создано</Message>
-        );
+        sendToast("success", "Извещение успешно создано")
+
+        // toaster.push(
+        //   <Message type="success">Извещение успешно создано</Message>
+        // );
         const noticeId = procedureData.notice_id;
         const procedureId = procedureData.procedure.guid.value;
         const procedureNumber = procedureData.procedure.id;

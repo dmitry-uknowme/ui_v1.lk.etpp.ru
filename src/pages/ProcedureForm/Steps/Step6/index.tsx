@@ -28,6 +28,7 @@ import uploadNoticeDocuments from "../../../../services/api/uploadNoticeDocument
 import { API_V1_URL, LK_URL } from "../../../../services/api";
 import fetchNoticeDocuments from "../../../../services/api/fetchNoticeDocuments";
 import sendSignedDocuments from "../../../../services/api/sendSignedDocument";
+import sendToast from "../../../../utils/sendToast";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -73,7 +74,8 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const procedure = formGlobalServerData.procedure;
   const cert_thumbprint = formGlobalServerData.session?.cert_thumbprint;
   if (!procedure) {
-    toaster.push(<Message type="error">Извещение не создано</Message>);
+    sendToast("error", "Извещение не создано")
+    // toaster.push(<Message type="error">Извещение не создано</Message>);
     return prevStep();
   }
   const procedureId = procedure?.guid?.value;
@@ -114,15 +116,16 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         ),
       ]);
 
-      return toaster.push(
-        <Message type="success">Документ успешно подписан</Message>
-      );
+      sendToast("success", "Документ успешно подписан")      // return toaster.push(
+      //   <Message type="success">Документ успешно подписан</Message>
+      // );
     } catch (err) {
-      return toaster.push(
-        <Message type="error">
-          Ошибка при подписании документа {JSON.stringify(err)}
-        </Message>
-      );
+      sendToast("error", `Ошибка при подписании документа ${JSON.stringify(err)}`)
+      // return toaster.push(
+      //   <Message type="error">
+      //     Ошибка при подписании документа {JSON.stringify(err)}
+      //   </Message>
+      // );
     }
   };
 
@@ -136,9 +139,10 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       );
       setDocuments((state) => state.filter((doc) => doc.id !== documentId));
     } catch (err) {
-      toaster.push(
-        <Message type="error">Ошибка при удалении документа</Message>
-      );
+      sendToast("error", "Ошибка при удалении документа")
+      // toaster.push(
+      //   <Message type="error">Ошибка при удалении документа</Message>
+      // );
     }
   };
   // const allDocumentsSigned = !!documents.filter(
@@ -151,15 +155,19 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       documents.filter((doc) => doc.status === "STATUS_SIGNED").length ===
       documents.length;
     if (!isDocumentsExists) {
-      return toaster.push(
-        <Message type="error">Не загружен документ извещения</Message>
-      );
+      sendToast("error", "Не загружен документ извещения")
+      return
+      // return toaster.push(
+      //   <Message type="error">Не загружен документ извещения</Message>
+      // );
     }
 
     if (!isAllDocumentsSigned) {
-      return toaster.push(
-        <Message type="error">Подписаны не все документы извещения</Message>
-      );
+      sendToast("error", "Подписаны не все документы извещения")
+      return
+      // return toaster.push(
+      //   <Message type="error">Подписаны не все документы извещения</Message>
+      // );
     }
 
     nextStep();
@@ -303,11 +311,17 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                       selectedDocuments.map((doc) => signDocument(doc))
                     );
                   } catch (err) {
-                    toaster.push(
-                      <Message type="error">
-                        Ошибка при подписании документов
-                      </Message>
-                    );
+                    sendToast("error", "Ошибка при подписании документов")
+                    // toaster.push(
+                    //   <Message type="error">
+                    //     Ошибка при подписании документов
+                    //   </Message>
+                    // );
+                    // toaster.push(
+                    //   <Message type="error">
+                    //     Ошибка при подписании документов
+                    //   </Message>
+                    // );
                   } finally {
                     setSignLoader(false);
                   }
@@ -327,11 +341,12 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                       selectedDocuments.map((doc) => removeDocument(doc))
                     );
                   } catch (err) {
-                    toaster.push(
-                      <Message type="error">
-                        Ошибка при удалении документов
-                      </Message>
-                    );
+                    sendToast("error", "Ошибка при удалении документов")
+                    // toaster.push(
+                    //   <Message type="error">
+                    //     Ошибка при удалении документов
+                    //   </Message>
+                    // );
                   } finally {
                     setRemoveLoader(false);
                   }
@@ -387,9 +402,11 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 setDocuments(data.files);
                 setFileList([]);
               } catch (err) {
-                return toaster.push(
-                  <Message type="error">Ошибка при загрузке документа</Message>
-                );
+                sendToast("error", "Ошибка при загрузке документа")
+                return
+                // return toaster.push(
+                //   <Message type="error">Ошибка при загрузке документа</Message>
+                // );
               }
             }}
             draggable

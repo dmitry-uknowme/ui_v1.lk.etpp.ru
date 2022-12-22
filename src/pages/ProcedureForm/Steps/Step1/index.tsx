@@ -25,6 +25,7 @@ import FormContext from "../../../../context/multiStepForm/context";
 import createProcedureViaPurchasePlan from "../../../../services/api/createProcedureViaPurchasePlan";
 import Money, { parseCurrency } from "../../../../utils/money";
 import { ProcedureFormActionVariants } from "../..";
+import sendToast from "../../../../utils/sendToast";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -149,9 +150,11 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     const session = formGlobalServerData.session;
 
     if (!session) {
-      return toaster.push(
-        <Message type="error">Пользователь не авторизован</Message>
-      );
+      sendToast('error', "Пользователь не авторизован")
+      return
+      // return toaster.push(
+      //   <Message type="error">Пользователь не авторизован</Message>
+      // );
     }
     const profileId = session.profile_id;
 
@@ -173,9 +176,11 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     }));
 
     if (!planPositionId) {
-      return toaster.push(
-        <Message type="error">Вы не выбрали позицию из плана закупок</Message>
-      );
+      sendToast("error", "Вы не выбрали позицию из плана закупок")
+      return
+      // return toaster.push(
+      //   <Message type="error">Вы не выбрали позицию из плана закупок</Message>
+      // );
     }
 
     // const procedure = await createProcedureViaPurchasePlan(
@@ -212,6 +217,8 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       }));
     }
   }, [selectedPlanPositions]);
+
+
 
   return (
     <div className="col-md-12">
@@ -276,9 +283,9 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               data={
                 purchasePlansQuery?.data?.length
                   ? purchasePlansQuery.data.map((plan) => ({
-                      value: plan.id,
-                      label: `План закупки №${plan.registration_number} (${plan.reporting_year})`,
-                    }))
+                    value: plan.id,
+                    label: `План закупки №${plan.registration_number} (${plan.reporting_year})`,
+                  }))
                   : []
               }
               loading={purchasePlansQuery.isLoading}
@@ -294,23 +301,23 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                   ...position,
                   maximum_contract_price: position.maximum_contract_price
                     ? new Money(
-                        parseInt(
-                          position.maximum_contract_price.replaceAll(
-                            parseCurrency(position.maximum_contract_price),
-                            ""
-                          )
-                        ),
-                        parseCurrency(position.maximum_contract_price)
-                      ).localeFormat({ style: "currency" })
+                      parseInt(
+                        position.maximum_contract_price.replaceAll(
+                          parseCurrency(position.maximum_contract_price),
+                          ""
+                        )
+                      ),
+                      parseCurrency(position.maximum_contract_price)
+                    ).localeFormat({ style: "currency" })
                     : "Не предусмотрено",
                   status_localized:
                     position.status === "STATUS_WAIT"
                       ? "Формируется"
                       : position.status === "STATUS_POSTED"
-                      ? "Размещена"
-                      : position.status === "STATUS_ANNULLED"
-                      ? "Аннулирована"
-                      : "Редактируется",
+                        ? "Размещена"
+                        : position.status === "STATUS_ANNULLED"
+                          ? "Аннулирована"
+                          : "Редактируется",
                 }))
                 .reverse()}
               isLoading={purchasePlanQuery?.isLoading}

@@ -22,6 +22,7 @@ import {
 } from "rsuite";
 import React, { useContext, useEffect, useState } from "react";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
+import sendToast from "../../../../utils/sendToast";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -66,7 +67,7 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     options: [
       formGlobalValues?.bidding_per_unit && "reduction_ratio_option",
       formGlobalValues?.bidding_per_position_option &&
-        "bidding_per_position_option",
+      "bidding_per_position_option",
       formGlobalValues?.more_than_one_protocol && "protocols_count_more_option",
       formGlobalValues?.position_purchase && "bidding_per_position_option",
       "rnp_requirement_option",
@@ -133,11 +134,12 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         !formValue.reduction_ratio_from.trim().length ||
         !formValue.reduction_ratio_to.trim().length
       ) {
-        return toaster.push(
-          <Message type="error">
-            Вы не ввели диапазон коэффициента снижения
-          </Message>
-        );
+        sendToast("error", "Вы не ввели диапазон коэффициента снижения")
+        // return toaster.push(
+        //   <Message type="error">
+        //     Вы не ввели диапазон коэффициента снижения
+        //   </Message>
+        // );
       }
     }
     nextStep();
@@ -195,12 +197,12 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           <Checkbox
             // value={"bidding_per_unit_option"}
             value={"reduction_ratio_option"}
-            // checked={
-            //   !!(
-            //     formValue.options.includes("bidding_per_unit_option") ||
-            //     formValue.options.includes("reduction_ratio_option")
-            //   )
-            // }
+          // checked={
+          //   !!(
+          //     formValue.options.includes("bidding_per_unit_option") ||
+          //     formValue.options.includes("reduction_ratio_option")
+          //   )
+          // }
           >
             Торги за единицу
           </Checkbox>

@@ -144,7 +144,7 @@ const MultiStepFormContextProvider: React.FC<
           : null,
         organizer: {
           inn: organizer.inn,
-          short_title: organizer.inn,
+          short_title: organizer.short_title,
           full_title: organizer.full_title,
           phone: organizer.phone_number,
           email: organizer.email,
