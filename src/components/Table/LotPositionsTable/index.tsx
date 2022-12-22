@@ -177,7 +177,7 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
           />
         </Column>
         <Column width={210}>
-          <HeaderCell wordWrap="break-all">Регион поставки</HeaderCell>
+          <HeaderCell wordWrap="break-all">Место поставки</HeaderCell>
           <Cell
             dataKey="region"
             onChange={handleChange}
