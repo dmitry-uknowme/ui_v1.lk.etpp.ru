@@ -210,10 +210,10 @@ const MultiStepFormContextProvider: React.FC<
           payment_return_deposit: null,
         },
         provision_contract: {
-          amount: `${provisionContract.amount.currency} ${provisionContract.amount.amount}`,
+          amount: provisionContract?.is_specified && provisionContract?.type === 'FROM_START_PRICE' ? `${provisionContract.amount.currency} ${provisionContract.amount.amount}` : null,
           is_specified: provisionContract.is_specified,
           // methods: provisionContract.methods,
-          percent: provisionContract.percent,
+          percent: provisionContract?.is_specified && provisionContract?.type === 'FROM_CONTRACT_PRICE' ? provisionContract.percent : null,
           type: provisionContract.type,
           payment_return_deposit: null,
         },

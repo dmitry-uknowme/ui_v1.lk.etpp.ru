@@ -63,7 +63,6 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const [formValue, setFormValue] = React.useState({
     accepting_bids_place: "ON_ETP",
     contract_conclude_type: formGlobalValues?.contract_type || "ON_SITE",
-    //TODO:options parser
     options: [
       formGlobalValues?.bidding_per_unit && "reduction_ratio_option",
       formGlobalValues?.bidding_per_position_option &&
