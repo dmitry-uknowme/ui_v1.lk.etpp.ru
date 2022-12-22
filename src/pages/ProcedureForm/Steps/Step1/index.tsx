@@ -72,7 +72,6 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     procedure_title: formGlobalValues?.name || "",
     procedure_section: "SECTION_FZ_223",
     procedure_method: "AUCTION",
-    //TODO:options parser
     options: [
       formGlobalValues?.requirement_not_rnp
         ? "rnp_requirement_option"

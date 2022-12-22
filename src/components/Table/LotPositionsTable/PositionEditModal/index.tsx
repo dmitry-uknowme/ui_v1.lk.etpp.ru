@@ -85,7 +85,8 @@ const model = Schema.Model({
   //   "Поле обязательно для заполнения"
   // ),
   // region_okato: StringType().isRequired("Поле обязательно для заполнения"),
-  // address: StringType().isRequired("Поле обязательно для заполнения"),
+  address: StringType().isRequired("Поле обязательно для заполнения"),
+  name: StringType().isRequired("Поле обязательно для заполнения"),
 });
 
 const PositionEditModal: React.FC<PositionEditModalProps> = ({
