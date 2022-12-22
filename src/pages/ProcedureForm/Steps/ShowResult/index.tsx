@@ -190,9 +190,9 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
 
   useEffect(() => {
     initDocuments();
-    if (formGlobalServerData?.positionsTableData?.length && !positionsTableData.length) {
-      setPositionsTableData(formGlobalServerData.positionsTableData)
-    }
+    // if (formGlobalServerData?.positionsTableData?.length && !positionsTableData.length) {
+    //   setPositionsTableData(formGlobalServerData.positionsTableData)
+    // }
   }, []);
   return (
     <div>
