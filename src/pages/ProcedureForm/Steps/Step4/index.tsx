@@ -701,9 +701,10 @@ const Step4 = ({
                   okved_field: `${position.okved_code}. ${position.okved_name} `,
                   qty_count: position?.qty_count ? position.qty_count : `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
                     } `,
-                  region: `${position?.region || position?.region_name} , ${position?.region_address
-                    } `
-                  ,
+                  region: position?.region_address && (position?.region || position?.region_name) ? `${position?.region || position?.region_name} , ${position?.region_address}` : position.region_address,
+                  // full_region: `${position?.region || position?.region_name} , ${position?.region_address
+                  //   } `
+                  // ,
                   address: position?.region_address
                 }))
                 : []

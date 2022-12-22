@@ -51,7 +51,10 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const [documents, setDocuments] = useState([]);
   const [isBtnLoader, setBtnLoader] = useState<boolean>(false);
   const navigate = useNavigate();
-  const [positionsTableData, setPositionsTableData] = useState(formGlobalServerData?.positionsTableData?.length ? formGlobalServerData.positionsTableData : []);
+  const [positionsTableData, setPositionsTableData] = useState(formGlobalServerData?.positionsTableData?.length ? formGlobalServerData.positionsTableData.map((pos) => ({
+    ...pos,
+    amount: `${currency(parseDBAmount(pos?.price?.amount) / 100)}`,
+  })) : []);
   // console.log("procccccc 7", formGlobalValues);
   const procedureId = formGlobalServerData?.procedureId;
   const procedureNumber = formGlobalServerData?.procedureNumber;
@@ -68,8 +71,6 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const customer = procedure?.customer;
 
   const lot = procedure?.lots?.length ? procedure?.lots[0] : null;
-
-  // const positionsTableData = formGlobalServerData?.positionsTableData
 
   console.log('tableeee', positionsTableData)
   const dateTime = lot?.date_time;

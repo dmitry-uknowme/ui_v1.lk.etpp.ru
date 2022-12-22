@@ -116,7 +116,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
   const handleClose = () => setOpen(false);
 
   const regionsQuery = useQuery(
-    "regions",
+    "regions2",
     async () => {
       const regions = await fetchRegions();
       if (regions.length) {
@@ -124,18 +124,27 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
           setFormValue((state) => ({
             ...state,
             region_okato: position?.okato || regions[0]?.okato,
+            region_name: regions.find(reg => reg.okato === position?.okato || regions[0]?.okato).nameWithType
           }));
         }
       }
       return regions;
     },
     {
-      refetchInterval: false,
+      // refetchInterval: false,
       // refetchOnMount: false,
-      refetchIntervalInBackground: false,
-      refetchOnWindowFocus: false,
+      // refetchIntervalInBackground: false,
+      // refetchOnWindowFocus: false,
     }
   );
+
+  // useEffect(() => {
+  //   console.log('regggggg', regionsQuery.data)
+  //   if (regionsQuery?.data?.length) {
+
+  //     setFormValue(state => ({ ...state, region_name: regionsQuery.data.find(reg => reg.okato === formValue.region_okato).nameWithType }))
+  //   }
+  // }, [formValue])
 
   const handleSubmit = async () => {
     if (!formRef.current.check()) {
@@ -163,8 +172,9 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
       okved_code: formValue.okved_code,
       okved_field: `${formValue.okved_code}. ${formValue.okved_name}`,
       region_name: formValue.region_name,
-      region: formValue.region_name,
+      full_region: `${position.region_name} ${formValue.address}`,
       region_okato: formValue.region_okato,
+      okato: formValue.region_okato,
       region_address: formValue.address,
       qty: formValue.qty,
       type_item: formValue.type_item,

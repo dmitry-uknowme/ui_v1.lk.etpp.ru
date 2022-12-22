@@ -57,6 +57,24 @@ const ActionCell = ({ rowData, dataKey, onClick, ...props }) => {
     </Cell>
   );
 };
+const RegionCell = ({ rowData, dataKey, regionsQuery, data, ...props }) => (
+  <>
+    {rowData[dataKey]?.split(',')?.length === 2 ? <Cell {...props}>{rowData[dataKey]}</Cell> : <Cell {...props}>
+      <SelectPicker style={{ fontSize: "0.6rem" }} label="" value={data?.length ? data[0].okato : null} data={
+        regionsQuery?.data?.length
+          ? regionsQuery.data.map((region) => ({
+            value: region.okato,
+            label: region.nameWithType,
+          }))
+          : []
+      }
+        loading={regionsQuery?.isLoading} disabled />
+
+    </Cell>}
+  </>
+
+);
+
 const EditableCell = ({ rowData, dataKey, onChange, ...props }) => {
   const editing = rowData.status === "EDIT";
   return (
@@ -112,14 +130,14 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
       const regions = await fetchRegions();
       if (regions.length) {
         if (!currentRegionOkato) {
-          setCurrentRegionOkato(regions[0]?.okato)
+          setCurrentRegionOkato(data[0]?.okato)
         }
 
       }
       return regions;
     },
     {
-      refetchInterval: false,
+      // refetchInterval: false,
       // refetchOnMount: false,
       // refetchIntervalInBackground: false,
       // refetchOnWindowFocus: false,
@@ -176,7 +194,7 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
             wordWrap="break-all"
           />
         </Column>
-        <Column width={210}>
+        {/* <Column width={210}>
           <HeaderCell wordWrap="break-all">Место поставки</HeaderCell>
           <Cell
             dataKey="region"
@@ -184,17 +202,14 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
             wordWrap="break-all"
           >
 
-            <SelectPicker style={{ fontSize: "0.6rem" }} label="" value={data?.length ? data[0].okato : null} data={
-              regionsQuery?.data?.length
-                ? regionsQuery.data.map((region) => ({
-                  value: region.okato,
-                  label: region.nameWithType,
-                }))
-                : []
-            }
-              loading={regionsQuery?.isLoading} disabled />
+
           </Cell>
+        </Column> */}
+        <Column width={210}>
+          <HeaderCell wordWrap="break-all">Место поставки</HeaderCell>
+          <RegionCell dataKey='region' regionsQuery={regionsQuery} data={data} />
         </Column>
+
       </Table>
     </>
   );
