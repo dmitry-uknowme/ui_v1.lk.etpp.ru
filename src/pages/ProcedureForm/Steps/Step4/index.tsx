@@ -275,8 +275,8 @@ const Step4 = ({
         percent: parseFloat(bidProvisionPercent),
       },
       provision_contract: {
-        amount: isContractProvisionSpecified && isContractProvisionFromStartPrice ? `RUB ${currency(parseFloat(formValue.provision_contract_amount)).intValue}` : null,
-        percent: isContractProvisionSpecified && isContractProvisionFromContractPrice ? parseFloat(contractProvisionPercent) : null,
+        amount: isContractProvisionSpecified ? `RUB ${currency(parseFloat(formValue.provision_contract_amount)).intValue}` : null,
+        percent: isContractProvisionSpecified ? parseFloat(contractProvisionPercent) : null,
       },
     }));
 
@@ -698,7 +698,7 @@ const Step4 = ({
                     null,
                   okpd_field: `${position.okpd_code}. ${position.okpd_name} `,
                   okved_field: `${position.okved_code}. ${position.okved_name} `,
-                  qty_count: `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
+                  qty_count: position?.qty_count ? position.qty_count : `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
                     } `,
                   region: `${position?.region || position?.region_name} , ${position?.region_address
                     } `,

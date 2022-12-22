@@ -139,7 +139,8 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
 
   const handleSubmit = async () => {
     if (!formRef.current.check()) {
-      toaster.push(<Message type="error">Пожалуйста исправьте ошибки</Message>);
+      sendToast("error", "Пожалуйста исправьте ошибки")
+      // toaster.push(<Message type="error">Пожалуйста исправьте ошибки</Message>);
       document
         .querySelector(
           ".rs-modal-content .rs-form-group .rs-form-error-message"
