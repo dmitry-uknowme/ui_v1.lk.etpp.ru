@@ -104,6 +104,8 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
     setEditModalOpen(true);
   };
 
+
+
   const regionsQuery = useQuery(
     "regions",
     async () => {
@@ -123,7 +125,7 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
       // refetchOnWindowFocus: false,
     }
   );
-  console.log('bibbbbbb', biddingPerPositionOption)
+
   return (
     <>
       {editingPosition ? (

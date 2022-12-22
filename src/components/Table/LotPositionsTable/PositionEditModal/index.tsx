@@ -102,7 +102,6 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
     serverData: formGlobalServerData,
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
-
   const actionType = formGlobalServerData?.actionType
   const lotId = formGlobalServerData?.lotId
 
@@ -111,6 +110,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
   const [formValue, setFormValue] = useState<ILotPosition>(position);
   const [formError, setFormError] = useState<ILotPosition>({});
   const formRef = React.useRef();
+  useEffect(() => { setFormValue(position) }, [position])
 
   const handleClose = () => setOpen(false);
 
