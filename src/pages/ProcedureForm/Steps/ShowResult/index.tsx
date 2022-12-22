@@ -51,7 +51,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const [documents, setDocuments] = useState([]);
   const [isBtnLoader, setBtnLoader] = useState<boolean>(false);
   const navigate = useNavigate();
-  const [positionsTableData, setPositionsTableData] = useState(formGlobalServerData?.positionsTableData?.length && !positionsTableData.length ? formGlobalServerData.positionsTableData : []);
+  const [positionsTableData, setPositionsTableData] = useState(formGlobalServerData?.positionsTableData?.length ? formGlobalServerData.positionsTableData : []);
   // console.log("procccccc 7", formGlobalValues);
   const procedureId = formGlobalServerData?.procedureId;
   const procedureNumber = formGlobalServerData?.procedureNumber;
