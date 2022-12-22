@@ -51,10 +51,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const [documents, setDocuments] = useState([]);
   const [isBtnLoader, setBtnLoader] = useState<boolean>(false);
   const navigate = useNavigate();
-  const [positionsTableData, setPositionsTableData] = useState(formGlobalServerData?.positionsTableData?.length ? formGlobalServerData.positionsTableData.map((pos) => ({
-    ...pos,
-    amount: `${currency(parseDBAmount(pos?.price?.amount) / 100)}`,
-  })) : []);
+  const [positionsTableData, setPositionsTableData] = useState(formGlobalServerData?.positionsTableData?.length ? formGlobalServerData.positionsTableData) : []);
   // console.log("procccccc 7", formGlobalValues);
   const procedureId = formGlobalServerData?.procedureId;
   const procedureNumber = formGlobalServerData?.procedureNumber;
@@ -88,7 +85,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const cert_thumbprint = formGlobalServerData?.session?.cert_thumbprint;
 
   const purchasePlanPositionQuery = useQuery(
-    ["purchasePlanPosition"],
+    ["lotPositions"],
     async () => {
       const lotId = formGlobalServerData?.lotId ?? null;
       if (actionType === ProcedureFormActionVariants.EDIT && lotId) {
@@ -747,9 +744,10 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                       okved_field: `${position.okved_code}. ${position.okved_name} `,
                       qty_count: position?.qty_count ? position.qty_count : `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
                         } `,
-                      region: `${position?.region || position?.region_name} , ${position?.region_address
-                        } `
-                      ,
+                      region: position?.region_address && (position?.region || position?.region_name) ? `${position?.region || position?.region_name} , ${position?.region_address}` : position.region_address,
+                      // full_region: `${position?.region || position?.region_name} , ${position?.region_address
+                      //   } `
+                      // ,
                       address: position?.region_address
                     }))
                     : []
