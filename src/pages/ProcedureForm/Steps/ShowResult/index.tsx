@@ -23,6 +23,7 @@ import { API_V1_URL, LK_URL } from "../../../../services/api";
 import currency from "currency.js";
 import { parseDBAmount } from "../../../../utils/newMoney";
 import fetchNoticeDocuments from "../../../../services/api/fetchNoticeDocuments";
+import sendToast from "../../../../utils/sendToast";
 
 interface ShowResultModalProps {
   isOpen: boolean;
@@ -68,7 +69,8 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const dateTime = lot?.date_time;
 
   if (!procedureId || !noticeId || !lot) {
-    toaster.push(<Message type="error">Извещение не создано</Message>);
+    sendToast("error", "Извещение не создано")
+    // toaster.push(<Message type="error">Извещение не создано</Message>);
     setActiveStep(4);
     return;
   }
@@ -110,19 +112,21 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
         formData,
         { withCredentials: true }
       );
+      sendToast("success", "Извещение успешно подписано и отправлено в очередь на загрузку в ЕИС")
 
-      toaster.push(
-        <Message type="success">
-          Извещение успешно подписано и отправлено в очередь на загрузку в ЕИС
-        </Message>
-      );
+      // toaster.push(
+      //   <Message type="success">
+      //     Извещение успешно подписано и отправлено в очередь на загрузку в ЕИС
+      //   </Message>
+      // );
       setTimeout(() => {
         document.querySelector("#eisProcessLink")?.click();
-      }, 1000);
+      }, 1500);
     } catch (err) {
-      return toaster.push(
-        <Message type="error">Ошибка при подписании извещения</Message>
-      );
+      sendToast("error", 'Ошибка при подписании извещения')
+      // return toaster.push(
+      //   <Message type="error">Ошибка при подписании извещения</Message>
+      // );
     } finally {
       setTimeout(() => {
         setBtnLoader(false);
@@ -709,6 +713,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                   )
                 }
                 isLoading={purchasePlanPositionQuery.isLoading}
+                options={formGlobalServerData.options}
               />
             </Panel>
             <Panel header="Документы извещения">

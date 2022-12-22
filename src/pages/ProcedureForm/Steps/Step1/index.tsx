@@ -174,7 +174,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       purchasePlanNumber: currentPurchasePlan.registration_number,
       planPositionNumber: selectedPlanPositions[0].number,
     }));
-
+    console.log('plannn', planPositionId)
     if (!planPositionId) {
       sendToast("error", "Вы не выбрали позицию из плана закупок")
       return

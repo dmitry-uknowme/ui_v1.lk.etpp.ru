@@ -243,7 +243,7 @@ const Step4 = ({
           currency(parseFloat(formValue.lot_start_price))
         );
         if (positionsSum > currency(parseFloat(formValue.lot_start_price))) {
-          sendToast("error", "Сумма позиций превышает НМЦ лота")
+          sendToast("error", `Сумма позиций превышает НМЦ лота. Вы ввели ${positionsSum.toString()}. НМЦ лота - ${currency(parseFloat(formValue.lot_start_price)).toString()}`)
           // toaster.push(
           //   <Message type="error">Сумма позиций превышает НМЦ лота</Message>
           // );

@@ -123,7 +123,7 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
       // refetchOnWindowFocus: false,
     }
   );
-
+  console.log('bibbbbbb', biddingPerPositionOption)
   return (
     <>
       {editingPosition ? (
