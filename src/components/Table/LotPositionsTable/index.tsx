@@ -183,6 +183,7 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
             onChange={handleChange}
             wordWrap="break-all"
           >
+
             <SelectPicker style={{ fontSize: "0.6rem" }} label="" value={data?.length ? data[0].okato : null} data={
               regionsQuery?.data?.length
                 ? regionsQuery.data.map((region) => ({

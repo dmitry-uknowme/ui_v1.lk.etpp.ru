@@ -170,8 +170,10 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
       type_item: formValue.type_item,
       amount: formValue.amount,
       unit_amount: formValue.unit_amount,
+      unit_name: position.unit_name,
       qty_count: `${position.qty}, ${position.unit_name}`,
     };
+    console.log('new possss', newPosition)
     if (newPosition) {
       setData((state) => [
         ...state?.filter(

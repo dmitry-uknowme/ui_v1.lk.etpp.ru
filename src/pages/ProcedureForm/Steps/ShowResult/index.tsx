@@ -24,6 +24,8 @@ import currency from "currency.js";
 import { parseDBAmount } from "../../../../utils/newMoney";
 import fetchNoticeDocuments from "../../../../services/api/fetchNoticeDocuments";
 import sendToast from "../../../../utils/sendToast";
+import fetchLotPositions from "../../../../services/api/fetchLotPositions";
+import { ProcedureFormActionVariants } from "../..";
 
 interface ShowResultModalProps {
   isOpen: boolean;
@@ -37,6 +39,8 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   setIsOpen,
   activeStep,
   setActiveStep,
+  actionType
+
 }) => {
   const {
     formValues: formGlobalValues,
@@ -47,7 +51,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const [documents, setDocuments] = useState([]);
   const [isBtnLoader, setBtnLoader] = useState<boolean>(false);
   const navigate = useNavigate();
-
+  const [positionsTableData, setPositionsTableData] = useState([]);
   // console.log("procccccc 7", formGlobalValues);
   const procedureId = formGlobalServerData?.procedureId;
   const procedureNumber = formGlobalServerData?.procedureNumber;
@@ -64,7 +68,8 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const customer = procedure?.customer;
 
   const lot = procedure?.lots?.length ? procedure?.lots[0] : null;
-  const positionsTableData = formGlobalServerData?.positionsTableData
+
+  // const positionsTableData = formGlobalServerData?.positionsTableData
 
   console.log('tableeee', positionsTableData)
   const dateTime = lot?.date_time;
@@ -82,17 +87,42 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const cert_thumbprint = formGlobalServerData?.session?.cert_thumbprint;
 
   const purchasePlanPositionQuery = useQuery(
-    ["purchasePlanPosition", planId, planPositionId],
+    ["purchasePlanPosition"],
     async () => {
-      const planPosition = await fetchPurchasePlanPosition({
-        planId,
-        planPositionId,
-      });
-
-      return planPosition;
+      const lotId = formGlobalServerData?.lotId ?? null;
+      if (actionType === ProcedureFormActionVariants.EDIT && lotId) {
+        const positions = await fetchLotPositions({ lotId });
+        // console.log('positionssss', positions.map(pos => ({ ...pos, amount: `${pos?.price?.currency} ${pos?.price?.amount}` })))
+        if (positions?.length && !positionsTableData.length) {
+          setPositionsTableData(
+            positions.map((pos) => ({
+              ...pos,
+              amount: `${currency(parseDBAmount(pos?.price?.amount) / 100)}`,
+            }))
+          );
+          // return { positions: positions.map(pos => ({ ...pos, region: `${pos.region_name} ${pos.region_address}` })) }
+        }
+      }
     },
-    { enabled: !!(planId && planPositionId) }
+    {
+      // refetchInterval: false,
+      // refetchIntervalInBackground: false,
+      // refetchOnWindowFocus: false,
+      // refetchOnMount: false,
+    }
   );
+  // const purchasePlanPositionQuery = useQuery(
+  //   ["purchasePlanPosition", planId, planPositionId],
+  //   async () => {
+  //     const planPosition = await fetchPurchasePlanPosition({
+  //       planId,
+  //       planPositionId,
+  //     });
+
+  //     return planPosition;
+  //   },
+  //   { enabled: !!(planId && planPositionId) }
+  // );
 
   const signAndSendNotice = async () => {
     setBtnLoader(true);
@@ -157,8 +187,12 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
     const serverDocuments = await fetchNoticeDocuments({ noticeId });
     setDocuments(serverDocuments);
   };
+
   useEffect(() => {
     initDocuments();
+    if (formGlobalServerData?.positionsTableData?.length && !positionsTableData.length) {
+      setPositionsTableData(formGlobalServerData.positionsTableData)
+    }
   }, []);
   return (
     <div>
@@ -699,20 +733,49 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
             </div>
             <Panel header="Перечень товаров, работ, услуг">
               <LotPositionsTable
-                activeStep={activeStep}
                 data={
-                  positionsTableData?.map(
-                    (position) => ({
+                  positionsTableData?.length
+                    ? positionsTableData.map((position) => ({
                       ...position,
-                      okato: positionsTableData[0].region_okato,
-                      okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
-                      okved_field: `${position.okved_code}. ${position.okved_name}`,
-                      qty_count: position?.qty_count ? position.qty_count : `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"}`,
-                    })
-                  )
+                      okato:
+                        position?.region_okato ||
+                        purchasePlanPositionQuery?.data?.okato ||
+                        null,
+                      unit_name: position.unit_name,
+                      okpd_field: `${position.okpd_code}. ${position.okpd_name} `,
+                      okved_field: `${position.okved_code}. ${position.okved_name} `,
+                      qty_count: position?.qty_count ? position.qty_count : `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
+                        } `,
+                      region: `${position?.region || position?.region_name} , ${position?.region_address
+                        } `
+                      ,
+                      address: position?.region_address
+                    }))
+                    : []
                 }
-                isLoading={purchasePlanPositionQuery.isLoading}
+                addPositions={(positions) => {
+                  setFormGlobalValues((state) => ({
+                    ...state,
+                    lots: [
+                      {
+                        ...(formGlobalValues?.lots?.length
+                          ? formGlobalValues.lots[0]
+                          : {}),
+                        plan_positions: [
+                          ...(state?.lots[0]?.plan_positions?.length
+                            ? state?.lots[0]?.plan_positions?.filter(
+                              (pos) => pos.id !== positions.id
+                            )
+                            : []),
+                          positions,
+                        ],
+                      },
+                    ],
+                  }));
+                }}
+                setPositionsTableData={setPositionsTableData}
                 options={formGlobalServerData.options}
+                isLoading={purchasePlanPositionQuery.isLoading}
               />
             </Panel>
             <Panel header="Документы извещения">
