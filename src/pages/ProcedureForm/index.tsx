@@ -89,6 +89,7 @@ const ProcedureForm: React.FC<ProcedureFormProps> = ({ action }) => {
                 setIsOpen={setIsModalOpen}
                 activeStep={activeStep}
                 setActiveStep={setActiveStep}
+                actionType={action}
               />
             ) : null}
 
