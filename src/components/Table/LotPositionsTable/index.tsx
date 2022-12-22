@@ -138,7 +138,7 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
           options={options}
         />
       ) : null}
-      <Table height={420} headerHeight={50} data={data} wordWrap="break-word" style={{ fontSize: "0.8rem" }}>
+      <Table height={420} headerHeight={50} data={data} wordWrap="break-word" style={{ fontSize: "0.8rem" }} sortColumn="number" sortType="asc">
         {activeStep > 3 ? null : <Column width={120}>
           <HeaderCell >Действия</HeaderCell>
           <ActionCell dataKey="id" onClick={openEditModal} />

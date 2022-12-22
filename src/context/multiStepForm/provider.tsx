@@ -134,6 +134,20 @@ const MultiStepFormContextProvider: React.FC<
         noticeId: procedure?.notices?.length ? procedure.notices[0].id : null,
         lotId: procedure?.lots?.length ? procedure.lots[0].id : null,
       }));
+      // 2: "protocols_count_more_option"
+      // 3: "bidding_per_position_option"
+      // 4: "rnp_requirement_option"
+      // 5: "reduction_ratio_option"
+      const options = ["protocols_count_more_option"]
+      if (procedure.bidding_per_position_option) {
+        options.push("bidding_per_position_option")
+      }
+      if (procedure.requirements) {
+        options.push("rnp_requirement_option")
+      }
+      if (procedure.reduction_factor_purchase) {
+        options.push("reduction_ratio_option")
+      }
       setFormValues((state) => ({
         ...state,
         name: procedure.name,
@@ -236,7 +250,8 @@ const MultiStepFormContextProvider: React.FC<
         platform: procedure.platform_type,
         reduction_factor_purchase: procedure.reduction_factor_purchase,
         reduction_factor_purchase_from: procedure.reduction_factor_purchase_from,
-        reduction_factor_purchase_to: procedure.reduction_factor_purchase_to
+        reduction_factor_purchase_to: procedure.reduction_factor_purchase_to,
+        options,
       }));
       // setServerData(state => ({ ...state, procedureId: procedure.id }))
     }
