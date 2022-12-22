@@ -71,14 +71,14 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
 
-  const procedure = formGlobalServerData.procedure;
+  const procedureId = formGlobalServerData?.procedureId;
+  // const procedure = formGlobalServerData?.procedure || formGlobalServerData?.procedureId;
   const cert_thumbprint = formGlobalServerData.session?.cert_thumbprint;
-  if (!procedure) {
+  if (!procedureId) {
     sendToast("error", "Извещение не создано")
     // toaster.push(<Message type="error">Извещение не создано</Message>);
     return prevStep();
   }
-  const procedureId = procedure?.guid?.value;
 
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});

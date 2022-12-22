@@ -275,9 +275,8 @@ const Step4 = ({
         percent: parseFloat(bidProvisionPercent),
       },
       provision_contract: {
-        amount: `RUB ${currency(parseFloat(formValue.provision_contract_amount)).intValue
-          }`,
-        percent: parseFloat(contractProvisionPercent),
+        amount: isContractProvisionSpecified && isContractProvisionFromStartPrice ? `RUB ${currency(parseFloat(formValue.provision_contract_amount)).intValue}` : null,
+        percent: isContractProvisionSpecified && isContractProvisionFromContractPrice ? parseFloat(contractProvisionPercent) : null,
       },
     }));
 
@@ -291,7 +290,7 @@ const Step4 = ({
       provision_bid: {
         is_specified: isBidProvisionSpecified,
         amount: parseFloat(bidProvisionAmount)
-          ? `${"RUB"} ${currency(parseFloat(bidProvisionAmount)).intValue}`
+          ? `${"RUB"} ${currency(parseFloat(bidProvisionAmount)).intValue} `
           : "RUB 0",
         methods: [formValue.provision_bid_type],
         payment_return_deposit: formValue.provision_bid_payment_return_deposit,
@@ -305,7 +304,7 @@ const Step4 = ({
           isContractProvisionSpecified && isContractProvisionFromStartPrice
             ? parseFloat(contractProvisionAmount)
               ? `${"RUB"} ${currency(parseFloat(contractProvisionAmount)).intValue
-              }`
+              } `
               : "RUB 0"
             : null,
         percent:
@@ -316,13 +315,13 @@ const Step4 = ({
           formValue.provision_contract_payment_return_deposit,
       },
       original_price: `${"RUB"} ${currency(parseFloat(formValue.lot_start_price)).intValue
-        }`,
+        } `,
       lots: [
         {
           ...(formGlobalValues?.lots?.length ? formGlobalValues?.lots[0] : {}),
           name: formValue.lot_title,
           starting_price: `${"RUB"} ${currency(parseFloat(formValue.lot_start_price)).intValue
-            }`,
+            } `,
           positions: isBiddingPerUnitOption ? [] : [],
           nds_type: formValue.nds_type,
         },
@@ -697,12 +696,12 @@ const Step4 = ({
                     position?.region_okato ||
                     purchasePlanPositionQuery?.data?.okato ||
                     null,
-                  okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
-                  okved_field: `${position.okved_code}. ${position.okved_name}`,
+                  okpd_field: `${position.okpd_code}. ${position.okpd_name} `,
+                  okved_field: `${position.okved_code}. ${position.okved_name} `,
                   qty_count: `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
-                    }`,
+                    } `,
                   region: `${position?.region || position?.region_name} , ${position?.region_address
-                    }`,
+                    } `,
                 }))
                 : []
             }

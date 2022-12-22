@@ -112,7 +112,18 @@ const MultiStepFormContextProvider: React.FC<
 
   useEffect(() => {
     if (procedureData) {
+      const options = ["protocols_count_more_option"]
+
       const procedure = procedureData;
+      if (procedure.bidding_per_position_option) {
+        options.push("bidding_per_position_option")
+      }
+      if (procedure.requirements) {
+        options.push("rnp_requirement_option")
+      }
+      if (procedure.reduction_factor_purchase) {
+        options.push("reduction_ratio_option")
+      }
       const organizer = procedure.organizer;
       const customer = procedure.customer;
       const lot = procedure.lots[0];
@@ -133,21 +144,10 @@ const MultiStepFormContextProvider: React.FC<
         procedureId: procedure.id,
         noticeId: procedure?.notices?.length ? procedure.notices[0].id : null,
         lotId: procedure?.lots?.length ? procedure.lots[0].id : null,
+        options
       }));
-      // 2: "protocols_count_more_option"
-      // 3: "bidding_per_position_option"
-      // 4: "rnp_requirement_option"
-      // 5: "reduction_ratio_option"
-      const options = ["protocols_count_more_option"]
-      if (procedure.bidding_per_position_option) {
-        options.push("bidding_per_position_option")
-      }
-      if (procedure.requirements) {
-        options.push("rnp_requirement_option")
-      }
-      if (procedure.reduction_factor_purchase) {
-        options.push("reduction_ratio_option")
-      }
+
+
       setFormValues((state) => ({
         ...state,
         name: procedure.name,
@@ -190,7 +190,7 @@ const MultiStepFormContextProvider: React.FC<
         },
         lots: [
           {
-            nds_type: procedure.nds_type,
+            nds_type: lot?.nds,
             plan_positions: [],
             positions: [],
             date_time: {
@@ -251,7 +251,7 @@ const MultiStepFormContextProvider: React.FC<
         reduction_factor_purchase: procedure.reduction_factor_purchase,
         reduction_factor_purchase_from: procedure.reduction_factor_purchase_from,
         reduction_factor_purchase_to: procedure.reduction_factor_purchase_to,
-        options,
+        cause_failed: null
       }));
       // setServerData(state => ({ ...state, procedureId: procedure.id }))
     }

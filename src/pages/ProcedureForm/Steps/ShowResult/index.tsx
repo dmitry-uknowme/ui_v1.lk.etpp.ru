@@ -65,9 +65,8 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
 
   const lot = procedure?.lots?.length ? procedure?.lots[0] : null;
   const positionsTableData = formGlobalServerData?.positionsTableData
-  console.log('tableeee', positionsTableData)
+  // console.log('tableeee', positionsTableData)
   const dateTime = lot?.date_time;
-
   if (!procedureId || !noticeId || !lot) {
     sendToast("error", "Извещение не создано")
     // toaster.push(<Message type="error">Извещение не создано</Message>);
