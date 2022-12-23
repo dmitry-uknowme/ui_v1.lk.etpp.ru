@@ -160,7 +160,7 @@ const Step4 = ({
     ["purchasePlanPosition"],
     async () => {
       const lotId = formGlobalServerData?.lotId ?? null;
-      if (actionType === ProcedureFormActionVariants.EDIT && lotId) {
+      if (actionType === ProcedureFormActionVariants.EDIT || lotId) {
         const positions = await fetchLotPositions({ lotId });
         // console.log('positionssss', positions.map(pos => ({ ...pos, amount: `${pos?.price?.currency} ${pos?.price?.amount}` })))
         if (positions?.length && !positionsTableData.length) {

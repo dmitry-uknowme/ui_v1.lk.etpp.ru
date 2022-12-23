@@ -192,7 +192,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
       ]);
       if (actionType === ProcedureFormActionVariants.EDIT) {
         try {
-          await updateLotPosition(position.id_legacy || position.id, {
+          await updateLotPosition(position.id_legacy, {
             amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
             unit_price: `RUB ${currency(parseFloat(newPosition.unit_amount)).intValue}`,
             info: formValue.extra_info,
