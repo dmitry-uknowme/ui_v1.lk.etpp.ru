@@ -587,6 +587,7 @@ const Step4 = ({
                   name="provision_bid_percent"
                   label="Размер обеспечения заявки, %"
                   accepter={InputNumber}
+                  scrollable={false}
                   error={formError.provision_bid_percent}
                 />
               </div>
@@ -599,6 +600,7 @@ const Step4 = ({
                   name="provision_bid_amount"
                   label="Размер обеспечения заявки, руб"
                   accepter={InputNumber}
+                  scrollable={false}
                   value={formValue.provision_bid_amount}
                   disabled={isBidProvisionPercent}
                 />
@@ -647,6 +649,7 @@ const Step4 = ({
                   name="provision_contract_percent"
                   label="Размер обеспечения исполнения договора, %"
                   accepter={InputNumber}
+                  scrollable={false}
                   error={formError.provision_contract_percent}
                 />
               </div>
@@ -657,6 +660,7 @@ const Step4 = ({
                   name="provision_contract_amount"
                   label="Размер обеспечения исполнения договора, руб"
                   accepter={InputNumber}
+                  scrollable={false}
                   error={formError.provision_contract_amount}
                   disabled={isContractProvisionFromStartPrice}
                 />

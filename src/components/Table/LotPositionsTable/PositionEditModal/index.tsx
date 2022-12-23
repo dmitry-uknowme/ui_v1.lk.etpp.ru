@@ -311,6 +311,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
             label="Количество"
             name="qty"
             accepter={InputNumber}
+            scrollable={false}
             error={formError.qty}
             disabled
           />
@@ -331,6 +332,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
               label="Итоговая цена"
               name="amount"
               accepter={InputNumber}
+              scrollable={false}
               error={formError.amount}
               disabled
             />
