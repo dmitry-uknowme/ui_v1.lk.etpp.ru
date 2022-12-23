@@ -42,7 +42,7 @@ const MultiStepFormContextProvider: React.FC<
       const savedProcedureId = savedServerData?.procedureId;
       const savedFormType = savedServerData?.actionType;
       const savedSession = savedServerData?.session
-      if (actionType === ProcedureFormActionVariants.EDIT) {
+      if (actionType !== ProcedureFormActionVariants.EDIT) {
         if (
           (savedFormType && (savedFormType === actionType)) ||
           (savedProcedureId && (savedProcedureId === procedureId))
@@ -62,8 +62,6 @@ const MultiStepFormContextProvider: React.FC<
           }
         }
       }
-
-
     }
     setIsInited(true);
   };
