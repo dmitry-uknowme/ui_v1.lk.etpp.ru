@@ -24,6 +24,7 @@ import fetchOrganizationEmployee from "../../../../services/api/fetchOrganizatio
 import { ProcedureFormActionVariants } from "../..";
 import fetchProfile from "../../../../services/api/fetchProfile";
 import sendToast from "../../../../utils/sendToast";
+import currency from "currency.js";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -176,7 +177,6 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   });
 
   const isErrorsExists = !!Object.keys(formError)?.length;
-
   const profileOrganizationsQuery = useQuery(
     "profileOrganizations",
     async () => {
@@ -189,7 +189,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             organizations.find(
               (org) => org.id === formGlobalServerData?.organizerId
             ) || organizations[0];
-          console.log("organizationss sett", organizations);
+          //console.log("organizationss sett", organizations);
           setFormValue((state) => ({
             ...state,
             organizer_id: selectOrganizerOrganization.id,

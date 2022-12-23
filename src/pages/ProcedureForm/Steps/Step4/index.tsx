@@ -270,12 +270,15 @@ const Step4 = ({
       ...state,
       positionsTableData: positionsTableData,
       provision_bid: {
-        amount: `RUB ${currency(parseFloat(formValue.provision_bid_amount)).intValue
-          }`,
-        percent: parseFloat(bidProvisionPercent),
+        // provisionBid?.methods.length ? provisionBid?.methods[0] === 'FIXED_AMOUNT' ? `${provisionBid.amount.currency} ${provisionBid.amount.amount}` : null : null,
+        amount: isBidProvisionSpecified && isBidProvisionFixed ? `RUB ${currency(parseFloat(formValue.provision_bid_amount)).intValue}` : null,
+        // percent: parseFloat(bidProvisionPercent),
+        // provisionBid?.methods?.length? provisionBid?.methods[0] === 'PERCENTAGE_AMOUNT' || provisionBid?.methods[0] === 'ACCORDING_DOCUMENTATION' ? provisionBid.percent : null : null,
+        percent: isBidProvisionSpecified && (isBidProvisionPercent || isBidProvisionByDocumentation) ? parseFloat(bidProvisionPercent) : null
       },
       provision_contract: {
-        amount: isContractProvisionSpecified ? `RUB ${currency(parseFloat(formValue.provision_contract_amount)).intValue}` : null,
+        amount: isContractProvisionSpecified ? `RUB ${currency(parseFloat(formValue.provision_contract_amount)).intValue
+          }` : null,
         percent: isContractProvisionSpecified ? parseFloat(contractProvisionPercent) : null,
       },
     }));
@@ -285,7 +288,7 @@ const Step4 = ({
       name: formValue.lot_title,
       bidding_per_unit_amount: isBiddingPerUnitOption
         ? `${"RUB"} ${currency(parseFloat(formValue.lot_unit_start_price)).intValue
-        }`
+        } `
         : null,
       provision_bid: {
         is_specified: isBidProvisionSpecified,
@@ -702,39 +705,40 @@ const Step4 = ({
                   okved_field: `${position.okved_code}. ${position.okved_name} `,
                   qty_count: position?.qty_count ? position.qty_count : `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
                     } `,
-                  region: position?.region_address && (position?.region || position?.region_name) ? `${position?.region || position?.region_name} , ${position?.region_address}` : position.region_address,
-                  // full_region: `${position?.region || position?.region_name} , ${position?.region_address
-                  //   } `
-                  // ,
-                  address: position?.region_address
-                }))
-                : []
+                  region: position?.region_address && (position?.region || position?.region_name) ? `${position?.region || position?.region_name} , ${position?.region_address} ` : position.region_address,
+                  // full_region: `${ position?.region || position?.region_name } , ${
+                  position?.region_address
+    //   } `
+    // ,
+    address: position?.region_address
+            }))
+          : []
             }
-            addPositions={(positions) => {
-              setFormGlobalValues((state) => ({
-                ...state,
-                lots: [
-                  {
-                    ...(formGlobalValues?.lots?.length
-                      ? formGlobalValues.lots[0]
-                      : {}),
-                    plan_positions: [
-                      ...(state?.lots[0]?.plan_positions?.length
-                        ? state?.lots[0]?.plan_positions?.filter(
-                          (pos) => pos.id !== positions.id
-                        )
-                        : []),
-                      positions,
-                    ],
-                  },
-                ],
-              }));
-            }}
-            setPositionsTableData={setPositionsTableData}
-            options={formGlobalServerData.options}
-            isLoading={purchasePlanPositionQuery.isLoading}
-          />
-        </Panel>
+          addPositions = {(positions) => {
+            setFormGlobalValues((state) => ({
+              ...state,
+              lots: [
+                {
+                  ...(formGlobalValues?.lots?.length
+                    ? formGlobalValues.lots[0]
+                    : {}),
+                  plan_positions: [
+                    ...(state?.lots[0]?.plan_positions?.length
+                      ? state?.lots[0]?.plan_positions?.filter(
+                        (pos) => pos.id !== positions.id
+                      )
+                      : []),
+                    positions,
+                  ],
+                },
+              ],
+            }));
+          }}
+          setPositionsTableData = {setPositionsTableData}
+          options = {formGlobalServerData.options}
+          isLoading = {purchasePlanPositionQuery.isLoading}
+  />
+        </Panel >
 
         <Form.Group>
           <Button onClick={prevStep}>Назад</Button>
@@ -746,8 +750,8 @@ const Step4 = ({
             Сохранить и продолжить
           </Button>
         </Form.Group>
-      </Form>
-    </div>
+      </Form >
+    </div >
   );
 };
 

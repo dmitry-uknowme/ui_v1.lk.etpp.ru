@@ -206,10 +206,13 @@ const MultiStepFormContextProvider: React.FC<
           },
         ],
         provision_bid: {
-          amount: `${provisionBid.amount.currency} ${provisionBid.amount.amount}`,
+          amount: provisionBid?.methods.length ? provisionBid?.methods[0] === 'FIXED_AMOUNT' ? `${provisionBid.amount.currency} ${provisionBid.amount.amount}` : null : null,
+          // amount: `${provisionBid.amount.currency} ${provisionBid.amount.amount}`,
           is_specified: provisionBid.is_specified,
           methods: provisionBid.methods,
           payment_return_deposit: provisionBid.payment_return,
+          percent: provisionBid?.methods?.length ? provisionBid?.methods[0] === 'PERCENTAGE_AMOUNT' || provisionBid?.methods[0] === 'ACCORDING_DOCUMENTATION' ? provisionBid.percent : null : null,
+          // percent: provisionBid?.is_specified && provisionContract?.type === 'FROM_CONTRACT_PRICE' ? provisionContract.percent : null,
         },
         provision_contract: {
           amount: provisionContract?.is_specified && provisionContract?.type === 'FROM_START_PRICE' ? `${provisionContract.amount.currency} ${provisionContract.amount.amount}` : null,
