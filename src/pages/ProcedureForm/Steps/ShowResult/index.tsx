@@ -809,7 +809,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
           <a
             className="d-none"
             id="eisProcessLink"
-            href={`${LK_URL} / lot / notice / ${noticeId} / process`}
+            href={`${LK_URL}/lot/notice/${noticeId}/process`}
           // target="_blank"
           >
             Редактирование процедуры
@@ -817,7 +817,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
           <a
             className="d-none"
             id="editProcedureLink"
-            href={`${LK_URL} / procedure / edit / new /${procedure.id}`}
+            href={`${LK_URL}/procedure/edit/new/${procedure.id}`}
           // target="_blank"
           >
             Процесс
