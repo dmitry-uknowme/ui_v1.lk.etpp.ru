@@ -167,7 +167,7 @@ const Step4 = ({
           setPositionsTableData(
             positions.map((pos) => ({
               ...pos,
-              amount: `${currency(parseDBAmount(pos?.price?.amount) / 100)}`,
+              amount: pos?.price?.amount ? `${currency(parseDBAmount(pos?.price?.amount) / 100)}` : null,
             }))
           );
           // return { positions: positions.map(pos => ({ ...pos, region: `${pos.region_name} ${pos.region_address}` })) }
@@ -330,11 +330,8 @@ const Step4 = ({
 
     if (!formRef.current.check()) {
       sendToast("error", "Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг")
-      // toaster.push(
-      //   <Message type="error">
-      //     Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг
-      //   </Message>
-      // );
+
+
       document
         .querySelector(".rs-form-group .rs-form-error-message")
         ?.parentNode?.parentNode?.scrollIntoView();
