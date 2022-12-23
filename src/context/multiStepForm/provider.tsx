@@ -42,24 +42,28 @@ const MultiStepFormContextProvider: React.FC<
       const savedProcedureId = savedServerData?.procedureId;
       const savedFormType = savedServerData?.actionType;
       const savedSession = savedServerData?.session
-      if (
-        (savedFormType && (savedFormType === actionType)) ||
-        (savedProcedureId && (savedProcedureId === procedureId))
-      ) {
-        if (savedFormValues) {
-          setFormValues(savedFormValues);
-        }
-        if (activeStep) {
-          setCurrentStepId(activeStep);
-        }
-        if (savedServerData) {
-          setServerData(savedServerData);
-        }
+      if (actionType === ProcedureFormActionVariants.EDIT) {
+        if (
+          (savedFormType && (savedFormType === actionType)) ||
+          (savedProcedureId && (savedProcedureId === procedureId))
+        ) {
+          if (savedFormValues) {
+            setFormValues(savedFormValues);
+          }
+          if (activeStep) {
+            setCurrentStepId(activeStep);
+          }
+          if (savedServerData) {
+            setServerData(savedServerData);
+          }
 
-        if (savedSession.profile_id !== session.profile_id) {
-          setServerData(state => ({ ...state, session }))
+          if (savedSession.profile_id !== session.profile_id) {
+            setServerData(state => ({ ...state, session }))
+          }
         }
       }
+
+
     }
     setIsInited(true);
   };

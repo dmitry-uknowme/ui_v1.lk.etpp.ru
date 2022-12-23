@@ -1,6 +1,6 @@
 import currency from "currency.js";
 import React, { useContext, useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { QueryClient, useQuery, useQueryClient } from "react-query";
 import {
   Button,
   Form,
@@ -111,7 +111,8 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
   const [formValue, setFormValue] = useState<ILotPosition>(position);
   const [formError, setFormError] = useState<ILotPosition>({});
   const formRef = React.useRef();
-  useEffect(() => { setFormValue(position) }, [position])
+  const queryClient = useQueryClient()
+
 
   const handleClose = () => setOpen(false);
 
@@ -138,6 +139,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
     }
   );
 
+
   // useEffect(() => {
   //   console.log('regggggg', regionsQuery.data)
   //   if (regionsQuery?.data?.length) {
@@ -147,6 +149,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
   // }, [formValue])
 
   const handleSubmit = async () => {
+    console.log('vvvvv', formValue)
     if (!formRef.current.check()) {
       sendToast("error", "Пожалуйста исправьте ошибки")
       // toaster.push(<Message type="error">Пожалуйста исправьте ошибки</Message>);
@@ -244,8 +247,26 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
     }
   }, [formValue.region_okato]);
 
+  useEffect(() => {
+    queryClient.invalidateQueries('regions2')
+
+  }, [])
+
+  // useEffect(() => { setFormValue(position) }, [position])
+  useEffect(() => {
+    if (!isOpen) {
+      setFormValue({})
+    }
+    else if (isOpen) {
+      setFormValue(position)
+    }
+    // else if (isOpen) {
+    //   document.querySelector('.rs-modal-content')?.scrollIntoView
+    // }
+  }, [isOpen])
+
   return (
-    <Modal size="md" open={isOpen} onClose={handleClose} backdrop="static">
+    <Modal size="md" open={isOpen} onClose={handleClose} backdrop="static" autoFocus enforceFocus>
       <Form
         onChange={setFormValue}
         onCheck={setFormError}
