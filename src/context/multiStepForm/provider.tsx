@@ -207,7 +207,7 @@ const MultiStepFormContextProvider: React.FC<
           amount: `${provisionBid.amount.currency} ${provisionBid.amount.amount}`,
           is_specified: provisionBid.is_specified,
           methods: provisionBid.methods,
-          payment_return_deposit: null,
+          payment_return_deposit: provisionBid.payment_return,
         },
         provision_contract: {
           amount: provisionContract?.is_specified && provisionContract?.type === 'FROM_START_PRICE' ? `${provisionContract.amount.currency} ${provisionContract.amount.amount}` : null,
@@ -215,7 +215,7 @@ const MultiStepFormContextProvider: React.FC<
           // methods: provisionContract.methods,
           percent: provisionContract?.is_specified && provisionContract?.type === 'FROM_CONTRACT_PRICE' ? provisionContract.percent : null,
           type: provisionContract.type,
-          payment_return_deposit: null,
+          payment_return_deposit: provisionContract.payment_return,
         },
         is_subcontractor_requirement: procedure.requirements.subcontractor,
         is_for_smb: procedure.requirements.only_for_smb,
