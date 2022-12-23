@@ -499,10 +499,10 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       );
       if (procedureData) {
         console.log("update procedureeeeee", procedureData);
-        setFormGlobalServerData((state) => ({
-          ...state,
-          procedure: procedureData,
-        }));
+        // setFormGlobalServerData((state) => ({
+        //   ...state,
+        //   procedure: procedureData,
+        // }));
         // toaster.push(
         //   <Message type="success">Процедура успешно создана</Message>
         // );
