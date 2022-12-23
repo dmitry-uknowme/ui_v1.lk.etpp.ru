@@ -752,26 +752,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     }))
                     : []
                 }
-                addPositions={(positions) => {
-                  setFormGlobalValues((state) => ({
-                    ...state,
-                    lots: [
-                      {
-                        ...(formGlobalValues?.lots?.length
-                          ? formGlobalValues.lots[0]
-                          : {}),
-                        plan_positions: [
-                          ...(state?.lots[0]?.plan_positions?.length
-                            ? state?.lots[0]?.plan_positions?.filter(
-                              (pos) => pos.id !== positions.id
-                            )
-                            : []),
-                          positions,
-                        ],
-                      },
-                    ],
-                  }));
-                }}
+                activeStep={activeStep}
                 setPositionsTableData={setPositionsTableData}
                 options={formGlobalServerData.options}
                 isLoading={purchasePlanPositionQuery.isLoading}
