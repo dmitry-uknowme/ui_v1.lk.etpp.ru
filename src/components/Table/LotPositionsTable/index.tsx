@@ -174,10 +174,10 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
           <Cell dataKey="qty_count" onChange={handleChange} />
         </Column>
         {biddingPerPositionOption ? <>
-          <Column width={100}>
+          {/* <Column width={100}>
             <HeaderCell>Цена за единицу</HeaderCell>
             <EditableCell dataKey="unit_amount" onChange={handleChange} />
-          </Column>
+          </Column> */}
           <Column width={100}>
             <HeaderCell>Сумма</HeaderCell>
             <EditableCell dataKey="amount" onChange={handleChange} />
