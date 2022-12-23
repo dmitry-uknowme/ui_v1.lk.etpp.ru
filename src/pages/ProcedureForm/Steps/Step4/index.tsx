@@ -706,38 +706,36 @@ const Step4 = ({
                   qty_count: position?.qty_count ? position.qty_count : `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
                     } `,
                   region: position?.region_address && (position?.region || position?.region_name) ? `${position?.region || position?.region_name} , ${position?.region_address} ` : position.region_address,
-                  // full_region: `${ position?.region || position?.region_name } , ${
-                  position?.region_address
-    //   } `
-    // ,
-    address: position?.region_address
-            }))
-          : []
+
+                  address: position?.region_address,
+                  extra_info: position?.addition_info || position?.info,
+                }))
+                : []
             }
-          addPositions = {(positions) => {
-            setFormGlobalValues((state) => ({
-              ...state,
-              lots: [
-                {
-                  ...(formGlobalValues?.lots?.length
-                    ? formGlobalValues.lots[0]
-                    : {}),
-                  plan_positions: [
-                    ...(state?.lots[0]?.plan_positions?.length
-                      ? state?.lots[0]?.plan_positions?.filter(
-                        (pos) => pos.id !== positions.id
-                      )
-                      : []),
-                    positions,
-                  ],
-                },
-              ],
-            }));
-          }}
-          setPositionsTableData = {setPositionsTableData}
-          options = {formGlobalServerData.options}
-          isLoading = {purchasePlanPositionQuery.isLoading}
-  />
+            addPositions={(positions) => {
+              setFormGlobalValues((state) => ({
+                ...state,
+                lots: [
+                  {
+                    ...(formGlobalValues?.lots?.length
+                      ? formGlobalValues.lots[0]
+                      : {}),
+                    plan_positions: [
+                      ...(state?.lots[0]?.plan_positions?.length
+                        ? state?.lots[0]?.plan_positions?.filter(
+                          (pos) => pos.id !== positions.id
+                        )
+                        : []),
+                      positions,
+                    ],
+                  },
+                ],
+              }));
+            }}
+            setPositionsTableData={setPositionsTableData}
+            options={formGlobalServerData.options}
+            isLoading={purchasePlanPositionQuery.isLoading}
+          />
         </Panel >
 
         <Form.Group>

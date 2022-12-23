@@ -748,7 +748,8 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                       // full_region: `${position?.region || position?.region_name} , ${position?.region_address
                       //   } `
                       // ,
-                      address: position?.region_address
+                      address: position?.region_address,
+                      extra_info: position?.addition_info || position?.info
                     }))
                     : []
                 }

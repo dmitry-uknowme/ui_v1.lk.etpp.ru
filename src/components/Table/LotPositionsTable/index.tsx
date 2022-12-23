@@ -209,6 +209,10 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
           <HeaderCell wordWrap="break-all">Место поставки</HeaderCell>
           <RegionCell dataKey='region' regionsQuery={regionsQuery} data={data} />
         </Column>
+        <Column width={150}>
+          <HeaderCell>Доп. информация</HeaderCell>
+          <Cell dataKey="extra_info" />
+        </Column>
 
       </Table>
     </>
