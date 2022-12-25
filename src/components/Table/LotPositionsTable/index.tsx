@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Button, Checkbox, SelectPicker } from "rsuite";
+import { Button, Checkbox, IconButton, SelectPicker } from "rsuite";
 import { Table, Toggle, TagPicker } from "rsuite";
 import EditIcon from "@rsuite/icons/Edit";
 import PositionEditModal from "./PositionEditModal";
 import { ProcedureFormActionVariants } from "../../../pages/ProcedureForm";
 import { useQuery } from "react-query";
+import PlusIcon from "@rsuite/icons/Plus";
 import fetchRegions from "../../../services/api/fetchRegions";
 
 const { Cell, HeaderCell, Column } = Table;
@@ -36,7 +37,7 @@ const dataColumns = [
     width: 200,
   },
 ];
-const ActionCell = ({ rowData, dataKey, onClick, ...props }) => {
+const ActionCell = ({ rowData, dataKey, onClick, isViaPlan, ...props }) => {
   return (
     <Cell {...props} style={{ padding: "6px" }}>
       <Button
@@ -45,34 +46,55 @@ const ActionCell = ({ rowData, dataKey, onClick, ...props }) => {
           onClick(rowData.id);
         }}
       >
-        {rowData.status === "EDIT" ? (
-          "Сохранить"
-        ) : (
-          <div className="d-flex flex-column justify-content-center" style={{ fontSize: "0.8rem" }}>
-            <EditIcon style={{ display: "block", margin: "auto" }} />
-            Редактировать
-          </div>
-        )}
+        <div
+          className="d-flex flex-column justify-content-center"
+          style={{ fontSize: "0.8rem" }}
+        >
+          {rowData.id === "null" && !isViaPlan ? (
+            <>
+              <Button
+                appearance="primary"
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                <PlusIcon style={{ fontSize: "0.7rem" }} />
+                Добавить
+              </Button>
+            </>
+          ) : (
+            <>
+              <EditIcon style={{ display: "block", margin: "auto" }} />
+              Редактировать
+            </>
+          )}
+        </div>
       </Button>
     </Cell>
   );
 };
 const RegionCell = ({ rowData, dataKey, regionsQuery, data, ...props }) => (
   <>
-    {rowData[dataKey]?.split(',')?.length === 2 ? <Cell {...props}>{rowData[dataKey]}</Cell> : <Cell {...props}>
-      <SelectPicker style={{ fontSize: "0.6rem" }} label="" value={data?.length ? data[0].okato : null} data={
-        regionsQuery?.data?.length
-          ? regionsQuery.data.map((region) => ({
-            value: region.okato,
-            label: region.nameWithType,
-          }))
-          : []
-      }
-        loading={regionsQuery?.isLoading} disabled />
-
-    </Cell>}
+    {rowData[dataKey]?.split(",")?.length === 2 ? (
+      <Cell {...props}>{rowData[dataKey]}</Cell>
+    ) : (
+      <Cell {...props}>
+        <SelectPicker
+          style={{ fontSize: "0.6rem" }}
+          label=""
+          value={data?.length ? data[0].okato : null}
+          data={
+            regionsQuery?.data?.length
+              ? regionsQuery.data.map((region) => ({
+                  value: region.okato,
+                  label: region.nameWithType,
+                }))
+              : []
+          }
+          loading={regionsQuery?.isLoading}
+          disabled
+        />
+      </Cell>
+    )}
   </>
-
 );
 
 const EditableCell = ({ rowData, dataKey, onChange, ...props }) => {
@@ -94,12 +116,20 @@ const EditableCell = ({ rowData, dataKey, onChange, ...props }) => {
   );
 };
 
-const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableData, options, activeStep }) => {
-  const biddingPerPositionOption = options?.includes("bidding_per_position_option") ?? false
+const LotPositionsTable = ({
+  data: defaultData,
+  addPositions,
+  setPositionsTableData,
+  options,
+  activeStep,
+  isViaPlan,
+}) => {
+  const biddingPerPositionOption =
+    options?.includes("bidding_per_position_option") ?? false;
   const [data, setData] = useState(defaultData);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [editingPosition, setEditingPosition] = useState<any>(null);
-  const [currentRegionOkato, setCurrentRegionOkato] = useState("")
+  const [currentRegionOkato, setCurrentRegionOkato] = useState("");
   useEffect(() => {
     setData(defaultData);
   }, [defaultData]);
@@ -122,17 +152,14 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
     setEditModalOpen(true);
   };
 
-
-
   const regionsQuery = useQuery(
     "regions",
     async () => {
       const regions = await fetchRegions();
       if (regions.length) {
         if (!currentRegionOkato) {
-          setCurrentRegionOkato(data[0]?.okato)
+          setCurrentRegionOkato(data[0]?.okato);
         }
-
       }
       return regions;
     },
@@ -156,11 +183,21 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
           options={options}
         />
       ) : null}
-      <Table height={420} headerHeight={50} data={data} wordWrap="break-word" style={{ fontSize: "0.8rem" }} sortColumn="number" sortType="asc">
-        {activeStep > 3 ? null : <Column width={120}>
-          <HeaderCell >Действия</HeaderCell>
-          <ActionCell dataKey="id" onClick={openEditModal} />
-        </Column>}
+      <Table
+        height={420}
+        headerHeight={50}
+        data={data}
+        wordWrap="break-word"
+        style={{ fontSize: "0.8rem" }}
+        sortColumn="number"
+        sortType="asc"
+      >
+        {activeStep > 3 ? null : (
+          <Column width={120}>
+            <HeaderCell>Действия</HeaderCell>
+            <ActionCell dataKey="id" onClick={openEditModal} />
+          </Column>
+        )}
         <Column width={60}>
           <HeaderCell>№</HeaderCell>
           <Cell dataKey="number" onChange={handleChange} />
@@ -173,15 +210,18 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
           <HeaderCell>Количество, Ед. изм.</HeaderCell>
           <Cell dataKey="qty_count" onChange={handleChange} />
         </Column>
-        {biddingPerPositionOption ? <>
-          {/* <Column width={100}>
+        {biddingPerPositionOption ? (
+          <>
+            {/* <Column width={100}>
             <HeaderCell>Цена за единицу</HeaderCell>
             <EditableCell dataKey="unit_amount" onChange={handleChange} />
           </Column> */}
-          <Column width={100}>
-            <HeaderCell>Сумма</HeaderCell>
-            <EditableCell dataKey="amount" onChange={handleChange} />
-          </Column></> : null}
+            <Column width={100}>
+              <HeaderCell>Сумма</HeaderCell>
+              <EditableCell dataKey="amount" onChange={handleChange} />
+            </Column>
+          </>
+        ) : null}
         <Column width={120}>
           <HeaderCell>ОКПД 2</HeaderCell>
           <Cell dataKey="okpd_field" onChange={handleChange} />
@@ -207,13 +247,16 @@ const LotPositionsTable = ({ data: defaultData, addPositions, setPositionsTableD
         </Column> */}
         <Column width={210}>
           <HeaderCell wordWrap="break-all">Место поставки</HeaderCell>
-          <RegionCell dataKey='region' regionsQuery={regionsQuery} data={data} />
+          <RegionCell
+            dataKey="region"
+            regionsQuery={regionsQuery}
+            data={data}
+          />
         </Column>
         <Column width={150}>
           <HeaderCell>Доп. информация</HeaderCell>
           <Cell dataKey="extra_info" />
         </Column>
-
       </Table>
     </>
   );

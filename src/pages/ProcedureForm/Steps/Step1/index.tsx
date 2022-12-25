@@ -70,8 +70,8 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     purchase_plan_id: formGlobalServerData.purchasePlanId || "",
     purchase_method_id: formGlobalValues?.plan_position_id || "",
     procedure_title: formGlobalValues?.name || "",
-    procedure_section: "SECTION_FZ_223",
-    procedure_method: "AUCTION",
+    procedure_section: "SECTION_223_FZ",
+    procedure_method: "COMPETITIVE_SELECTION",
     options: [
       formGlobalValues?.requirement_not_rnp
         ? "rnp_requirement_option"
@@ -82,6 +82,8 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         : null,
     ],
   });
+
+  console.log("formerr", formError);
 
   const planPositionId = formValue.purchase_method_id;
   const procedureTitle = formValue.procedure_title;
@@ -149,18 +151,30 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     const session = formGlobalServerData.session;
 
     if (!session) {
-      sendToast('error', "Пользователь не авторизован")
-      return
+      sendToast("error", "Пользователь не авторизован");
+      return;
       // return toaster.push(
       //   <Message type="error">Пользователь не авторизован</Message>
       // );
     }
-    const profileId = session.profile_id;
 
+    if (isViaPlan && !planPositionId) {
+      sendToast("error", "Вы не выбрали позицию из плана закупок");
+      return;
+      // return toaster.push(
+      //   <Message type="error">Вы не выбрали позицию из плана закупок</Message>
+      // );
+    }
+    if (!formRef.current.check()) {
+      sendToast("error", "Пожалуйста заполните необходимые поля формы");
+      // toaster.push(<Message type="error">Error</Message>);
+      return;
+    }
     setFormGlobalValues((state) => ({
       ...state,
-      plan_position_id: planPositionId,
+      plan_position_id: isViaPlan ? planPositionId : null,
       name: formValue.procedure_title,
+      platform: formValue.procedure_section,
       requirement_not_rnp: requirementRNPOption,
       is_for_smb: smbOption,
       is_subcontractor_requirement: subcontractorOption,
@@ -171,40 +185,10 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       isViaPlan,
       purchasePlanId: formValue.purchase_plan_id,
       purchasePlanNumber: currentPurchasePlan.registration_number,
-      planPositionNumber: selectedPlanPositions[0].number,
+      planPositionNumber: isViaPlan ? selectedPlanPositions[0].number : null,
     }));
-    console.log('plannn', planPositionId)
-    if (!planPositionId) {
-      sendToast("error", "Вы не выбрали позицию из плана закупок")
-      return
-      // return toaster.push(
-      //   <Message type="error">Вы не выбрали позицию из плана закупок</Message>
-      // );
-    }
-
-    // const procedure = await createProcedureViaPurchasePlan(
-    //   {
-    //     profileId,
-    //     planPositionId,
-    //     procedureTitle,
-    //     requirementRNPOption,
-    //     smbOption,
-    //     subcontractorOption,
-    //   },
-    //   (err) => {
-    //     return toaster.push(
-    //       <Message type="error">{JSON.stringify(err)}</Message>
-    //     );
-    //   }
-    // );
 
     nextStep();
-    // if (!formRef.current.check()) {
-    //   await createProcedureViaPurchasePlan(formValue.);
-    //   toaster.push(<Message type="error">Error</Message>);
-    //   return;
-    // }
-    // toaster.push(<Message type="success">Success</Message>);
   };
 
   useEffect(() => {
@@ -216,8 +200,6 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       }));
     }
   }, [selectedPlanPositions]);
-
-
 
   return (
     <div className="col-md-12">
@@ -250,7 +232,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               accepter={SelectPicker}
               error={formError.procedure_section}
               data={[
-                { value: "SECTION_FZ_223", label: "223-ФЗ" },
+                { value: "SECTION_223_FZ", label: "223-ФЗ" },
                 {
                   value: "SECTION_COMMERCIAL_PROCEDURES",
                   label: "Коммерческие процедуры",
@@ -264,7 +246,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               accepter={SelectPicker}
               error={formError.procedure_section}
               data={[
-                { value: "AUCTION", label: "Аукцион" },
+                // { value: "AUCTION", label: "Аукцион" },
                 { value: "COMPETITIVE_SELECTION", label: "Конкурентный отбор" },
               ]}
               placeholder="Выберите"
@@ -282,9 +264,9 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               data={
                 purchasePlansQuery?.data?.length
                   ? purchasePlansQuery.data.map((plan) => ({
-                    value: plan.id,
-                    label: `План закупки №${plan.registration_number} (${plan.reporting_year})`,
-                  }))
+                      value: plan.id,
+                      label: `План закупки №${plan.registration_number} (${plan.reporting_year})`,
+                    }))
                   : []
               }
               loading={purchasePlansQuery.isLoading}
@@ -300,23 +282,23 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                   ...position,
                   maximum_contract_price: position.maximum_contract_price
                     ? new Money(
-                      parseInt(
-                        position.maximum_contract_price.replaceAll(
-                          parseCurrency(position.maximum_contract_price),
-                          ""
-                        )
-                      ),
-                      parseCurrency(position.maximum_contract_price)
-                    ).localeFormat({ style: "currency" })
+                        parseInt(
+                          position.maximum_contract_price.replaceAll(
+                            parseCurrency(position.maximum_contract_price),
+                            ""
+                          )
+                        ),
+                        parseCurrency(position.maximum_contract_price)
+                      ).localeFormat({ style: "currency" })
                     : "Не предусмотрено",
                   status_localized:
                     position.status === "STATUS_WAIT"
                       ? "Формируется"
                       : position.status === "STATUS_POSTED"
-                        ? "Размещена"
-                        : position.status === "STATUS_ANNULLED"
-                          ? "Аннулирована"
-                          : "Редактируется",
+                      ? "Размещена"
+                      : position.status === "STATUS_ANNULLED"
+                      ? "Аннулирована"
+                      : "Редактируется",
                 }))
                 .reverse()}
               isLoading={purchasePlanQuery?.isLoading}

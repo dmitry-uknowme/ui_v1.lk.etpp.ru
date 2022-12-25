@@ -41,11 +41,11 @@ const MultiStepFormContextProvider: React.FC<
       const savedServerData = savedFormContext?.serverData;
       const savedProcedureId = savedServerData?.procedureId;
       const savedFormType = savedServerData?.actionType;
-      const savedSession = savedServerData?.session
+      const savedSession = savedServerData?.session;
       if (actionType !== ProcedureFormActionVariants.EDIT) {
         if (
-          (savedFormType && (savedFormType === actionType)) ||
-          (savedProcedureId && (savedProcedureId === procedureId))
+          (savedFormType && savedFormType === actionType) ||
+          (savedProcedureId && savedProcedureId === procedureId)
         ) {
           if (savedFormValues) {
             setFormValues(savedFormValues);
@@ -58,7 +58,7 @@ const MultiStepFormContextProvider: React.FC<
           }
 
           if (savedSession.profile_id !== session.profile_id) {
-            setServerData(state => ({ ...state, session }))
+            setServerData((state) => ({ ...state, session }));
           }
         }
       }
@@ -114,17 +114,17 @@ const MultiStepFormContextProvider: React.FC<
 
   useEffect(() => {
     if (procedureData) {
-      const options = ["protocols_count_more_option"]
+      const options = ["protocols_count_more_option"];
 
       const procedure = procedureData;
       if (procedure.bidding_per_position_option) {
-        options.push("bidding_per_position_option")
+        options.push("bidding_per_position_option");
       }
       if (procedure.requirements) {
-        options.push("rnp_requirement_option")
+        options.push("rnp_requirement_option");
       }
       if (procedure.reduction_factor_purchase) {
-        options.push("reduction_ratio_option")
+        options.push("reduction_ratio_option");
       }
       const organizer = procedure.organizer;
       const customer = procedure.customer;
@@ -135,20 +135,23 @@ const MultiStepFormContextProvider: React.FC<
       setServerData((state) => ({
         ...state,
         provision_bid: {
-          amount: `${provisionBid.amount.currency} ${provisionBid.amount.amount}`,
+          amount: provisionBid?.amount?.amount
+            ? `${provisionBid.amount.currency} ${provisionBid.amount.amount}`
+            : null,
           percent: provisionBid.percent,
         },
         provision_contract: {
-          amount: `${provisionContract.amount.currency} ${provisionContract.amount.amount}`,
+          amount: provisionBid?.amount?.amount
+            ? `${provisionContract.amount.currency} ${provisionContract.amount.amount}`
+            : null,
           percent: provisionContract.percent,
         },
         actionType: actionType,
         procedureId: procedure.id,
         noticeId: procedure?.notices?.length ? procedure.notices[0].id : null,
         lotId: procedure?.lots?.length ? procedure.lots[0].id : null,
-        options
+        options,
       }));
-
 
       setFormValues((state) => ({
         ...state,
@@ -206,19 +209,36 @@ const MultiStepFormContextProvider: React.FC<
           },
         ],
         provision_bid: {
-          amount: provisionBid?.methods.length ? provisionBid?.methods[0] === 'FIXED_AMOUNT' ? `${provisionBid.amount.currency} ${provisionBid.amount.amount}` : null : null,
+          amount: provisionBid?.methods.length
+            ? provisionBid?.methods[0] === "FIXED_AMOUNT"
+              ? `${provisionBid.amount.currency} ${provisionBid.amount.amount}`
+              : null
+            : null,
           // amount: `${provisionBid.amount.currency} ${provisionBid.amount.amount}`,
           is_specified: provisionBid.is_specified,
           methods: provisionBid.methods,
           payment_return_deposit: provisionBid.payment_return,
-          percent: provisionBid?.methods?.length ? provisionBid?.methods[0] === 'PERCENTAGE_AMOUNT' || provisionBid?.methods[0] === 'ACCORDING_DOCUMENTATION' ? provisionBid.percent : null : null,
+          percent: provisionBid?.methods?.length
+            ? provisionBid?.methods[0] === "PERCENTAGE_AMOUNT" ||
+              provisionBid?.methods[0] === "ACCORDING_DOCUMENTATION"
+              ? provisionBid.percent
+              : null
+            : null,
           // percent: provisionBid?.is_specified && provisionContract?.type === 'FROM_CONTRACT_PRICE' ? provisionContract.percent : null,
         },
         provision_contract: {
-          amount: provisionContract?.is_specified && provisionContract?.type === 'FROM_START_PRICE' ? `${provisionContract.amount.currency} ${provisionContract.amount.amount}` : null,
+          amount:
+            provisionContract?.is_specified &&
+            provisionContract?.type === "FROM_START_PRICE"
+              ? `${provisionContract.amount.currency} ${provisionContract.amount.amount}`
+              : null,
           is_specified: provisionContract.is_specified,
           // methods: provisionContract.methods,
-          percent: provisionContract?.is_specified && provisionContract?.type === 'FROM_CONTRACT_PRICE' ? provisionContract.percent : null,
+          percent:
+            provisionContract?.is_specified &&
+            provisionContract?.type === "FROM_CONTRACT_PRICE"
+              ? provisionContract.percent
+              : null,
           type: provisionContract.type,
           payment_return_deposit: provisionContract.payment_return,
         },
@@ -250,13 +270,13 @@ const MultiStepFormContextProvider: React.FC<
         count_participant_ranked_lower_than_first: null,
         is_rebidding: true,
 
-
         more_than_one_protocol: procedure.more_than_one_protocol,
         platform: procedure.platform_type,
         reduction_factor_purchase: procedure.reduction_factor_purchase,
-        reduction_factor_purchase_from: procedure.reduction_factor_purchase_from,
+        reduction_factor_purchase_from:
+          procedure.reduction_factor_purchase_from,
         reduction_factor_purchase_to: procedure.reduction_factor_purchase_to,
-        cause_failed: null
+        cause_failed: null,
       }));
       // setServerData(state => ({ ...state, procedureId: procedure.id }))
     }
@@ -280,22 +300,26 @@ const MultiStepFormContextProvider: React.FC<
 
   return (
     <>
-      {isInited ? <FormContext.Provider
-        value={{
-          formValues,
-          setFormValues,
-          formErrors,
-          setFormErrors,
-          serverData,
-          setServerData,
-          currentStepId,
-          setCurrentStepId,
-        }}
-      >
-        {children}
-      </FormContext.Provider> : <Loader size="lg" />}
+      {isInited ? (
+        <FormContext.Provider
+          value={{
+            formValues,
+            setFormValues,
+            formErrors,
+            setFormErrors,
+            serverData,
+            setServerData,
+            currentStepId,
+            setCurrentStepId,
+          }}
+        >
+          {children}
+        </FormContext.Provider>
+      ) : (
+        <Loader size="lg" />
+      )}
     </>
   );
 };
 
-export default MultiStepFormContextProvider
+export default MultiStepFormContextProvider;

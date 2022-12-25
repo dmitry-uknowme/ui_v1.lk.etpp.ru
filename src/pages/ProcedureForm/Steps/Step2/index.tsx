@@ -66,7 +66,7 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     options: [
       formGlobalValues?.bidding_per_unit && "reduction_ratio_option",
       formGlobalValues?.bidding_per_position_option &&
-      "bidding_per_position_option",
+        "bidding_per_position_option",
       formGlobalValues?.more_than_one_protocol && "protocols_count_more_option",
       formGlobalValues?.position_purchase && "bidding_per_position_option",
       "rnp_requirement_option",
@@ -116,12 +116,11 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       bid_part: "ONE",
       cause_failed: null,
       is_rebidding: true,
-      count_participant_ranked_lower_than_first: null,
+      count_participant_ranked_lower_than_first: 1,
       criteria_evaluation: null,
       currency: "RUB",
       currency_rate: 1,
       currency_rate_date: null,
-      platform: "SECTION_223_FZ",
       contract_by_any_participant: true,
     }));
     setFormGlobalServerData((state) => ({
@@ -133,7 +132,7 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         !formValue.reduction_ratio_from.trim().length ||
         !formValue.reduction_ratio_to.trim().length
       ) {
-        sendToast("error", "Вы не ввели диапазон коэффициента снижения")
+        sendToast("error", "Вы не ввели диапазон коэффициента снижения");
         // return toaster.push(
         //   <Message type="error">
         //     Вы не ввели диапазон коэффициента снижения
@@ -157,6 +156,19 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       }));
     }
   }, [selectedPlanPositions]);
+
+  useEffect(() => {
+    if (isReductionRatioOption) {
+      setFormValue((state) => ({
+        ...state,
+        options: [
+          ...state.options.filter(
+            (opt) => opt === "bidding_per_position_option"
+          ),
+        ],
+      }));
+    }
+  }, [formValue.options]);
 
   const isReductionRatioOption = !!formValue.options.includes(
     "reduction_ratio_option"
@@ -190,18 +202,21 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           accepter={CheckboxGroup}
           error={formError.options}
         >
-          <Checkbox value={"bidding_per_position_option"}>
+          <Checkbox
+            value={"bidding_per_position_option"}
+            disabled={isReductionRatioOption}
+          >
             Попозиционная закупка
           </Checkbox>
           <Checkbox
             // value={"bidding_per_unit_option"}
             value={"reduction_ratio_option"}
-          // checked={
-          //   !!(
-          //     formValue.options.includes("bidding_per_unit_option") ||
-          //     formValue.options.includes("reduction_ratio_option")
-          //   )
-          // }
+            // checked={
+            //   !!(
+            //     formValue.options.includes("bidding_per_unit_option") ||
+            //     formValue.options.includes("reduction_ratio_option")
+            //   )
+            // }
           >
             Торги за единицу
           </Checkbox>

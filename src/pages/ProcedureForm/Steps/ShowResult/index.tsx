@@ -39,8 +39,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   setIsOpen,
   activeStep,
   setActiveStep,
-  actionType
-
+  actionType,
 }) => {
   const {
     formValues: formGlobalValues,
@@ -51,7 +50,11 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const [documents, setDocuments] = useState([]);
   const [isBtnLoader, setBtnLoader] = useState<boolean>(false);
   const navigate = useNavigate();
-  const [positionsTableData, setPositionsTableData] = useState(formGlobalServerData?.positionsTableData?.length ? formGlobalServerData.positionsTableData : []);
+  const [positionsTableData, setPositionsTableData] = useState(
+    formGlobalServerData?.positionsTableData?.length
+      ? formGlobalServerData.positionsTableData
+      : []
+  );
   // console.log("procccccc 7", formGlobalValues);
   const procedureId = formGlobalServerData?.procedureId;
   const procedureNumber = formGlobalServerData?.procedureNumber;
@@ -69,17 +72,19 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
 
   const lot = procedure?.lots?.length ? procedure?.lots[0] : null;
 
-  console.log('tableeee', positionsTableData)
+  console.log("tableeee", positionsTableData);
   const dateTime = lot?.date_time;
   if (!procedureId || !noticeId || !lot) {
-    sendToast("error", "Извещение не создано")
+    sendToast("error", "Извещение не создано");
     // toaster.push(<Message type="error">Извещение не создано</Message>);
     setActiveStep(4);
     return;
   }
 
   const provisionBid = procedure.provision_bid;
+  const provisionBidServer = formGlobalServerData.provision_bid;
   const provisionContract = procedure.provision_contract;
+  const provisionContractServer = formGlobalServerData.provision_contract;
   const planId = formGlobalServerData?.purchasePlanId;
   const planPositionId = formGlobalValues?.plan_position_id;
   const cert_thumbprint = formGlobalServerData?.session?.cert_thumbprint;
@@ -140,7 +145,10 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
         formData,
         { withCredentials: true }
       );
-      sendToast("success", "Извещение успешно подписано и отправлено в очередь на загрузку в ЕИС")
+      sendToast(
+        "success",
+        "Извещение успешно подписано и отправлено в очередь на загрузку в ЕИС"
+      );
 
       // toaster.push(
       //   <Message type="success">
@@ -151,7 +159,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
         document.querySelector("#eisProcessLink")?.click();
       }, 1500);
     } catch (err) {
-      sendToast("error", 'Ошибка при подписании извещения')
+      sendToast("error", "Ошибка при подписании извещения");
       // return toaster.push(
       //   <Message type="error">Ошибка при подписании извещения</Message>
       // );
@@ -251,24 +259,30 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     </td>
                     <td style={{ width: "50%" }}>
                       {procedure.bidding_per_unit_amount
-                        ? parseDBMoney(procedure.bidding_per_unit_amount).localeFormat({
-                          style: "currency",
-                        })
-                        // ? currency(
-                        //   parseDBAmount(procedure.bidding_per_unit_amount)
-                        // ).toString()
-                        :
-                        "Не предусмотрено"}
-
+                        ? parseDBMoney(
+                            procedure.bidding_per_unit_amount
+                          ).localeFormat({
+                            style: "currency",
+                          })
+                        : // ? currency(
+                          //   parseDBAmount(procedure.bidding_per_unit_amount)
+                          // ).toString()
+                          "Не предусмотрено"}
                     </td>
                   </tr>
                 ) : null}
                 <tr>
+                  <td style={{ width: "50%" }}>НДС</td>
                   <td style={{ width: "50%" }}>
-                    НДС
-                  </td>
-                  <td style={{ width: "50%" }}>
-                    {procedure?.lots[0].nds_type === 'NO_NDS' ? "Без НДС" : procedure?.lots[0].nds_type == "FIX_10" ? '10%' : procedure?.lots[0].nds_type === 'FIX_18' ? "18%" : procedure?.lots[0].nds_type === 'FIX_20' ? '20%' : procedure?.lots[0]?.nds_type}
+                    {procedure?.lots[0].nds_type === "NO_NDS"
+                      ? "Без НДС"
+                      : procedure?.lots[0].nds_type == "FIX_10"
+                      ? "10%"
+                      : procedure?.lots[0].nds_type === "FIX_18"
+                      ? "18%"
+                      : procedure?.lots[0].nds_type === "FIX_20"
+                      ? "20%"
+                      : procedure?.lots[0]?.nds_type}
                   </td>
                 </tr>
 
@@ -412,23 +426,23 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                         ? provisionBid.methods[0] === "PERCENTAGE_AMOUNT"
                           ? "Процент от НМЦ (с внесением д/с на эл. площадку или банковская гарантия на эл. площадку)"
                           : provisionBid.methods[0] === "FIXED_AMOUNT"
-                            ? "Фиксированная сумма (с внесением д/с на эл. площадку или банковская гарантия)"
-                            : provisionBid.methods[0] === "WITHOUT_COLLATERAL"
-                              ? "Без обеспечения"
-                              : provisionBid.methods[0] ===
-                                "ACCORDING_DOCUMENTATION"
-                                ? "В соответствии с документацией"
-                                : null
+                          ? "Фиксированная сумма (с внесением д/с на эл. площадку или банковская гарантия)"
+                          : provisionBid.methods[0] === "WITHOUT_COLLATERAL"
+                          ? "Без обеспечения"
+                          : provisionBid.methods[0] ===
+                            "ACCORDING_DOCUMENTATION"
+                          ? "В соответствии с документацией"
+                          : null
                         : null}
                     </td>
                   </tr>
-                  {provisionBid?.amount ? (
+                  {provisionBidServer?.amount ? (
                     <tr>
                       <td style={{ width: "50%" }}>
                         Размер обеспечения заявки
                       </td>
                       <td style={{ width: "50%" }}>
-                        {parseDBMoney(provisionBid.amount).localeFormat({
+                        {parseDBMoney(provisionBidServer.amount).localeFormat({
                           style: "currency",
                         })}
                         {/* {currency(parseDBAmount(provisionBid.amount)).format()}
@@ -454,20 +468,22 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                           "ACCORDING_PROCUREMENT_DOCUMENTS"
                           ? "В соответствии с закупочной документацией"
                           : provisionContract.type === "FROM_START_PRICE"
-                            ? "От начальной цены лота"
-                            : provisionContract.type === "FROM_CONTRACT_PRICE"
-                              ? "От цены договора"
-                              : null
+                          ? "От начальной цены лота"
+                          : provisionContract.type === "FROM_CONTRACT_PRICE"
+                          ? "От цены договора"
+                          : null
                         : null}
                     </td>
                   </tr>
-                  {provisionContract?.amount ? (
+                  {provisionContractServer?.amount ? (
                     <tr>
                       <td style={{ width: "50%" }}>
                         Размер обеспечения исполнения договора
                       </td>
                       <td style={{ width: "50%" }}>
-                        {parseDBMoney(provisionContract.amount).localeFormat({
+                        {parseDBMoney(
+                          provisionContractServer.amount
+                        ).localeFormat({
                           style: "currency",
                         })}
                       </td>
@@ -734,23 +750,32 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                 data={
                   positionsTableData?.length
                     ? positionsTableData.map((position) => ({
-                      ...position,
-                      okato:
-                        position?.region_okato ||
-                        purchasePlanPositionQuery?.data?.okato ||
-                        null,
-                      unit_name: position.unit_name,
-                      okpd_field: `${position.okpd_code}. ${position.okpd_name} `,
-                      okved_field: `${position.okved_code}. ${position.okved_name} `,
-                      qty_count: position?.qty_count ? position.qty_count : `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
-                        } `,
-                      region: position?.region_address && (position?.region || position?.region_name) ? `${position?.region || position?.region_name} , ${position?.region_address}` : position.region_address,
-                      // full_region: `${position?.region || position?.region_name} , ${position?.region_address
-                      //   } `
-                      // ,
-                      address: position?.region_address,
-                      extra_info: position?.addition_info || position?.info
-                    }))
+                        ...position,
+                        okato:
+                          position?.region_okato ||
+                          purchasePlanPositionQuery?.data?.okato ||
+                          null,
+                        unit_name: position.unit_name,
+                        okpd_field: `${position.okpd_code}. ${position.okpd_name} `,
+                        okved_field: `${position.okved_code}. ${position.okved_name} `,
+                        qty_count: position?.qty_count
+                          ? position.qty_count
+                          : `${position.qty || "Не определено"}, ${
+                              position.unit_name || "Не определено"
+                            } `,
+                        region:
+                          position?.region_address &&
+                          (position?.region || position?.region_name)
+                            ? `${position?.region || position?.region_name} , ${
+                                position?.region_address
+                              }`
+                            : position.region_address,
+                        // full_region: `${position?.region || position?.region_name} , ${position?.region_address
+                        //   } `
+                        // ,
+                        address: position?.region_address,
+                        extra_info: position?.addition_info || position?.info,
+                      }))
                     : []
                 }
                 activeStep={activeStep}
@@ -792,7 +817,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
             className="d-none"
             id="eisProcessLink"
             href={`${LK_URL}/lot/notice/${noticeId}/process`}
-          // target="_blank"
+            // target="_blank"
           >
             Редактирование процедуры
           </a>
@@ -800,7 +825,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
             className="d-none"
             id="editProcedureLink"
             href={`${LK_URL}/procedure/edit/new/${procedure.id}`}
-          // target="_blank"
+            // target="_blank"
           >
             Процесс
           </a>
