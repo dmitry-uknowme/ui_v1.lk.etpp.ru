@@ -14,20 +14,30 @@ const PositionUnitPicker: React.FC<PositionUnitPickerProps> = ({
   initialValue,
   setInitialValue,
 }) => {
-  // const [value, setValue] = useState(initialValue);
-  // useEffect(() => {
-  //   setValue(initialValue);
-  // }, [initialValue]);
-  const { data, isLoading } = useQuery("lotPositionUnits", async () => {
-    const units = await fetchLotPositionUnits();
+  const [value, setValue] = useState<string>("")
+  const [searchString, setSearchString] = useState<string>("")
+  const [foundData, setFoundData] = useState([])
+  const { data, isLoading } = useQuery(["lotPositionUnits", searchString], async () => {
+    const units = await fetchLotPositionUnits(searchString);
     return units.map((unit) => ({ value: unit.id, label: unit.name }));
-  });
+  }, { refetchInterval: false });
+
+  useEffect(() => {
+    setFoundData(data)
+  }, [data])
+
+  useEffect(() => {
+    setInitialValue(value)
+  }, [value])
   return (
     <SelectPicker
-      data={initialData || data}
-      value={initialValue}
+      data={foundData}
+      value={initialValue || value}
       onChange={(value) => {
-        setInitialValue(value);
+        setValue(value)
+      }}
+      onSearch={(value) => {
+        setSearchString(value)
       }}
       loading={isLoading}
     />

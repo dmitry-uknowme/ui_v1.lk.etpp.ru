@@ -87,22 +87,22 @@ const Step4 = ({
   const isBiddingPerUnitOption = !!formGlobalValues?.bidding_per_unit;
   const serverProcedure = formGlobalServerData.procedure;
   const [positionsTableData, setPositionsTableData] = useState(
-    formGlobalServerData?.positionsTableData ||
+    formGlobalServerData?.positionsTableData ? formGlobalServerData?.positionsTableData :
       !isEditType
-      ? [
-        {
-          id: "null",
-          qty: "",
-          unit_name: "",
-          qty_count: null,
-          region: null,
-          okpd_code: "",
-          okpd_name: "",
-          okved_code: "",
-          okved_name: "",
-        },
-      ]
-      : []
+        ? [
+          {
+            id: "null",
+            qty: "",
+            unit_name: "",
+            qty_count: null,
+            region: null,
+            okpd_code: "",
+            okpd_name: "",
+            okved_code: "",
+            okved_name: "",
+          },
+        ]
+        : []
   );
 
   useEffect(() => {

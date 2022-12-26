@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { SelectPicker } from "rsuite";
 import fetchOkvedCodes from "../../services/api/fetchOkvedCodes";
@@ -14,20 +14,39 @@ const OkvedCodePicker: React.FC<PositionUnitPickerProps> = ({
   initialValue,
   setInitialValue,
 }) => {
-  const { data, isLoading, refetch } = useQuery("okvedCodes", async () => {
-    const okpdCodes = await fetchOkvedCodes();
+  const [value, setValue] = useState<string>("")
+  const [searchString, setSearchString] = useState<string>("")
+  const [foundData, setFoundData] = useState([])
+  const { data, isLoading, refetch } = useQuery(["okvedCodes", searchString], async () => {
+    const okpdCodes = await fetchOkvedCodes(searchString);
     return okpdCodes.map((code) => ({
       value: `${code.key}; ${code.name}`,
       label: `${code.key}: ${code.name}`,
     }));
-  });
+  }, { refetchInterval: false });
+
+  useEffect(() => {
+    setFoundData(data)
+  }, [data])
+
+  useEffect(() => {
+    setInitialValue(value)
+  }, [value])
+
+
   return (
     <SelectPicker
-      data={initialData || data}
-      value={initialValue}
+      data={foundData}
+      value={initialValue || value}
       onChange={(value) => {
-        setInitialValue(value);
+        setValue(value)
       }}
+      onSearch={(value) => {
+        setSearchString(value)
+      }}
+      // onChange={(value) => {
+      //   setInitialValue(value);
+      // }}
       loading={isLoading}
     />
   );
