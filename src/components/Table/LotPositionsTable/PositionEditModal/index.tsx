@@ -130,7 +130,8 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
   const actionType = formGlobalServerData?.actionType;
   const isViaPlan = formGlobalServerData?.isViaPlan;
   const lotId = formGlobalServerData?.lotId;
-  const isAddType = position.id === "null";
+  const isAddType = position.id === "null" || !isViaPlan;
+  // const isAddType = position.id === "null";
   const biddingPerPositionOption =
     options?.includes("bidding_per_position_option") ?? false;
   const [formValue, setFormValue] = useState({

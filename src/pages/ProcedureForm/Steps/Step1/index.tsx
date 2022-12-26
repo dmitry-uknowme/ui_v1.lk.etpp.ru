@@ -188,6 +188,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       purchasePlanId: formValue.purchase_plan_id,
       purchasePlanNumber: currentPurchasePlan.registration_number,
       planPositionNumber: isViaPlan ? selectedPlanPositions[0].number : null,
+      procedureMethod: isViaPlan ? 'COMPETITIVE_SELECTION' : formValue.procedure_method
     }));
 
     nextStep();
