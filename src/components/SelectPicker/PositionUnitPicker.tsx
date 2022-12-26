@@ -20,7 +20,7 @@ const PositionUnitPicker: React.FC<PositionUnitPickerProps> = ({
   // }, [initialValue]);
   const { data, isLoading } = useQuery("lotPositionUnits", async () => {
     const units = await fetchLotPositionUnits();
-    return units.map((unit) => ({ value: unit.value, label: unit.name }));
+    return units.map((unit) => ({ value: unit.id, label: unit.name }));
   });
   return (
     <SelectPicker

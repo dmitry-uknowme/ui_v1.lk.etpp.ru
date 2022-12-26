@@ -248,9 +248,8 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
         try {
           await updateLotPosition(position.id_legacy, {
             amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
-            unit_price: `RUB ${
-              currency(parseFloat(newPosition.unit_amount)).intValue
-            }`,
+            unit_price: `RUB ${currency(parseFloat(newPosition.unit_amount)).intValue
+              }`,
             info: formValue.extra_info,
             region_address: newPosition.region_address,
             unit_value: newPosition.unit_id,
@@ -287,7 +286,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
           });
           addPositions({
             unit_id: newPosition.unit_id,
-            info: newPosition.info,
+            info: newPosition.info?.trim()?.length ? newPosition.info : null,
             name: newPosition.name,
             okpd_name: newPosition.okpd_name,
             okpd_code: newPosition.okpd_code,
@@ -296,7 +295,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
             region_name: newPosition.region_name,
             region_okato: newPosition.okato,
             region_address: newPosition.region_address,
-            qty: newPosition.qty,
+            qty: parseFloat(newPosition.qty),
             type_item: newPosition.type_item,
             amount: null,
           });
@@ -492,9 +491,9 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
             data={
               regionsQuery?.data?.length
                 ? regionsQuery.data.map((region) => ({
-                    value: region.okato,
-                    label: region.nameWithType,
-                  }))
+                  value: region.okato,
+                  label: region.nameWithType,
+                }))
                 : []
             }
             loading={regionsQuery?.isLoading}
