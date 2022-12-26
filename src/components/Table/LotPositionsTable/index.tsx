@@ -71,6 +71,8 @@ const ActionCell = ({ rowData, dataKey, onClick, isViaPlan, ...props }) => {
     </Cell>
   );
 };
+
+
 const RegionCell = ({ rowData, dataKey, regionsQuery, data, ...props }) => (
   <>
     {rowData[dataKey]?.split(",")?.length === 2 ? (
@@ -84,9 +86,9 @@ const RegionCell = ({ rowData, dataKey, regionsQuery, data, ...props }) => (
           data={
             regionsQuery?.data?.length
               ? regionsQuery.data.map((region) => ({
-                  value: region.okato,
-                  label: region.nameWithType,
-                }))
+                value: region.okato,
+                label: region.nameWithType,
+              }))
               : []
           }
           loading={regionsQuery?.isLoading}

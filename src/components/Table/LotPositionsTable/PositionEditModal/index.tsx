@@ -13,7 +13,6 @@ import {
   toaster,
 } from "rsuite";
 import { v4 as uuidv4 } from "uuid";
-
 import CurrencyInput from "react-currency-masked-input";
 import fetchRegions from "../../../../services/api/fetchRegions";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
@@ -104,8 +103,8 @@ const model = Schema.Model({
 });
 const modelAddType = Schema.Model({
   type_item: StringType().isRequired("Поле обязательно для заполнения"),
-  okpd_code: NumberType().isRequired("Поле обязательно для заполнения"),
-  okved_code: NumberType().isRequired("Поле обязательно для заполнения"),
+  okpd_code: StringType().isRequired("Поле обязательно для заполнения"),
+  okved_code: StringType().isRequired("Поле обязательно для заполнения"),
   region_okato: StringType().isRequired("Поле обязательно для заполнения"),
   address: StringType().isRequired("Поле обязательно для заполнения"),
   name: StringType().isRequired("Поле обязательно для заполнения"),
@@ -179,8 +178,8 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
   //   }
   // }, [formValue])
   const handleSubmit = async () => {
-    console.log("vvvvv", formValue);
-    console.log("errr", formError);
+    // console.log("vvvvv", formValue);
+    // console.log("errr", formError);
     if (!formRef.current.check()) {
       sendToast("error", "Пожалуйста исправьте ошибки");
       // toaster.push(<Message type="error">Пожалуйста исправьте ошибки</Message>);
@@ -195,18 +194,25 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
       return;
     }
     // if (!formValue.okpd_code) return;
-    const okpdCodes = queryClient.getQueryData(["okpdCodes"]);
-    const selectedOkpd =
-      okpdCodes?.find((code) => code.value === formValue.okpd_code) || null;
-    // if (!selectedOkpd) return;
-    const selectedOkpdCode = selectedOkpd.label.split(":")[0];
-    const selectedOkpdName = selectedOkpd.label.split(":")[1].trim();
-    const okvedCodes = queryClient.getQueryData(["okvedCodes"]);
-    const selectedOkved =
-      okpdCodes?.find((code) => code.value === formValue.okved_code) || null;
-    // if (!selectedOkpd) return;
-    const selectedOkvedCode = selectedOkved.label.split(":")[0];
-    const selectedOkvedName = selectedOkved.label.split(":")[1].trim();
+    const selectedOkpd = formValue.okpd_code
+    const selectedOkpdCode = selectedOkpd.split(';')[0]
+    const selectedOkpdName = selectedOkpd.split(';')[1].trim()
+
+    const selectedOkved = formValue.okved_code
+    const selectedOkvedCode = selectedOkved.split(';')[0]
+    const selectedOkvedName = selectedOkved.split(';')[1].trim()
+    // const okpdCodes = queryClient.getQueryData(["okpdCodes"]);
+    // const selectedOkpd =
+    //   okpdCodes?.find((code) => code.value === formValue.okpd_code) || null;
+    // // if (!selectedOkpd) return;
+    // const selectedOkpdCode = selectedOkpd.label.split(":")[0];
+    // const selectedOkpdName = selectedOkpd.label.split(":")[1].trim();
+    // const okvedCodes = queryClient.getQueryData(["okvedCodes"]);
+    // const selectedOkved =
+    //   okpdCodes?.find((code) => code.value === formValue.okved_code) || null;
+    // // if (!selectedOkpd) return;
+    // const selectedOkvedCode = selectedOkved.label.split(":")[0];
+    // const selectedOkvedName = selectedOkved.label.split(":")[1].trim();
 
     const newPosition = {
       id: position.id,

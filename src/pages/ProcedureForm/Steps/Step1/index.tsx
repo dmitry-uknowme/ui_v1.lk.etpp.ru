@@ -83,7 +83,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     ],
   });
 
-  console.log("formerr", formError);
+
 
   const planPositionId = formValue.purchase_method_id;
   const procedureTitle = formValue.procedure_title;
@@ -128,7 +128,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
       return result;
     },
-    { refetchInterval: false }
+    { refetchInterval: false, refetchOnMount: false, refetchIntervalInBackground: false }
     // { enabled: !!isViaPlan }
   );
 
@@ -140,6 +140,8 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       refetchInterval: false,
     }
   );
+
+  // console.log("positionsss", purchasePlanQuery?.data?.positions);
 
   const currentPurchasePlan = purchasePlansQuery?.data?.find(
     (item) => item.id === formValue.purchase_plan_id
@@ -248,6 +250,8 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               data={[
                 // { value: "AUCTION", label: "Аукцион" },
                 { value: "COMPETITIVE_SELECTION", label: "Конкурентный отбор" },
+                { value: "REQUEST_OFFERS", label: "Запрос предложений" },
+                { value: "REQUEST_QUOTATIONS", label: "Запрос котировок" },
               ]}
               placeholder="Выберите"
             />
@@ -264,9 +268,9 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               data={
                 purchasePlansQuery?.data?.length
                   ? purchasePlansQuery.data.map((plan) => ({
-                      value: plan.id,
-                      label: `План закупки №${plan.registration_number} (${plan.reporting_year})`,
-                    }))
+                    value: plan.id,
+                    label: `План закупки №${plan.registration_number} (${plan.reporting_year})`,
+                  }))
                   : []
               }
               loading={purchasePlansQuery.isLoading}
@@ -282,23 +286,23 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                   ...position,
                   maximum_contract_price: position.maximum_contract_price
                     ? new Money(
-                        parseInt(
-                          position.maximum_contract_price.replaceAll(
-                            parseCurrency(position.maximum_contract_price),
-                            ""
-                          )
-                        ),
-                        parseCurrency(position.maximum_contract_price)
-                      ).localeFormat({ style: "currency" })
+                      parseInt(
+                        position.maximum_contract_price.replaceAll(
+                          parseCurrency(position.maximum_contract_price),
+                          ""
+                        )
+                      ),
+                      parseCurrency(position.maximum_contract_price)
+                    ).localeFormat({ style: "currency" })
                     : "Не предусмотрено",
                   status_localized:
                     position.status === "STATUS_WAIT"
                       ? "Формируется"
                       : position.status === "STATUS_POSTED"
-                      ? "Размещена"
-                      : position.status === "STATUS_ANNULLED"
-                      ? "Аннулирована"
-                      : "Редактируется",
+                        ? "Размещена"
+                        : position.status === "STATUS_ANNULLED"
+                          ? "Аннулирована"
+                          : "Редактируется",
                 }))
                 .reverse()}
               isLoading={purchasePlanQuery?.isLoading}

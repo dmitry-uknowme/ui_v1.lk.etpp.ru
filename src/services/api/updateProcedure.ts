@@ -10,7 +10,7 @@ const updateProcedure = async (
 ) => {
   try {
     const { data } = await axios.put(
-      `${API_V1_URL}/procedures/${procedureId}`,
+      `${API_V1_URL}/procedure/${procedureId}`,
       payload,
       {
         headers: {

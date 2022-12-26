@@ -18,7 +18,7 @@ const OkpdCodePicker: React.FC<PositionUnitPickerProps> = ({
   const { data, isLoading } = useQuery("okpdCodes", async () => {
     const okpdCodes = await fetchOkpdCodes();
     return okpdCodes.map((code) => ({
-      value: code.id,
+      value: `${code.key}; ${code.name}`,
       label: `${code.key}: ${code.name}`,
     }));
   });

@@ -87,13 +87,15 @@ const Step4 = ({
   const isBiddingPerUnitOption = !!formGlobalValues?.bidding_per_unit;
   const serverProcedure = formGlobalServerData.procedure;
   const [positionsTableData, setPositionsTableData] = useState(
-    !isEditType
+    formGlobalServerData?.positionsTableData ||
+      !isEditType
       ? [
         {
           id: "null",
           qty: "",
           unit_name: "",
-          qty_count: "",
+          qty_count: null,
+          region: null,
           okpd_code: "",
           okpd_name: "",
           okved_code: "",
@@ -102,6 +104,10 @@ const Step4 = ({
       ]
       : []
   );
+
+  useEffect(() => {
+    setFormGlobalServerData(state => ({ ...state, positionsTableData }))
+  }, [positionsTableData])
 
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
@@ -547,7 +553,7 @@ const Step4 = ({
     }
   }, [formError]);
   return (
-    <div className="col-md-9">
+    <div className="col-md-12">
       <Form
         ref={formRef}
         onChange={setFormValue}
@@ -762,14 +768,15 @@ const Step4 = ({
                   okved_field: `${position.okved_code}. ${position.okved_name} `,
                   qty_count: position?.qty_count
                     ? position.qty_count
-                    : `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
-                    } `,
+                    : position.qty && position.unit_name ? `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
+                      }` : null,
                   region:
-                    position?.region_address &&
-                      (position?.region || position?.region_name)
-                      ? `${position?.region || position?.region_name} , ${position?.region_address
-                      } `
-                      : position.region_address,
+                    !position?.region && !position?.region_address ? null :
+                      position?.region_address &&
+                        (position?.region || position?.region_name)
+                        ? `${position?.region || position?.region_name} , ${position?.region_address
+                        } `
+                        : position.region_address,
 
                   address: position?.region_address || "",
                   extra_info: position?.addition_info || position?.info || "",

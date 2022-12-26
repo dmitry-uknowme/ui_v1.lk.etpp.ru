@@ -19,24 +19,32 @@ const CompactCell = (props) => {
     <Cell
       {...props}
       style={{ padding: 4 }}
-      children={
-        dataKey === "select" ? (
-          <Checkbox
-            checked={
-              selected.find((item) => item.id === rowData.id) ? true : false
-            }
-            onChange={(value) => {
-              setSelected([rowData]);
-            }}
-          />
-        ) : null
-      }
     />
   );
 };
 const CompactHeaderCell = (props) => (
   <HeaderCell {...props} style={{ padding: 4 }} resizable />
 );
+
+const ActionCell = (props) => {
+  const { dataKey, rowData, selected, setSelected } = props;
+
+  return (
+    <Cell {...props} style={{ padding: "6px" }}>
+      <Checkbox
+      // checked={
+      //   selected[0]?.id === rowData.id ? true : false
+      // }
+      // // checked={
+      // //   selected.find((item) => item.id === rowData.id) ? true : false
+      // // }
+      // onChange={(value) => {
+      //   setSelected([rowData]);
+      // }}
+      />
+    </Cell>
+  );
+};
 
 const Table: React.FC<TableProps> = ({
   data,
@@ -60,15 +68,14 @@ const Table: React.FC<TableProps> = ({
       rowHeight={30}
       wordWrap="break-word"
     >
+
       {dataColumns.map((column) => {
         const { key, label, ...rest } = column;
         return (
           <Column {...rest} key={key}>
             <CompactHeaderCell>{label}</CompactHeaderCell>
             <CompactCell
-              dataKey={key}
-              selected={selectedItems}
-              setSelected={setSelectedItems}
+              dataKey={key} {...rest}
             />
           </Column>
         );

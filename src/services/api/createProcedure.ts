@@ -9,7 +9,7 @@ const createProcedure = async (
 ) => {
   try {
     const { data } = await axios.post(
-      `${API_V1_URL}/procedures/COMPETITIVE_SELECTION`,
+      `${API_V1_URL}/procedure/COMPETITIVE_SELECTION`,
       payload,
       {
         headers: {
@@ -37,7 +37,7 @@ const createProcedure = async (
     // }
     return data;
   } catch (err) {
-    console.log("procedure eerrrrrrr",err)
+    console.log("procedure eerrrrrrr", err);
     if (err.response.status === 400) {
       return onError(err.response.data.errors);
     }
