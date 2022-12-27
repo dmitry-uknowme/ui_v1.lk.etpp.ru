@@ -105,7 +105,7 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       return
     }
 
-    const { globalFormValues: finalGlobalFormValues, globalServerValues: finalGlobalServerValues } = dispatchStep3Values(formValue)
+    const { globalFormValues: finalGlobalFormValues, globalServerValues: finalGlobalServerValues } = dispatchStep3Values(formValue, formGlobalValues)
 
     setFormGlobalValues(state => ({ ...state, ...finalGlobalFormValues }))
     setFormGlobalServerData(state => ({ ...state, ...finalGlobalServerValues }))
