@@ -17,6 +17,7 @@ import InfoRoundIcon from "@rsuite/icons/InfoRound";
 import React, { useContext, useEffect, useState } from "react";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
 import sendToast from "../../../../utils/sendToast";
+import { checkStep2Values, dispatchStep2Values, initStep2Values } from "./helpers";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -38,27 +39,6 @@ const Field = React.forwardRef((props, ref) => {
   );
 });
 
-// const CustomField = () => {
-//   const { name, message, label, accepter, error, ...rest } = props;
-//   return (
-//     <>
-//       <InputNumber />
-//       <Whisper
-//         speaker={
-//           <Tooltip style={{ width: 300 }}>
-//             Заключение договора будет возможно с любым из допущенных участников.
-//             Блокирование обеспечения заявок сохранится у всех допущенных
-//             участников после публикации итогового (последнего) протокола закупки
-//             до момента заключения договора.
-//           </Tooltip>
-//         }
-//         placement="autoHorizontalEnd"
-//       >
-//         <InfoRoundIcon color="#3498ff" style={{ marginLeft: "0.5rem" }} />
-//       </Whisper>
-//     </>
-//   );
-// };
 
 const { ArrayType, NumberType, StringType } = Schema.Types;
 const model = Schema.Model({
@@ -82,146 +62,48 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
-  const [formValue, setFormValue] = React.useState({
-    accepting_bids_place: "ON_ETP",
-    contract_conclude_type: formGlobalValues?.contract_type || "ON_SITE",
-    options: [
-      formGlobalValues?.bidding_per_unit && "reduction_ratio_option",
-      formGlobalValues?.bidding_per_position_option &&
-        "bidding_per_position_option",
-      formGlobalValues?.more_than_one_protocol && "protocols_count_more_option",
-      formGlobalValues?.position_purchase && "bidding_per_position_option",
-      "rnp_requirement_option",
-    ],
-    count_participant_ranked_lower_than_first:
-      formGlobalValues?.count_participant_ranked_lower_than_first || "",
-    reduction_ratio_from:
-      formGlobalValues?.reduction_factor_purchase_from?.toString() || "0",
-    reduction_ratio_to:
-      formGlobalValues?.reduction_factor_purchase_to?.toString() || "1",
-  });
-  useEffect(() => {
-    setFormValue((state) => ({
-      ...state,
-      contract_conclude_type: formGlobalValues?.contract_type || "ON_SITE",
-    }));
-  }, [formGlobalValues.contract_type]);
+  const [formValue, setFormValue] = React.useState(initStep2Values({ globalFormValues: formGlobalValues, globalServerValues: formGlobalServerData }))
+
 
   const isViaPlan = formGlobalServerData.isViaPlan;
   const contractByAnyParticipantOption = formValue.options.includes(
     "contract_by_any_participant_option"
   );
-  const [selectedPlanPositions, setSelectedPlanPositions] = useState([]);
+
+  const biddingPerPositionOption = formValue.options.includes(
+    "bidding_per_position_option"
+  );
+  const biddingPerUnitOption = formValue.options.includes(
+    "bidding_per_unit_option"
+  );
+  const reductionRatioOption = formValue.options.includes(
+    "reduction_ratio_option"
+  );
+  const protocolsCountMoreOption = formValue.options.includes(
+    "protocols_count_more_option"
+  );
+
   const handleSubmit = () => {
-    const errors = {};
-
-    const biddingPerPositionOption = formValue.options.includes(
-      "bidding_per_position_option"
-    );
-    const biddingPerUnitOption = formValue.options.includes(
-      "bidding_per_unit_option"
-    );
-    const reductionRatioOption = formValue.options.includes(
-      "reduction_ratio_option"
-    );
-    const protocolsCountMoreOption = formValue.options.includes(
-      "protocols_count_more_option"
-    );
-
-    const contractConcludeType = formValue.contract_conclude_type;
-    if (!contractByAnyParticipantOption) {
-      if (!parseInt(formValue.count_participant_ranked_lower_than_first)) {
-        errors.count_participant_ranked_lower_than_first =
-          "Поле обязательно для заполнения";
-        // setFormError((state) => ({
-        //   ...state,
-        //   count_participant_ranked_lower_than_first:
-        //     "Поле обязательно для заполнения",
-        // }));
-      }
-    }
-
-    if (!formRef.current.check() || Object.keys(errors)?.length) {
-      setFormError((state) => ({ ...state, ...errors }));
-      sendToast("error", "Пожалуйста исправьте ошибки");
+    if (!formRef.current.check()) {
+      sendToast("error", "Пожалуйста заполните необходимые поля формы");
       return;
     }
 
-    setFormGlobalValues((state) => ({
-      ...state,
-      position_purchase: biddingPerPositionOption,
-      bidding_per_unit: reductionRatioOption,
-      reduction_factor_purchase: reductionRatioOption,
-      reduction_factor_purchase_to: parseFloat(formValue.reduction_ratio_to),
-      reduction_factor_purchase_from: parseFloat(
-        formValue.reduction_ratio_from
-      ),
-      more_than_one_protocol: protocolsCountMoreOption,
-      contract_type: contractConcludeType,
-      bid_part: "ONE",
-      cause_failed: null,
-      is_rebidding: isProcedureCompetitiveSelection
-        ? true
-        : formValue.options.includes("rebidding_option"),
-      count_participant_ranked_lower_than_first: contractByAnyParticipantOption
-        ? 1
-        : parseInt(formValue.count_participant_ranked_lower_than_first),
-      criteria_evaluation: null,
-      currency: "RUB",
-      currency_rate: 1,
-      currency_rate_date: null,
-      contract_by_any_participant: contractByAnyParticipantOption,
-    }));
-    setFormGlobalServerData((state) => ({
-      ...state,
-      options: formValue.options,
-    }));
-    if (isReductionRatioOption) {
-      if (
-        !formValue.reduction_ratio_from.trim().length ||
-        !formValue.reduction_ratio_to.trim().length
-      ) {
-        sendToast("error", "Вы не ввели диапазон коэффициента снижения");
-        // return toaster.push(
-        //   <Message type="error">
-        //     Вы не ввели диапазон коэффициента снижения
-        //   </Message>
-        // );
-      }
+    const errors = checkStep2Values(formValue)
+    if (errors) {
+      setFormError(state => ({ ...state, ...errors }))
+      return
     }
+
+    const { globalFormValues: finalGlobalFormValues, globalServerValues: finalGlobalServerValues } = dispatchStep2Values(formValue)
+
+    setFormGlobalValues(state => ({ ...state, ...finalGlobalFormValues }))
+    setFormGlobalServerData(state => ({ ...state, ...finalGlobalServerValues }))
+
     nextStep();
-    // if (!formRef.current.check()) {
-    //   toaster.push(<Message type="error">Error</Message>);
-    //   return;
-    // }
-    // toaster.push(<Message type="success">Success</Message>);
+
   };
 
-  useEffect(() => {
-    if (selectedPlanPositions.length) {
-      setFormValue((state) => ({
-        ...state,
-        procedure_title: selectedPlanPositions[0].title,
-      }));
-    }
-  }, [selectedPlanPositions]);
-
-  useEffect(() => {
-    if (isReductionRatioOption) {
-      setFormValue((state) => ({
-        ...state,
-        options: [
-          ...state.options.filter(
-            (opt) => opt === "bidding_per_position_option"
-          ),
-        ],
-      }));
-    }
-  }, [formValue.options]);
-
-  const isReductionRatioOption = !!formValue.options.includes(
-    "reduction_ratio_option"
-  );
 
   return (
     <div className="col-md-8">
@@ -244,6 +126,18 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             <Radio value={"ON_PAPER"}>Бумажная</Radio>
           </Field>
         </Stack>
+        <Stack wrap spacing={50}>
+          <Field
+            name="bid_part_type"
+            label="Процедура состоит из"
+            accepter={RadioGroup}
+            error={formError.bid_part_type}
+            inline
+          >
+            <Radio value={"ONE"}>Одной части</Radio>
+            <Radio value={"SECOND"}>Двух частей</Radio>
+          </Field>
+        </Stack>
 
         <Field
           name="options"
@@ -258,15 +152,15 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           ) : null}
           {isProcedureCompetitiveSelection ? (
             <>
-              <Checkbox
+              {/* <Checkbox
                 value={"bidding_per_position_option"}
-                disabled={isReductionRatioOption}
+                disabled={reducti}
               >
                 Попозиционная закупка
-              </Checkbox>
+              </Checkbox> */}
               <Checkbox value={"reduction_ratio_option"}>
                 Торги за единицу
-              </Checkbox>{" "}
+              </Checkbox>
               <Checkbox value={"reduction_ratio_option"}>
                 Коэффициент снижения
               </Checkbox>
@@ -274,7 +168,7 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           ) : null}
 
           <Stack spacing={10}>
-            <Animation.Collapse in={isReductionRatioOption}>
+            <Animation.Collapse in={reductionRatioOption}>
               <div>
                 <Field
                   name="reduction_ratio_from"
@@ -285,7 +179,7 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               </div>
             </Animation.Collapse>
 
-            <Animation.Collapse in={isReductionRatioOption}>
+            <Animation.Collapse in={reductionRatioOption}>
               <div>
                 <Field
                   name="reduction_ratio_to"

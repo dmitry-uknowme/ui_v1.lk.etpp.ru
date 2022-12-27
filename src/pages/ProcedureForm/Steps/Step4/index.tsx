@@ -9,31 +9,21 @@ import {
   SelectPicker,
   Header,
   Stack,
-  InputGroup,
-  toaster,
-  Message,
   InputNumber,
 } from "rsuite";
 import CurrencyInput from "react-currency-masked-input";
 import React, { useContext, useEffect, useState } from "react";
 import currency from "currency.js";
-
-import PurchasePlanTable from "../../../../components/Table/PuchasePlanTable";
 import { useQuery } from "react-query";
-import fetchPurchasePlans from "../../../../services/api/fetchPurchasePlans";
-import fetchPurchasePlan from "../../../../services/api/fetchPurchasePlan";
-import fetchSession from "../../../../services/api/fetchSession";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
 import fetchPurchasePlanPosition from "../../../../services/api/fetchPurchasePlanPosition";
-import useDebounce from "../../../../hooks/useDebounce";
-import { RUB } from "@dinero.js/currencies";
 import LotPositionsTable from "../../../../components/Table/LotPositionsTable";
 import Money, { parseCurrency, parseDBMoney } from "../../../../utils/money";
 import { parseDBAmount } from "../../../../utils/newMoney";
 import { ProcedureFormActionVariants } from "../..";
 import fetchLotPositions from "../../../../services/api/fetchLotPositions";
-import { toast } from "react-toastify";
 import sendToast from "../../../../utils/sendToast";
+import { checkStep4Values, dispatchStep4Values, initStep4Values } from "./helpers";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -64,7 +54,7 @@ const { ArrayType, NumberType, StringType } = Schema.Types;
 
 const model = Schema.Model({
   lot_title: StringType().isRequired("Поле обязательно для заполнения"),
-  lot_start_price: NumberType().isRequired("Поле обязательно для заполнения"),
+  // lot_start_price: StringType().isRequired("Поле обязательно для заполнения"),
 });
 
 const Step4 = ({
@@ -91,7 +81,7 @@ const Step4 = ({
     formGlobalServerData?.positionsTableData
       ? formGlobalServerData?.positionsTableData
       : !isEditType
-      ? [
+        ? [
           {
             id: "null",
             qty: "",
@@ -104,7 +94,7 @@ const Step4 = ({
             okved_name: "",
           },
         ]
-      : []
+        : []
   );
 
   useEffect(() => {
@@ -113,58 +103,7 @@ const Step4 = ({
 
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
-  const [formValue, setFormValue] = React.useState({
-    lot_start_price: formGlobalValues?.original_price
-      ? currency(
-          parseDBAmount(formGlobalValues.original_price) / 100
-        ).toString()
-      : "",
-    lot_title:
-      formGlobalValues?.name || formGlobalValues?.lots?.length
-        ? formGlobalValues.lots[0].name
-        : "",
-    lot_currency: "RUB",
-    nds_type:
-      formGlobalValues?.lots?.length && formGlobalValues?.lots[0]?.nds_type
-        ? formGlobalValues?.lots[0]?.nds_type
-        : "NO_NDS",
-    provision_bid_type: formGlobalValues?.provision_bid?.methods?.length
-      ? formGlobalValues?.provision_bid?.methods[0]
-      : "WITHOUT_COLLATERAL",
-    provision_bid_amount: formGlobalServerData?.provision_bid?.amount
-      ? currency(
-          parseDBAmount(formGlobalServerData?.provision_bid?.amount) / 100
-        ).toString()
-      : "",
-    provision_bid_percent: formGlobalServerData?.provision_bid?.percent
-      ? parseFloat(formGlobalServerData.provision_bid.percent).toFixed(2)
-      : "",
-    provision_bid_methods: formGlobalValues?.provision_bid?.methods || [],
-    provision_contract_type:
-      formGlobalValues?.provision_contract?.is_specified === false
-        ? "NOT_SPECIFIED"
-        : formGlobalValues?.provision_contract?.type || "NOT_SPECIFIED",
-    provision_contract_amount: formGlobalServerData?.provision_contract?.amount
-      ? currency(
-          parseDBAmount(formGlobalServerData.provision_contract.amount) / 100
-        ).toString()
-      : "",
-    provision_contract_percent: formGlobalServerData?.provision_contract
-      ?.percent
-      ? parseFloat(formGlobalServerData.provision_contract.percent).toFixed(2)
-      : "",
-    lot_unit_start_price: formGlobalValues?.bidding_per_unit_amount
-      ? currency(
-          parseDBAmount(formGlobalValues.bidding_per_unit_amount) / 100
-        ).toString()
-      : "",
-    provision_bid_payment_return_deposit:
-      formGlobalValues?.provision_bid?.payment_return_deposit ||
-      "В соответствии с закупочной документацией",
-    provision_contract_payment_return_deposit:
-      formGlobalValues?.provision_contract?.payment_return_deposit ||
-      "В соответствии с закупочной документацией",
-  });
+  const [formValue, setFormValue] = React.useState(initStep4Values({ globalFormValues: formGlobalValues, globalServerValues: formGlobalServerData }));
 
   const isBidProvisionSpecified =
     formValue.provision_bid_type !== "WITHOUT_COLLATERAL";
@@ -247,185 +186,178 @@ const Step4 = ({
     const contractProvisionType = formValue.provision_contract_type;
     const contractProvisionAmount = formValue.provision_contract_amount;
     const contractProvisionPercent = formValue.provision_contract_percent;
-
-    if (!isViaPlan) {
-      if (
-        !positionsTableData?.length ||
-        !(
-          formGlobalValues?.lots?.length &&
-          formGlobalValues?.lots[0].positions?.length
-        )
-      ) {
-        sendToast("error", "Вы не добавили позицию лота");
-        return;
-      }
-    }
-
-    if (biddingPerPositionOption) {
-      const defaultPlanPositions = positionsTableData;
-      const positions = formGlobalValues?.lots[0]?.plan_positions;
-      if (actionType !== ProcedureFormActionVariants.EDIT) {
-        if (!positions || positions?.length !== defaultPlanPositions?.length) {
-          sendToast("error", "Не всем позициям проставлена цена за единицу");
-          // toaster.push(
-          //   <Message type="error">
-          //     Не всем позициям проставлена цена за единицу
-          //   </Message>
-          // );
-          return;
-        }
-        const positionsSum = positions.reduce(
-          (acc, curr) => acc.add(currency(parseDBAmount(curr.amount) / 100)),
-          currency(0)
-        );
-        console.log(
-          "summm ",
-          positionsSum,
-          currency(parseFloat(formValue.lot_start_price))
-        );
-        if (
-          positionsSum.intValue >
-          currency(parseFloat(formValue.lot_start_price)).intValue
-        ) {
-          sendToast(
-            "error",
-            `Сумма позиций превышает НМЦ лота. Вы ввели ${positionsSum.toString()}. НМЦ лота - ${currency(
-              parseFloat(formValue.lot_start_price)
-            ).toString()}`
-          );
-          // toaster.push(
-          //   <Message type="error">Сумма позиций превышает НМЦ лота</Message>
-          // );
-          return;
-        }
-      }
-
-      // if (defaultPlanPositions.length !== formGlobalValues?.lots[0]?.positions?.length) {
-      //   toaster.push(<Message type='error'>Не всем позициям лота проставлена цена</Message>)
-      //   return
-      // }
-    }
-    if (isBiddingPerUnitOption) {
-      if (!parseFloat(formValue.lot_unit_start_price)) {
-        setFormError((state) => ({
-          ...state,
-          lot_unit_start_price: "Поле обязательно для заполнения",
-        }));
-        setBtnLoader(false);
-        return;
-      }
-    }
-
-    setFormGlobalServerData((state) => ({
-      ...state,
-      positionsTableData: positionsTableData,
-      provision_bid: {
-        amount: isBidProvisionSpecified
-          ? `RUB ${
-              currency(parseFloat(formValue.provision_bid_amount)).intValue
-            }`
-          : null,
-        percent: isBidProvisionSpecified
-          ? parseFloat(bidProvisionPercent)
-          : null,
-      },
-      provision_contract: {
-        amount: isContractProvisionSpecified
-          ? `RUB ${
-              currency(parseFloat(formValue.provision_contract_amount)).intValue
-            }`
-          : null,
-        percent: isContractProvisionSpecified
-          ? parseFloat(contractProvisionPercent)
-          : null,
-      },
-    }));
-
-    setFormGlobalValues((state) => ({
-      ...state,
-      name: formValue.lot_title,
-      bidding_per_unit_amount: isBiddingPerUnitOption
-        ? `${"RUB"} ${
-            currency(parseFloat(formValue.lot_unit_start_price)).intValue
-          } `
-        : null,
-      provision_bid: {
-        is_specified: isBidProvisionSpecified,
-        amount:
-          isBidProvisionSpecified && isBidProvisionFixed
-            ? `RUB ${
-                currency(parseFloat(formValue.provision_bid_amount)).intValue
-              }`
-            : null,
-        methods: [formValue.provision_bid_type],
-        payment_return_deposit: formValue.provision_bid_payment_return_deposit,
-        percent:
-          isBidProvisionSpecified &&
-          (isBidProvisionPercent || isBidProvisionByDocumentation)
-            ? parseFloat(bidProvisionPercent)
-            : null,
-      },
-      // provision_bid: {
-      //   is_specified: isBidProvisionSpecified,
-      //   amount: parseFloat(bidProvisionAmount)
-      //     ? `${"RUB"} ${currency(parseFloat(bidProvisionAmount)).intValue} `
-      //     : "RUB 0",
-      //   methods: [formValue.provision_bid_type],
-      //   payment_return_deposit: formValue.provision_bid_payment_return_deposit,
-      // },
-      provision_contract: {
-        is_specified: isContractProvisionSpecified,
-        type: isContractProvisionSpecified
-          ? contractProvisionType
-          : "FROM_START_PRICE",
-        amount:
-          isContractProvisionSpecified && isContractProvisionFromStartPrice
-            ? parseFloat(contractProvisionAmount)
-              ? `${"RUB"} ${
-                  currency(parseFloat(contractProvisionAmount)).intValue
-                } `
-              : "RUB 0"
-            : null,
-        percent:
-          isContractProvisionSpecified && isContractProvisionFromContractPrice
-            ? parseFloat(contractProvisionPercent)
-            : null,
-        payment_return_deposit:
-          formValue.provision_contract_payment_return_deposit,
-      },
-      original_price: `${"RUB"} ${
-        currency(parseFloat(formValue.lot_start_price)).intValue
-      } `,
-      lots: [
-        {
-          ...(formGlobalValues?.lots?.length ? formGlobalValues?.lots[0] : {}),
-          name: formValue.lot_title,
-          starting_price: `${"RUB"} ${
-            currency(parseFloat(formValue.lot_start_price)).intValue
-          } `,
-          // positions: isBiddingPerUnitOption ? [] : [],
-          nds_type: formValue.nds_type,
-          plan_positions: formGlobalValues?.lots[0]?.plan_positions?.length
-            ? formGlobalValues?.lots[0]?.plan_positions
-            : [],
-        },
-      ],
-    }));
-
     if (!formRef.current.check()) {
-      sendToast(
-        "error",
-        "Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг"
-      );
-
-      document
-        .querySelector(".rs-form-group .rs-form-error-message")
-        ?.parentNode?.parentNode?.scrollIntoView();
-      document.querySelector(".rs-form-error-message-inner")?.scrollIntoView();
+      sendToast("error", "Пожалуйста заполните необходимые поля формы");
       return;
     }
-    setBtnLoader(false);
-    nextStep();
+
+    const errors = checkStep4Values(formValue, formGlobalValues, formGlobalServerData)
+    if (errors) {
+      setFormError(state => ({ ...state, ...errors }))
+      return
+    }
+
+    const { globalFormValues: finalGlobalFormValues, globalServerValues: finalGlobalServerValues } = dispatchStep4Values(formValue, formGlobalValues, formGlobalServerData)
+
+    setFormGlobalValues(state => ({ ...state, ...finalGlobalFormValues }))
+    setFormGlobalServerData(state => ({ ...state, ...finalGlobalServerValues }))
+
+    nextStep()
+
+
+
+
+
+    // if (biddingPerPositionOption) {
+    //   const defaultPlanPositions = positionsTableData;
+    //   const positions = formGlobalValues?.lots[0]?.plan_positions;
+    //   if (actionType !== ProcedureFormActionVariants.EDIT) {
+    //     if (!positions || positions?.length !== defaultPlanPositions?.length) {
+    //       sendToast("error", "Не всем позициям проставлена цена за единицу");
+    //       // toaster.push(
+    //       //   <Message type="error">
+    //       //     Не всем позициям проставлена цена за единицу
+    //       //   </Message>
+    //       // );
+    //       return;
+    //     }
+    //     const positionsSum = positions.reduce(
+    //       (acc, curr) => acc.add(currency(parseDBAmount(curr.amount) / 100)),
+    //       currency(0)
+    //     );
+    //     console.log(
+    //       "summm ",
+    //       positionsSum,
+    //       currency(parseFloat(formValue.lot_start_price))
+    //     );
+    //     if (
+    //       positionsSum.intValue >
+    //       currency(parseFloat(formValue.lot_start_price)).intValue
+    //     ) {
+    //       sendToast(
+    //         "error",
+    //         `Сумма позиций превышает НМЦ лота. Вы ввели ${positionsSum.toString()}. НМЦ лота - ${currency(
+    //           parseFloat(formValue.lot_start_price)
+    //         ).toString()}`
+    //       );
+    //       // toaster.push(
+    //       //   <Message type="error">Сумма позиций превышает НМЦ лота</Message>
+    //       // );
+    //       return;
+    //     }
+    //   }
+
+    //   // if (defaultPlanPositions.length !== formGlobalValues?.lots[0]?.positions?.length) {
+    //   //   toaster.push(<Message type='error'>Не всем позициям лота проставлена цена</Message>)
+    //   //   return
+    //   // }
+    // }
+    // if (isBiddingPerUnitOption) {
+    //   if (!parseFloat(formValue.lot_unit_start_price)) {
+    //     setFormError((state) => ({
+    //       ...state,
+    //       lot_unit_start_price: "Поле обязательно для заполнения",
+    //     }));
+    //     setBtnLoader(false);
+    //     return;
+    //   }
+    // }
+
+    // setFormGlobalServerData((state) => ({
+    //   ...state,
+    //   positionsTableData: positionsTableData,
+    //   provision_bid: {
+    //     amount: isBidProvisionSpecified
+    //       ? `RUB ${currency(parseFloat(formValue.provision_bid_amount)).intValue
+    //       }`
+    //       : null,
+    //     percent: isBidProvisionSpecified
+    //       ? parseFloat(bidProvisionPercent)
+    //       : null,
+    //   },
+    //   provision_contract: {
+    //     amount: isContractProvisionSpecified
+    //       ? `RUB ${currency(parseFloat(formValue.provision_contract_amount)).intValue
+    //       }`
+    //       : null,
+    //     percent: isContractProvisionSpecified
+    //       ? parseFloat(contractProvisionPercent)
+    //       : null,
+    //   },
+    // }));
+
+    // setFormGlobalValues((state) => ({
+    //   ...state,
+    //   name: formValue.lot_title,
+    //   bidding_per_unit_amount: isBiddingPerUnitOption
+    //     ? `${"RUB"} ${currency(parseFloat(formValue.lot_unit_start_price)).intValue
+    //     } `
+    //     : null,
+    //   provision_bid: {
+    //     is_specified: isBidProvisionSpecified,
+    //     amount:
+    //       isBidProvisionSpecified && isBidProvisionFixed
+    //         ? `RUB ${currency(parseFloat(formValue.provision_bid_amount)).intValue
+    //         }`
+    //         : null,
+    //     methods: [formValue.provision_bid_type],
+    //     payment_return_deposit: formValue.provision_bid_payment_return_deposit,
+    //     percent:
+    //       isBidProvisionSpecified &&
+    //         (isBidProvisionPercent || isBidProvisionByDocumentation)
+    //         ? parseFloat(bidProvisionPercent)
+    //         : null,
+    //   },
+    //   provision_contract: {
+    //     is_specified: isContractProvisionSpecified,
+    //     type: isContractProvisionSpecified
+    //       ? contractProvisionType
+    //       : "FROM_START_PRICE",
+    //     amount:
+    //       isContractProvisionSpecified && isContractProvisionFromStartPrice
+    //         ? parseFloat(contractProvisionAmount)
+    //           ? `${"RUB"} ${currency(parseFloat(contractProvisionAmount)).intValue
+    //           } `
+    //           : "RUB 0"
+    //         : null,
+    //     percent:
+    //       isContractProvisionSpecified && isContractProvisionFromContractPrice
+    //         ? parseFloat(contractProvisionPercent)
+    //         : null,
+    //     payment_return_deposit:
+    //       formValue.provision_contract_payment_return_deposit,
+    //   },
+    //   original_price: `${"RUB"} ${currency(parseFloat(formValue.lot_start_price)).intValue
+    //     } `,
+    //   lots: [
+    //     {
+    //       ...(formGlobalValues?.lots?.length ? formGlobalValues?.lots[0] : {}),
+    //       name: formValue.lot_title,
+    //       starting_price: `${"RUB"} ${currency(parseFloat(formValue.lot_start_price)).intValue
+    //         } `,
+    //       // positions: isBiddingPerUnitOption ? [] : [],
+    //       nds_type: formValue.nds_type,
+    //       plan_positions: formGlobalValues?.lots[0]?.plan_positions?.length
+    //         ? formGlobalValues?.lots[0]?.plan_positions
+    //         : [],
+    //     },
+    //   ],
+    // }));
+
+    // if (!formRef.current.check()) {
+    //   sendToast(
+    //     "error",
+    //     "Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг"
+    //   );
+
+    //   document
+    //     .querySelector(".rs-form-group .rs-form-error-message")
+    //     ?.parentNode?.parentNode?.scrollIntoView();
+    //   document.querySelector(".rs-form-error-message-inner")?.scrollIntoView();
+    //   return;
+    // }
+    // setBtnLoader(false);
+    // nextStep();
   };
 
   useEffect(() => {
@@ -599,7 +531,7 @@ const Step4 = ({
             onChange={(e, value) =>
               setFormValue((state) => ({
                 ...state,
-                lot_start_price: value,
+                lot_start_price: value.toString(),
               }))
             }
             accepter={CurrencyInput}
@@ -782,34 +714,32 @@ const Step4 = ({
             data={
               positionsTableData?.length
                 ? positionsTableData.map((position) => ({
-                    ...position,
-                    okato:
-                      position?.region_okato ||
-                      purchasePlanPositionQuery?.data?.okato ||
-                      null,
-                    unit_name: position.unit_name,
-                    okpd_field: `${position.okpd_code}. ${position.okpd_name} `,
-                    okved_field: `${position.okved_code}. ${position.okved_name} `,
-                    qty_count: position?.qty_count
-                      ? position.qty_count
-                      : position.qty && position.unit_name
-                      ? `${position.qty || "Не определено"}, ${
-                          position.unit_name || "Не определено"
-                        }`
+                  ...position,
+                  okato:
+                    position?.region_okato ||
+                    purchasePlanPositionQuery?.data?.okato ||
+                    null,
+                  unit_name: position.unit_name,
+                  okpd_field: `${position.okpd_code}. ${position.okpd_name} `,
+                  okved_field: `${position.okved_code}. ${position.okved_name} `,
+                  qty_count: position?.qty_count
+                    ? position.qty_count
+                    : position.qty && position.unit_name
+                      ? `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
+                      }`
                       : null,
-                    region:
-                      !position?.region && !position?.region_address
-                        ? null
-                        : position?.region_address &&
-                          (position?.region || position?.region_name)
-                        ? `${position?.region || position?.region_name} , ${
-                            position?.region_address
-                          } `
+                  region:
+                    !position?.region && !position?.region_address
+                      ? null
+                      : position?.region_address &&
+                        (position?.region || position?.region_name)
+                        ? `${position?.region || position?.region_name} , ${position?.region_address
+                        } `
                         : position.region_address,
 
-                    address: position?.region_address || "",
-                    extra_info: position?.addition_info || position?.info || "",
-                  }))
+                  address: position?.region_address || "",
+                  extra_info: position?.addition_info || position?.info || "",
+                }))
                 : []
             }
             isViaPlan={isViaPlan}
@@ -826,8 +756,8 @@ const Step4 = ({
                       ...(state?.lots[0]?.plan_positions?.length
                         ? isViaPlan
                           ? state?.lots[0]?.plan_positions?.filter(
-                              (pos) => pos.id !== positions.id
-                            )
+                            (pos) => pos.id !== positions.id
+                          )
                           : []
                         : []),
                     ],

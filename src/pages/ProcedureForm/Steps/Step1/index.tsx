@@ -26,6 +26,8 @@ import createProcedureViaPurchasePlan from "../../../../services/api/createProce
 import Money, { parseCurrency } from "../../../../utils/money";
 import { ProcedureFormActionVariants } from "../..";
 import sendToast from "../../../../utils/sendToast";
+import { checkStep1Values, dispatchStep1Values, initStep1Values } from "./helpers";
+import { ProcedureMethodVariants, ProcedureSectionVariants } from "../../types";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -65,23 +67,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
-  const [formValue, setFormValue] = React.useState({
-    is_via_plan: formGlobalServerData?.isViaPlan?.toString() || "true",
-    purchase_plan_id: formGlobalServerData.purchasePlanId || "",
-    purchase_method_id: formGlobalValues?.plan_position_id || "",
-    procedure_title: formGlobalValues?.name || "",
-    procedure_section: "SECTION_223_FZ",
-    procedure_method: "COMPETITIVE_SELECTION",
-    options: [
-      formGlobalValues?.requirement_not_rnp
-        ? "rnp_requirement_option"
-        : "rnp_requirement_option",
-      formGlobalValues?.is_for_smb ? "smb_participant_option" : null,
-      formGlobalValues?.is_subcontractor_requirement
-        ? "subcontractor_option"
-        : null,
-    ],
-  });
+  const [formValue, setFormValue] = React.useState(initStep1Values({ globalFormValues: formGlobalValues, globalServerValues: formGlobalServerData }));
 
 
 
@@ -95,21 +81,21 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     "subcontractor_option"
   );
 
-  useEffect(() => {
-    if (formGlobalValues.plan_position_id) {
-      setSelectedPlanPositions([{ id: formGlobalValues.plan_position_id }]);
-    }
-    setFormValue((state) => ({
-      ...state,
-      procedure_title: formGlobalValues?.lots?.length
-        ? formGlobalValues.lots[0].name
-        : formGlobalValues?.name || "",
-    }));
-  }, [
-    formGlobalValues.lots,
-    formGlobalValues.name,
-    formGlobalValues.plan_position_id,
-  ]);
+  // useEffect(() => {
+  //   if (formGlobalValues.plan_position_id) {
+  //     setSelectedPlanPositions([{ id: formGlobalValues.plan_position_id }]);
+  //   }
+  //   setFormValue((state) => ({
+  //     ...state,
+  //     procedure_title: formGlobalValues?.lots?.length
+  //       ? formGlobalValues.lots[0].name
+  //       : formGlobalValues?.name || "",
+  //   }));
+  // }, [
+  //   formGlobalValues.lots,
+  //   formGlobalValues.name,
+  //   formGlobalValues.plan_position_id,
+  // ]);
 
   const isViaPlan = formValue.is_via_plan === "true";
   const isEditType =
@@ -146,63 +132,61 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const currentPurchasePlan = purchasePlansQuery?.data?.find(
     (item) => item.id === formValue.purchase_plan_id
   );
+  const selectedPlanPosition = formGlobalServerData?.selectedPlanPosition
 
   const [selectedPlanPositions, setSelectedPlanPositions] = useState([]);
 
   const handleSubmit = async () => {
-    const session = formGlobalServerData.session;
 
-    if (!session) {
-      sendToast("error", "Пользователь не авторизован");
-      return;
-      // return toaster.push(
-      //   <Message type="error">Пользователь не авторизован</Message>
-      // );
-    }
-
-    if (isViaPlan && !planPositionId) {
-      sendToast("error", "Вы не выбрали позицию из плана закупок");
-      return;
-      // return toaster.push(
-      //   <Message type="error">Вы не выбрали позицию из плана закупок</Message>
-      // );
-    }
     if (!formRef.current.check()) {
       sendToast("error", "Пожалуйста заполните необходимые поля формы");
-      // toaster.push(<Message type="error">Error</Message>);
       return;
     }
-    setFormGlobalValues((state) => ({
-      ...state,
-      plan_position_id: isViaPlan ? planPositionId : null,
-      name: formValue.procedure_title,
-      platform: formValue.procedure_section,
-      requirement_not_rnp: requirementRNPOption,
-      is_for_smb: smbOption,
-      is_subcontractor_requirement: subcontractorOption,
-    }));
 
-    setFormGlobalServerData((state) => ({
-      ...state,
-      isViaPlan,
-      purchasePlanId: formValue.purchase_plan_id,
-      purchasePlanNumber: currentPurchasePlan.registration_number,
-      planPositionNumber: isViaPlan ? selectedPlanPositions[0].number : null,
-      procedureMethod: isViaPlan ? 'COMPETITIVE_SELECTION' : formValue.procedure_method
-    }));
+    const errors = checkStep1Values(formValue, currentPurchasePlan, selectedPlanPositions)
+    if (errors) {
+      setFormError(state => ({ ...state, ...errors }))
+      return
+    }
+
+    const { globalFormValues: finalGlobalFormValues, globalServerValues: finalGlobalServerValues } = dispatchStep1Values(formValue, currentPurchasePlan, selectedPlanPosition)
+
+    setFormGlobalValues(state => ({ ...state, ...finalGlobalFormValues }))
+    setFormGlobalServerData(state => ({ ...state, ...finalGlobalServerValues }))
+
+    // setFormGlobalValues((state) => ({
+    //   ...state,
+    //   plan_position_id: isViaPlan ? planPositionId : null,
+    //   name: formValue.procedure_title,
+    //   platform: formValue.procedure_section,
+    //   requirement_not_rnp: requirementRNPOption,
+    //   is_for_smb: smbOption,
+    //   is_subcontractor_requirement: subcontractorOption,
+    // }));
+
+    // setFormGlobalServerData((state) => ({
+    //   ...state,
+    //   isViaPlan,
+    //   purchasePlanId: formValue.purchase_plan_id,
+    //   purchasePlanNumber: currentPurchasePlan.registration_number,
+    //   planPositionNumber: isViaPlan ? selectedPlanPositions[0].number : null,
+    //   procedureMethod: isViaPlan ? 'COMPETITIVE_SELECTION' : formValue.procedure_method
+    // }));
 
     nextStep();
   };
 
   useEffect(() => {
-    if (selectedPlanPositions.length) {
+    const selectedPlanPosition = formGlobalServerData?.selectedPlanPosition
+    if (selectedPlanPosition) {
       setFormValue((state) => ({
         ...state,
-        procedure_title: selectedPlanPositions[0].contract_subject,
-        purchase_method_id: selectedPlanPositions[0].id,
+        procedure_title: selectedPlanPosition.contract_subject,
+        purchase_method_id: selectedPlanPosition.id,
       }));
     }
-  }, [selectedPlanPositions]);
+
+  }, [formGlobalServerData.selectedPlanPosition]);
 
   return (
     <div className="col-md-12">
@@ -235,9 +219,9 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               accepter={SelectPicker}
               error={formError.procedure_section}
               data={[
-                { value: "SECTION_223_FZ", label: "223-ФЗ" },
+                { value: ProcedureSectionVariants.SECTION_223_FZ, label: "223-ФЗ" },
                 {
-                  value: "SECTION_COMMERCIAL_PROCEDURES",
+                  value: ProcedureSectionVariants.SECTION_COMMERCIAL_PROCEDURES,
                   label: "Коммерческие процедуры",
                 },
               ]}
@@ -249,10 +233,10 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               accepter={SelectPicker}
               error={formError.procedure_section}
               data={[
-                // { value: "AUCTION", label: "Аукцион" },
-                { value: "COMPETITIVE_SELECTION", label: "Конкурентный отбор" },
-                { value: "REQUEST_OFFERS", label: "Запрос предложений" },
-                { value: "REQUEST_QUOTATIONS", label: "Запрос котировок" },
+                { value: ProcedureMethodVariants.AUCTION, label: "Аукцион" },
+                { value: ProcedureMethodVariants.COMPETITIVE_SELECTION, label: "Конкурентный отбор" },
+                { value: ProcedureMethodVariants.REQUEST_OFFERS, label: "Запрос предложений" },
+                { value: ProcedureMethodVariants.REQUEST_QUOTATIONS, label: "Запрос котировок" },
               ]}
               placeholder="Выберите"
             />

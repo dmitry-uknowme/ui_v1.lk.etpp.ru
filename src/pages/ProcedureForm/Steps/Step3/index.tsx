@@ -16,6 +16,7 @@ import { useQuery } from "react-query";
 import fetchPurchasePlan from "../../../../services/api/fetchPurchasePlan";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
 import sendToast from "../../../../utils/sendToast";
+import { checkStep3Values, dispatchStep3Values, initStep3Values } from "./helpers";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -54,59 +55,7 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
-  const [formValue, setFormValue] = React.useState({
-    start_acceipting_bids_date:
-      formGlobalValues?.lots?.length &&
-      formGlobalValues?.lots[0]?.date_time?.start_bids
-        ? new Date(formGlobalValues?.lots[0]?.date_time?.start_bids)
-        : add(new Date(), { minutes: 1 }),
-    // : new Date(),
-    end_acceipting_bids_date:
-      formGlobalValues?.lots?.length &&
-      formGlobalValues?.lots[0]?.date_time?.close_bids
-        ? new Date(formGlobalValues?.lots[0]?.date_time?.close_bids)
-        : // : new Date(),
-          add(new Date(), { minutes: 2 }),
-    reviewing_bids_date:
-      formGlobalValues?.lots?.length &&
-      formGlobalValues?.lots[0]?.date_time?.review_bids
-        ? new Date(formGlobalValues?.lots[0]?.date_time?.review_bids)
-        : // : new Date(),
-          add(new Date(), { minutes: 3 }),
-    summing_up_bids_date:
-      formGlobalValues?.lots?.length &&
-      formGlobalValues?.lots[0]?.date_time?.summing_up_end
-        ? new Date(formGlobalValues?.lots[0]?.date_time?.summing_up_end)
-        : // : new Date(),
-          add(new Date(), { minutes: 4 }),
-    bidding_process:
-      formGlobalValues?.bidding_process ||
-      "В соответствии с закупочной документацией",
-    order_review_and_summing_up:
-      formGlobalValues?.order_review_and_summing_up ||
-      "В соответствии с закупочной документацией",
-    place_review_and_summing_up:
-      formGlobalValues?.place_review_and_summing_up ||
-      "В соответствии с закупочной документацией",
-    procedure_process:
-      formGlobalValues?.procedure_process ||
-      "В соответствии с закупочной документацией",
-    info_trading_venue:
-      formGlobalValues?.info_trading_venue ||
-      "В соответствии с закупочной документацией",
-    providing_documentation_explanation:
-      formGlobalValues?.providing_documentation_explanation ||
-      "В соответствии с закупочной документацией",
-    requirements_participant:
-      formGlobalValues?.requirements_participant ||
-      "В соответствии с закупочной документацией",
-    provision_procurement_documentation:
-      formGlobalValues?.provision_procurement_documentation ||
-      "В соответствии с закупочной документацией",
-    other_info_by_customer:
-      formGlobalValues?.other_info_by_customer ||
-      "В соответствии с закупочной документацией",
-  });
+  const [formValue, setFormValue] = React.useState(initStep3Values({ globalFormValues: formGlobalValues, globalServerValues: formGlobalServerData }));
 
   const schema = {
     start_acceipting_bids_date: DateType().min(
@@ -142,93 +91,37 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const model = Schema.Model(schema);
 
   const handleSubmit = () => {
-    const {
-      bidding_process,
-      order_review_and_summing_up,
-      place_review_and_summing_up,
-      procedure_process,
-      info_trading_venue,
-      requirements_participant,
-      providing_documentation_explanation,
-      other_info_by_customer,
-      provision_procurement_documentation,
-    } = formValue;
-    setFormGlobalValues((state) => ({
-      ...state,
-      bidding_process,
-      order_review_and_summing_up,
-      place_review_and_summing_up,
-      procedure_process,
-      info_trading_venue,
-      providing_documentation_explanation,
-      requirements_participant,
-      provision_procurement_documentation,
-      other_info_by_customer,
-      lots: [
-        // ...formGlobalValues.lots,
-        {
-          ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}),
-          date_time: {
-            start_bids: formatDate(
-              formValue.start_acceipting_bids_date,
-              "yyyy-MM-dd HH:mm:ss"
-            ),
-            close_bids: formatDate(
-              formValue.end_acceipting_bids_date,
-              "yyyy-MM-dd HH:mm:ss"
-            ),
-            review_bids: formatDate(
-              formValue.reviewing_bids_date,
-              "yyyy-MM-dd HH:mm:ss"
-            ),
-            summing_up_end: formatDate(
-              formValue.summing_up_bids_date,
-              "yyyy-MM-dd HH:mm:ss"
-            ),
-          },
-        },
-      ],
-    }));
-    // onNext();
+    console.log('errrrrr', formError)
     if (!formRef.current.check()) {
-      sendToast(
-        "error",
-        "Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг"
-      );
-      // toaster.push(
-      //   <Message type="error">
-      //     Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг
-      //   </Message>
-      // );
-      document
-        .querySelector(".rs-form-group .rs-form-error-message")
-        ?.parentNode?.parentNode?.scrollIntoView();
-      document
-        .querySelector(".rs-form-error-message-inner")
-        ?.parentNode?.parentNode?.parentNode?.parentNode?.scrollIntoView();
+
+      sendToast("error", "Пожалуйста заполните необходимые поля формы");
       return;
     }
-    nextStep();
-  };
 
-  // useEffect(() => {
-  //   setFormValue((state) => ({
-  //     ...state,
-  //     start_acceipting_bids_date: formGlobalValues?.lots[0]?.date_time
-  //       ?.start_bids
-  //       ? new Date(formGlobalValues?.lots[0]?.date_time?.start_bids)
-  //       : new Date(state.start_acceipting_bids_date),
-  //     end_acceipting_bids_date: formGlobalValues?.lots[0]?.date_time?.close_bids
-  //       ? new Date(formGlobalValues?.lots[0]?.date_time?.close_bids)
-  //       : new Date(state.end_acceipting_bids_date),
-  //     reviewing_bids_date: formGlobalValues?.lots[0]?.date_time?.review_bids
-  //       ? new Date(formGlobalValues?.lots[0]?.date_time?.review_bids)
-  //       : new Date(state.reviewing_bids_date),
-  //     summing_up_bids_date: formGlobalValues?.lots[0]?.date_time?.summing_up_end
-  //       ? new Date(formGlobalValues?.lots[0]?.date_time?.summing_up_end)
-  //       : new Date(state.summing_up_bids_date),
-  //   }));
-  // }, [formGlobalValues.lots]);
+    const errors = checkStep3Values(formValue)
+    // console.log('errrr', errors)
+    if (errors) {
+      setFormError(state => ({ ...state, ...errors }))
+      return
+    }
+
+    const { globalFormValues: finalGlobalFormValues, globalServerValues: finalGlobalServerValues } = dispatchStep3Values(formValue)
+
+    setFormGlobalValues(state => ({ ...state, ...finalGlobalFormValues }))
+    setFormGlobalServerData(state => ({ ...state, ...finalGlobalServerValues }))
+
+    nextStep()
+    //   document
+    //     .querySelector(".rs-form-group .rs-form-error-message")
+    //     ?.parentNode?.parentNode?.scrollIntoView();
+    //   document
+    //     .querySelector(".rs-form-error-message-inner")
+    //     ?.parentNode?.parentNode?.parentNode?.parentNode?.scrollIntoView();
+    //   return;
+  }
+  // nextStep();
+
+
 
   return (
     <div className="col-md-8">
