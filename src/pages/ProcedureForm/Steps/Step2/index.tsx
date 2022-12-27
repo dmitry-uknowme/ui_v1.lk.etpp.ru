@@ -6,20 +6,14 @@ import {
   Checkbox,
   Radio,
   Schema,
-  CheckPicker,
-  InputNumber,
-  Panel,
-  Slider,
-  DatePicker,
-  Message,
-  toaster,
-  FlexboxGrid,
   Input,
   Animation,
-  SelectPicker,
-  Header,
   Stack,
+  InputNumber,
+  Whisper,
+  Tooltip,
 } from "rsuite";
+import InfoRoundIcon from "@rsuite/icons/InfoRound";
 import React, { useContext, useEffect, useState } from "react";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
 import sendToast from "../../../../utils/sendToast";
@@ -44,10 +38,32 @@ const Field = React.forwardRef((props, ref) => {
   );
 });
 
+// const CustomField = () => {
+//   const { name, message, label, accepter, error, ...rest } = props;
+//   return (
+//     <>
+//       <InputNumber />
+//       <Whisper
+//         speaker={
+//           <Tooltip style={{ width: 300 }}>
+//             Заключение договора будет возможно с любым из допущенных участников.
+//             Блокирование обеспечения заявок сохранится у всех допущенных
+//             участников после публикации итогового (последнего) протокола закупки
+//             до момента заключения договора.
+//           </Tooltip>
+//         }
+//         placement="autoHorizontalEnd"
+//       >
+//         <InfoRoundIcon color="#3498ff" style={{ marginLeft: "0.5rem" }} />
+//       </Whisper>
+//     </>
+//   );
+// };
+
 const { ArrayType, NumberType, StringType } = Schema.Types;
 const model = Schema.Model({
-  is_via_plan: StringType().isRequired("Поле обязательно для заполнения"),
-  procedure_title: StringType().isRequired("Поле обязательно для заполнения"),
+  // is_via_plan: StringType().isRequired("Поле обязательно для заполнения"),
+  // procedure_title: StringType().isRequired("Поле обязательно для заполнения"),
 });
 
 const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
@@ -58,8 +74,11 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
 
-  const isProcedureCompetitiveSelection = formGlobalServerData?.procedureMethod === 'COMPETITIVE_SELECTION'
-  const isProcedureEasy = formGlobalServerData?.procedureMethod === 'COMPETITIVE_SELECTION' || formGlobalServerData?.procedureMethod === 'REQUEST_QUOTATIONS' || formGlobalServerData?.procedureMethod === 'REQUEST_OFFERS'
+  const isProcedureCompetitiveSelection =
+    formGlobalServerData?.procedureMethod === "COMPETITIVE_SELECTION";
+  const isProcedureEasy =
+    formGlobalServerData?.procedureMethod === "REQUEST_QUOTATIONS" ||
+    formGlobalServerData?.procedureMethod === "REQUEST_OFFERS";
 
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
@@ -69,12 +88,13 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     options: [
       formGlobalValues?.bidding_per_unit && "reduction_ratio_option",
       formGlobalValues?.bidding_per_position_option &&
-      "bidding_per_position_option",
+        "bidding_per_position_option",
       formGlobalValues?.more_than_one_protocol && "protocols_count_more_option",
       formGlobalValues?.position_purchase && "bidding_per_position_option",
       "rnp_requirement_option",
     ],
-    count_participant_ranked_lower_than_first: "",
+    count_participant_ranked_lower_than_first:
+      formGlobalValues?.count_participant_ranked_lower_than_first || "",
     reduction_ratio_from:
       formGlobalValues?.reduction_factor_purchase_from?.toString() || "0",
     reduction_ratio_to:
@@ -88,9 +108,13 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   }, [formGlobalValues.contract_type]);
 
   const isViaPlan = formGlobalServerData.isViaPlan;
-
+  const contractByAnyParticipantOption = formValue.options.includes(
+    "contract_by_any_participant_option"
+  );
   const [selectedPlanPositions, setSelectedPlanPositions] = useState([]);
   const handleSubmit = () => {
+    const errors = {};
+
     const biddingPerPositionOption = formValue.options.includes(
       "bidding_per_position_option"
     );
@@ -103,11 +127,25 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     const protocolsCountMoreOption = formValue.options.includes(
       "protocols_count_more_option"
     );
-    const contractByAnyParticipantOption = formValue.options.includes(
-      "contract_by_any_participant_option"
-    );
 
     const contractConcludeType = formValue.contract_conclude_type;
+    if (!contractByAnyParticipantOption) {
+      if (!parseInt(formValue.count_participant_ranked_lower_than_first)) {
+        errors.count_participant_ranked_lower_than_first =
+          "Поле обязательно для заполнения";
+        // setFormError((state) => ({
+        //   ...state,
+        //   count_participant_ranked_lower_than_first:
+        //     "Поле обязательно для заполнения",
+        // }));
+      }
+    }
+
+    if (!formRef.current.check() || Object.keys(errors)?.length) {
+      setFormError((state) => ({ ...state, ...errors }));
+      sendToast("error", "Пожалуйста исправьте ошибки");
+      return;
+    }
 
     setFormGlobalValues((state) => ({
       ...state,
@@ -122,8 +160,12 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       contract_type: contractConcludeType,
       bid_part: "ONE",
       cause_failed: null,
-      is_rebidding: isProcedureCompetitiveSelection ? true : formValue.options.includes('rebidding_option'),
-      count_participant_ranked_lower_than_first: 1,
+      is_rebidding: isProcedureCompetitiveSelection
+        ? true
+        : formValue.options.includes("rebidding_option"),
+      count_participant_ranked_lower_than_first: contractByAnyParticipantOption
+        ? 1
+        : parseInt(formValue.count_participant_ranked_lower_than_first),
       criteria_evaluation: null,
       currency: "RUB",
       currency_rate: 1,
@@ -209,25 +251,27 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           accepter={CheckboxGroup}
           error={formError.options}
         >
-          {isProcedureEasy ? (<Checkbox
-            value={"rebidding_option"}
-          >
-            Переторжка предусмотрена
-          </Checkbox>) : null}
-          {isProcedureCompetitiveSelection ? (<>
-            <Checkbox
-              value={"bidding_per_position_option"}
-              disabled={isReductionRatioOption}
-            >
-              Попозиционная закупка
+          {isProcedureEasy ? (
+            <Checkbox value={"rebidding_option"}>
+              Переторжка предусмотрена
             </Checkbox>
-            <Checkbox
-              value={"reduction_ratio_option"}
-            >
-              Торги за единицу
-            </Checkbox> <Checkbox value={"reduction_ratio_option"}>
-              Коэффициент снижения
-            </Checkbox></>) : null}
+          ) : null}
+          {isProcedureCompetitiveSelection ? (
+            <>
+              <Checkbox
+                value={"bidding_per_position_option"}
+                disabled={isReductionRatioOption}
+              >
+                Попозиционная закупка
+              </Checkbox>
+              <Checkbox value={"reduction_ratio_option"}>
+                Торги за единицу
+              </Checkbox>{" "}
+              <Checkbox value={"reduction_ratio_option"}>
+                Коэффициент снижения
+              </Checkbox>
+            </>
+          ) : null}
 
           <Stack spacing={10}>
             <Animation.Collapse in={isReductionRatioOption}>
@@ -254,28 +298,61 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             {/* </div> */}
           </Stack>
 
-
-
           <Checkbox value={"protocols_count_more_option"}>
             Количество публикуемых протоколов, согласно Положению Заказчика,
             более 1
           </Checkbox>
-          <Checkbox
-            value={"contract_by_any_participant_option"}
-          >
+          <Checkbox value={"contract_by_any_participant_option"}>
             Заключение договора возможно с любым из допущенных участников
-
+            <Whisper
+              speaker={
+                <Tooltip style={{ width: 300 }}>
+                  Заключение договора будет возможно с любым из допущенных
+                  участников. Блокирование обеспечения заявок сохранится у всех
+                  допущенных участников после публикации итогового (последнего)
+                  протокола закупки до момента заключения договора.
+                </Tooltip>
+              }
+              placement="autoHorizontalEnd"
+            >
+              <InfoRoundIcon color="#3498ff" style={{ marginLeft: "0.5rem" }} />
+            </Whisper>
           </Checkbox>
-          <Animation.Collapse in={contractByAnyParticipantOption}>
-            <Field
-              name="count_participant_ranked_lower_than_first"
-              label="Количество участников, занявших места ниже первого, с которыми возможно заключение договора по результатам процедуры"
-              accepter={InputNumber}
-              scrollable={false}
-              error={formError.count_participant_ranked_lower_than_first}
-            />
+          <Animation.Collapse in={!contractByAnyParticipantOption}>
             <div>
-
+              <Field
+                name="count_participant_ranked_lower_than_first"
+                label={
+                  <>
+                    Количество участников, занявших места ниже первого, с
+                    которыми возможно заключение договора по результатам
+                    процедуры
+                    <Whisper
+                      speaker={
+                        <Tooltip style={{ width: 300 }}>
+                          Количество участников, занявших места ниже первого, с
+                          которыми возможно заключение договора по результатам
+                          процедуры, блокирование обеспечения заявок на участие
+                          которых сохраняется после публикации итогового
+                          (последнего) протокола закупки до момента заключения
+                          договора с одним из участников или отказа от
+                          заключения договора (с признанием или без признания
+                          участника уклонившимся от заключения договора).
+                        </Tooltip>
+                      }
+                      placement="autoHorizontalEnd"
+                    >
+                      <InfoRoundIcon
+                        color="#3498ff"
+                        style={{ marginLeft: "0.5rem" }}
+                      />
+                    </Whisper>
+                  </>
+                }
+                accepter={InputNumber}
+                scrollable={false}
+                error={formError.count_participant_ranked_lower_than_first}
+              />
             </div>
           </Animation.Collapse>
         </Field>

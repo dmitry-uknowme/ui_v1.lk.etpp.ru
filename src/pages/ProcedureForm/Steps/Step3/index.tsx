@@ -57,28 +57,28 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const [formValue, setFormValue] = React.useState({
     start_acceipting_bids_date:
       formGlobalValues?.lots?.length &&
-        formGlobalValues?.lots[0]?.date_time?.start_bids
+      formGlobalValues?.lots[0]?.date_time?.start_bids
         ? new Date(formGlobalValues?.lots[0]?.date_time?.start_bids)
         : add(new Date(), { minutes: 1 }),
     // : new Date(),
     end_acceipting_bids_date:
       formGlobalValues?.lots?.length &&
-        formGlobalValues?.lots[0]?.date_time?.close_bids
+      formGlobalValues?.lots[0]?.date_time?.close_bids
         ? new Date(formGlobalValues?.lots[0]?.date_time?.close_bids)
         : // : new Date(),
-        add(new Date(), { minutes: 2 }),
+          add(new Date(), { minutes: 2 }),
     reviewing_bids_date:
       formGlobalValues?.lots?.length &&
-        formGlobalValues?.lots[0]?.date_time?.review_bids
+      formGlobalValues?.lots[0]?.date_time?.review_bids
         ? new Date(formGlobalValues?.lots[0]?.date_time?.review_bids)
         : // : new Date(),
-        add(new Date(), { minutes: 3 }),
+          add(new Date(), { minutes: 3 }),
     summing_up_bids_date:
       formGlobalValues?.lots?.length &&
-        formGlobalValues?.lots[0]?.date_time?.summing_up_end
+      formGlobalValues?.lots[0]?.date_time?.summing_up_end
         ? new Date(formGlobalValues?.lots[0]?.date_time?.summing_up_end)
         : // : new Date(),
-        add(new Date(), { minutes: 4 }),
+          add(new Date(), { minutes: 4 }),
     bidding_process:
       formGlobalValues?.bidding_process ||
       "В соответствии с закупочной документацией",
@@ -141,8 +141,6 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   const model = Schema.Model(schema);
 
-  const isViaPlan = formValue.is_via_plan === "true";
-
   const handleSubmit = () => {
     const {
       bidding_process,
@@ -167,7 +165,6 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       provision_procurement_documentation,
       other_info_by_customer,
       lots: [
-
         // ...formGlobalValues.lots,
         {
           ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}),
@@ -194,7 +191,10 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     }));
     // onNext();
     if (!formRef.current.check()) {
-      sendToast("error", "Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг")
+      sendToast(
+        "error",
+        "Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг"
+      );
       // toaster.push(
       //   <Message type="error">
       //     Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг
@@ -203,7 +203,9 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       document
         .querySelector(".rs-form-group .rs-form-error-message")
         ?.parentNode?.parentNode?.scrollIntoView();
-      document.querySelector('.rs-form-error-message-inner')?.parentNode?.parentNode?.parentNode?.parentNode?.scrollIntoView()
+      document
+        .querySelector(".rs-form-error-message-inner")
+        ?.parentNode?.parentNode?.parentNode?.parentNode?.scrollIntoView();
       return;
     }
     nextStep();
@@ -276,7 +278,9 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             name="bidding_process"
             accepter={Input}
             value={formValue.bidding_process}
-            onChange={(value) => setFormValue(state => ({ ...state, bidding_process: value }))}
+            onChange={(value) =>
+              setFormValue((state) => ({ ...state, bidding_process: value }))
+            }
             as="textarea"
             style={{ width: "100%" }}
           />
@@ -285,7 +289,12 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             name="order_review_and_summing_up"
             accepter={Input}
             value={formValue.order_review_and_summing_up}
-            onChange={(value) => setFormValue(state => ({ ...state, order_review_and_summing_up: value }))}
+            onChange={(value) =>
+              setFormValue((state) => ({
+                ...state,
+                order_review_and_summing_up: value,
+              }))
+            }
             as="textarea"
             style={{ width: "100%" }}
           />
@@ -294,7 +303,12 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             name="place_review_and_summing_up"
             accepter={Input}
             value={formValue.place_review_and_summing_up}
-            onChange={(value) => setFormValue(state => ({ ...state, place_review_and_summing_up: value }))}
+            onChange={(value) =>
+              setFormValue((state) => ({
+                ...state,
+                place_review_and_summing_up: value,
+              }))
+            }
             as="textarea"
             style={{ width: "100%" }}
           />
@@ -303,7 +317,9 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             name="procedure_process"
             accepter={Input}
             value={formValue.procedure_process}
-            onChange={(value) => setFormValue(state => ({ ...state, procedure_process: value }))}
+            onChange={(value) =>
+              setFormValue((state) => ({ ...state, procedure_process: value }))
+            }
             as="textarea"
             style={{ width: "100%" }}
           />
@@ -312,7 +328,9 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             name="info_trading_venue"
             accepter={Input}
             value={formValue.info_trading_venue}
-            onChange={(value) => setFormValue(state => ({ ...state, info_trading_venue: value }))}
+            onChange={(value) =>
+              setFormValue((state) => ({ ...state, info_trading_venue: value }))
+            }
             as="textarea"
             style={{ width: "100%" }}
           />
@@ -321,7 +339,12 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             name="providing_documentation_explanation"
             accepter={Input}
             value={formValue.providing_documentation_explanation}
-            onChange={(value) => setFormValue(state => ({ ...state, providing_documentation_explanation: value }))}
+            onChange={(value) =>
+              setFormValue((state) => ({
+                ...state,
+                providing_documentation_explanation: value,
+              }))
+            }
             as="textarea"
             style={{ width: "100%" }}
           />
@@ -330,7 +353,12 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             name="requirements_participant"
             accepter={Input}
             value={formValue.requirements_participant}
-            onChange={(value) => setFormValue(state => ({ ...state, requirements_participant: value }))}
+            onChange={(value) =>
+              setFormValue((state) => ({
+                ...state,
+                requirements_participant: value,
+              }))
+            }
             as="textarea"
             style={{ width: "100%" }}
           />
@@ -339,7 +367,12 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             name="provision_procurement_documentation"
             accepter={Input}
             value={formValue.provision_procurement_documentation}
-            onChange={(value) => setFormValue(state => ({ ...state, provision_procurement_documentation: value }))}
+            onChange={(value) =>
+              setFormValue((state) => ({
+                ...state,
+                provision_procurement_documentation: value,
+              }))
+            }
             as="textarea"
             style={{ width: "100%" }}
           />
@@ -348,7 +381,12 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             name="other_info_by_customer"
             accepter={Input}
             value={formValue.other_info_by_customer}
-            onChange={(value) => setFormValue(state => ({ ...state, other_info_by_customer: value }))}
+            onChange={(value) =>
+              setFormValue((state) => ({
+                ...state,
+                other_info_by_customer: value,
+              }))
+            }
             as="textarea"
             style={{ width: "100%" }}
           />
