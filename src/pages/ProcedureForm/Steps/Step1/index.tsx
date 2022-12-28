@@ -134,7 +134,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       setFormError(state => ({ ...state, ...errors }))
       return
     }
-
+    const selectedPlanPosition = formGlobalServerData?.selectedPlanPosition
     const { globalFormValues: finalGlobalFormValues, globalServerValues: finalGlobalServerValues } = await dispatchStep1Values(formValue, currentPurchasePlan, selectedPlanPosition)
 
     setFormGlobalValues(state => ({ ...state, ...finalGlobalFormValues }))
