@@ -767,6 +767,87 @@ const Step4 = ({
             }
             isViaPlan={isViaPlan}
             addPositions={(positions) => {
+              if (positions.id === 'null') {
+                if (isViaPlan) {
+                  setFormGlobalValues((state) => ({
+                    ...state,
+                    lots: [
+                      {
+                        ...(formGlobalValues?.lots?.length
+                          ? formGlobalValues.lots[0]
+                          : {}),
+                        plan_positions: [
+                          ...(state?.lots[0]?.plan_positions?.length
+                            ? [...state?.lots[0]?.plan_positions]
+                            : []),
+                          positions,
+                        ],
+                      },
+                    ],
+                  }));
+                }
+                else {
+                  setFormGlobalValues((state) => ({
+                    ...state,
+                    lots: [
+                      {
+                        ...(formGlobalValues?.lots?.length
+                          ? formGlobalValues.lots[0]
+                          : {}),
+                        positions: [
+                          ...(state?.lots[0]?.positions?.length
+
+                            ? [...state?.lots[0]?.positions]
+                            : []),
+                          positions,
+                        ],
+                      },
+                    ],
+                  }));
+                }
+              }
+              else {
+                if (isViaPlan) {
+                  setFormGlobalValues((state) => ({
+                    ...state,
+                    lots: [
+                      {
+                        ...(formGlobalValues?.lots?.length
+                          ? formGlobalValues.lots[0]
+                          : {}),
+                        plan_positions: [
+                          ...(state?.lots[0]?.plan_positions?.length
+                            ? state?.lots[0]?.plan_positions?.filter(
+                              (pos) => pos.id !== positions.id
+                            )
+                            : []),
+                        ],
+
+                      },
+                    ],
+                  }));
+                }
+                else {
+                  setFormGlobalValues((state) => ({
+                    ...state,
+                    lots: [
+                      {
+                        ...(formGlobalValues?.lots?.length
+                          ? formGlobalValues.lots[0]
+                          : {}),
+                        positions: [
+                          ...(state?.lots[0]?.positions?.length
+                            ? state?.lots[0]?.positions?.filter(
+                              (pos) => pos.id !== positions.id
+                            )
+                            : []),
+                        ],
+
+                      },
+                    ],
+                  }));
+                }
+              }
               console.log("adddddddd", positions);
               setFormGlobalValues((state) => ({
                 ...state,
@@ -792,7 +873,6 @@ const Step4 = ({
                         : []),
                       positions,
                     ],
-                    // [positions, ...state?.lots[0]?.plan_positions],
                   },
                 ],
               }));

@@ -151,7 +151,7 @@ const MultiStepFormContextProvider: React.FC<
         noticeId: procedure?.notices?.length ? procedure.notices[0].id : null,
         lotId: procedure?.lots?.length ? procedure.lots[0].id : null,
         options,
-        isViaPlan: lot.is_created_via_plan
+        isViaPlan: lot.is_created_via_plan, procedureMethod: procedure.type
       }));
 
       setFormValues((state) => ({

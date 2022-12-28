@@ -241,8 +241,9 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             }));
           }
         }
-        return organizations;
+
       }
+      return organizations;
     },
     { refetchInterval: false }
   );

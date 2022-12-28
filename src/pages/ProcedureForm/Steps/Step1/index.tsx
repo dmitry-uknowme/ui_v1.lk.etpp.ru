@@ -176,12 +176,14 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
 
   useEffect(() => {
+    console.log('selelelel', formValue.purchase_method_id)
+
     const selectedPlanPosition = isViaPlan && formValue.purchase_method_id && purchasePlanQuery.data?.positions?.length ? purchasePlanQuery.data?.positions.find(pos => pos.id === formValue.purchase_method_id) : formGlobalServerData?.selectedPlanPosition
     if (!formGlobalServerData?.selectedPlanPosition && isViaPlan) {
       setFormGlobalServerData(state => ({ ...state, selectedPlanPosition }))
     }
 
-  }, [purchasePlanQuery])
+  }, [purchasePlanQuery.data])
 
   return (
     <div className="col-md-12">
@@ -221,6 +223,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 },
               ]}
               placeholder="Выберите"
+              disabled={isEditType}
             />
             <Field
               name="procedure_method"
@@ -234,6 +237,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 { value: ProcedureMethodVariants.REQUEST_QUOTATIONS, label: "Запрос котировок" },
               ]}
               placeholder="Выберите"
+              disabled={isEditType}
             />
           </Panel>
         </Animation.Collapse>
