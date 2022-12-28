@@ -116,9 +116,17 @@ const PurchasePlanTable = (props) => {
         <CompactHeaderCell>Предмет договора (лота)</CompactHeaderCell>
         <CompactCell dataKey="contract_subject" />
       </Column>
+      <Column key="maximum_contract_price">
+        <CompactHeaderCell>Начальная (максимальная) цена договора (цена лота)</CompactHeaderCell>
+        <CompactCell dataKey="maximum_contract_price" />
+      </Column>
       <Column key="purchase_method_name">
         <CompactHeaderCell>Способ закупки</CompactHeaderCell>
         <CompactCell dataKey="purchase_method_name" />
+      </Column>
+      <Column key="status_localized">
+        <CompactHeaderCell>Статус</CompactHeaderCell>
+        <CompactCell dataKey="status_localized" />
       </Column>
     </Table>
   );
