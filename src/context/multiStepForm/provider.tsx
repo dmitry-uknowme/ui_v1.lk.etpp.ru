@@ -151,6 +151,7 @@ const MultiStepFormContextProvider: React.FC<
         noticeId: procedure?.notices?.length ? procedure.notices[0].id : null,
         lotId: procedure?.lots?.length ? procedure.lots[0].id : null,
         options,
+        isViaPlan: lot.is_created_via_plan
       }));
 
       setFormValues((state) => ({
@@ -195,9 +196,6 @@ const MultiStepFormContextProvider: React.FC<
         },
         lots: [
           {
-            auctions: [{ min_step_percent: lot?.auctions?.length ? lot.auctions[0]?.min_step_percent : null, max_step_percent: lot?.auctions?.length ? lot.auctions[0]?.max_step_percent : null, wait_offer_time_minutes: lot?.auctions?.length ? lot.auctions[0]?.wait_offer_time_minutes : null }]
-          },
-          {
             nds_type: lot?.nds,
             plan_positions: [],
             positions: [],
@@ -206,9 +204,12 @@ const MultiStepFormContextProvider: React.FC<
               close_bids: lot.close_bid_date,
               review_bids: lot.close_bid_date,
               summing_up_end: lot.summing_up_date,
+              review_bid_second_part: null,
+              start_trading: lot.start_trade_date
             },
             name: procedure.name,
             starting_price: `${procedure.price_original.currency} ${procedure.price_original.amount}`,
+            auctions: [{ min_step_percent: lot?.auction ? lot.auction?.min_step_percent : null, max_step_percent: lot?.auction ? lot.auction?.max_step_percent : null, wait_offers_minute: lot?.auction ? lot.auction?.wait_offer_time_minutes : null }]
           },
         ],
         provision_bid: {

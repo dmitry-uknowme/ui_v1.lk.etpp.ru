@@ -345,12 +345,20 @@ export const dispatchStep4Values = (
           starting_price: `${"RUB"} ${
             currency(parseFloat(formValues.lot_start_price)).intValue
           } `,
-          positions: isViaPlan ? [] : [],
-          plan_positions: [
-            ...(globalFormValues?.lots[0]?.plan_positions?.length
-              ? globalFormValues?.lots[0]?.plan_positions
-              : []),
-          ],
+          plan_positions: isViaPlan
+            ? [
+                ...(globalFormValues?.lots[0]?.plan_positions?.length
+                  ? globalFormValues?.lots[0]?.plan_positions
+                  : []),
+              ]
+            : [],
+          positions: !isViaPlan
+            ? [
+                ...(globalFormValues?.lots[0]?.positions?.length
+                  ? globalFormValues?.lots[0]?.positions
+                  : []),
+              ]
+            : [],
         },
       ],
       provision_bid: {

@@ -77,17 +77,17 @@ export const checkStep1Values = async (
   selectedPurchasePlanPosition: any | null
 ) => {
   const displayErrors: Partial<Step1InitFormValues> = {};
+
   const isViaPlan = formValues.is_via_plan === "true";
   const planPositionId = formValues.purchase_method_id;
   const planId = selectedPurchasePlan.id;
-
-  const planPosition = await fetchPurchasePlanPosition({
-    planId,
-    planPositionId,
-  });
   let procedureMethod = null;
-
   if (isViaPlan) {
+    const planPosition = await fetchPurchasePlanPosition({
+      planId,
+      planPositionId,
+    });
+
     procedureMethod = planPosition.procedure_system_type;
     const purchaseMethodEisCode = planPosition.purchase_method_code;
     if (!procedureMethod) {
@@ -122,12 +122,13 @@ export const dispatchStep1Values = async (
   const isViaPlan = formValues.is_via_plan === "true";
   const planPositionId = formValues.purchase_method_id;
   const planId = selectedPurchasePlan.id;
-  const planPosition = await fetchPurchasePlanPosition({
-    planId,
-    planPositionId,
-  });
   let procedureMethod = null;
   if (isViaPlan) {
+    const planPosition = await fetchPurchasePlanPosition({
+      planId,
+      planPositionId,
+    });
+
     procedureMethod = planPosition.procedure_system_type;
     const purchaseMethodEisCode = planPosition.purchase_method_code;
     if (!procedureMethod) {

@@ -145,17 +145,17 @@ const Step4 = ({
       if (actionType === ProcedureFormActionVariants.EDIT || lotId) {
         const positions = await fetchLotPositions({ lotId });
         // console.log('positionssss', positions.map(pos => ({ ...pos, amount: `${pos?.price?.currency} ${pos?.price?.amount}` })))
-        if (positions?.length && !positionsTableData.length) {
-          setPositionsTableData(
-            positions.map((pos) => ({
-              ...pos,
-              amount: pos?.price?.amount
-                ? `${currency(parseDBAmount(pos?.price?.amount) / 100)}`
-                : null,
-            }))
-          );
-          // return { positions: positions.map(pos => ({ ...pos, region: `${pos.region_name} ${pos.region_address}` })) }
-        }
+        // if (positions?.length && !positionsTableData.length) {
+        setPositionsTableData(
+          positions.map((pos) => ({
+            ...pos,
+            amount: pos?.price?.amount
+              ? `${currency(parseDBAmount(pos?.price?.amount) / 100)}`
+              : null,
+          }))
+        );
+        // return { positions: positions.map(pos => ({ ...pos, region: `${pos.region_name} ${pos.region_address}` })) }
+        // }
       } else {
         const planPosition = await fetchPurchasePlanPosition({
           planId,

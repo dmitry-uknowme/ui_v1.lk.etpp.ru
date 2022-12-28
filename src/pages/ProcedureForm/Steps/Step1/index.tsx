@@ -81,21 +81,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     "subcontractor_option"
   );
 
-  // useEffect(() => {
-  //   if (formGlobalValues.plan_position_id) {
-  //     setSelectedPlanPositions([{ id: formGlobalValues.plan_position_id }]);
-  //   }
-  //   setFormValue((state) => ({
-  //     ...state,
-  //     procedure_title: formGlobalValues?.lots?.length
-  //       ? formGlobalValues.lots[0].name
-  //       : formGlobalValues?.name || "",
-  //   }));
-  // }, [
-  //   formGlobalValues.lots,
-  //   formGlobalValues.name,
-  //   formGlobalValues.plan_position_id,
-  // ]);
+
 
   const isViaPlan = formValue.is_via_plan === "true";
   const isEditType =
@@ -132,7 +118,6 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const currentPurchasePlan = purchasePlansQuery?.data?.find(
     (item) => item.id === formValue.purchase_plan_id
   );
-  const selectedPlanPosition = formGlobalServerData?.selectedPlanPosition
 
   const [selectedPlanPositions, setSelectedPlanPositions] = useState([]);
 
@@ -188,6 +173,15 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     }
 
   }, [formGlobalServerData.selectedPlanPosition]);
+
+
+  useEffect(() => {
+    const selectedPlanPosition = isViaPlan && formValue.purchase_method_id && purchasePlanQuery.data?.positions?.length ? purchasePlanQuery.data?.positions.find(pos => pos.id === formValue.purchase_method_id) : formGlobalServerData?.selectedPlanPosition
+    if (!formGlobalServerData?.selectedPlanPosition && isViaPlan) {
+      setFormGlobalServerData(state => ({ ...state, selectedPlanPosition }))
+    }
+
+  }, [purchasePlanQuery])
 
   return (
     <div className="col-md-12">

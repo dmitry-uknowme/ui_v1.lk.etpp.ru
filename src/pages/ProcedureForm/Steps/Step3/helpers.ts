@@ -247,18 +247,13 @@ export const dispatchStep3Values = (
                   "yyyy-MM-dd HH:mm:ss"
                 )
               : null,
-            review_bid_second_part: isProcedureAuction
-              ? formatDate(
-                  formValues.trading_start_date as Date,
-                  "yyyy-MM-dd HH:mm:ss"
-                )
-              : null,
-            // isBidPartTypeTwo && formValues?.reviewing_bid_second_part_date
-            //   ? formatDate(
-            //       formValues.reviewing_bid_second_part_date as Date,
-            //       "yyyy-MM-dd HH:mm:ss"
-            //     )
-            //   : null,
+            review_bid_second_part:
+              isBidPartTypeTwo && formValues?.reviewing_bid_second_part_date
+                ? formatDate(
+                    formValues.reviewing_bid_second_part_date as Date,
+                    "yyyy-MM-dd HH:mm:ss"
+                  )
+                : null,
           },
           auctions: [
             {

@@ -254,7 +254,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     {
       enabled:
         formValue.organizer_id?.trim()?.length &&
-        formValue.organizer_id !== "MANUAL_INPUT"
+          formValue.organizer_id !== "MANUAL_INPUT"
           ? true
           : false,
       refetchInterval: false,
@@ -279,7 +279,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     {
       enabled:
         formValue.customer_id?.trim()?.length &&
-        formValue.customer_id !== "MANUAL_INPUT"
+          formValue.customer_id !== "MANUAL_INPUT"
           ? true
           : false,
       refetchInterval: false,
@@ -314,7 +314,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     {
       enabled:
         formValue?.organizer_representative_id?.trim()?.length &&
-        formValue?.organizer_representative_id !== "MANUAL_INPUT"
+          formValue?.organizer_representative_id !== "MANUAL_INPUT"
           ? true
           : false,
       refetchInterval: false,
@@ -343,7 +343,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     {
       enabled:
         formValue.customer_representative_id?.trim()?.length &&
-        formValue.customer_representative_id !== "MANUAL_INPUT"
+          formValue.customer_representative_id !== "MANUAL_INPUT"
           ? true
           : false,
       refetchInterval: false,
@@ -514,9 +514,11 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         //   <Message type="success">Процедура успешно создана</Message>
         // );
         const noticeId = procedureData.notice_id;
+        const lotId = procedureData.lot_id
         setFormGlobalServerData((state) => ({
           ...state,
           noticeId,
+          lotId,
           procedure: procedureData.procedure,
         }));
         nextStep();
@@ -546,11 +548,13 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         //   <Message type="success">Извещение успешно создано</Message>
         // );
         const noticeId = procedureData.notice_id;
+        const lotId = procedureData.lot_id
         const procedureId = procedureData.procedure.guid.value;
         const procedureNumber = procedureData.procedure.id;
         setFormGlobalServerData((state) => ({
           ...state,
           noticeId,
+          lotId,
           procedure: procedureData.procedure,
           procedureId,
           procedureNumber,
@@ -631,9 +635,8 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         </Field>
         <div className="d-flex">
           <Panel
-            header={`Сведения об организаторе ${
-              isOrganizerEqualsCustomer ? "и заказчике" : ""
-            }`}
+            header={`Сведения об организаторе ${isOrganizerEqualsCustomer ? "и заказчике" : ""
+              }`}
           >
             <Panel>
               <Field
@@ -643,16 +646,16 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 error={formError.procedure_section}
                 data={
                   profileOrganizationsQuery.isError ||
-                  !profileOrganizationsQuery?.data?.length
+                    !profileOrganizationsQuery?.data?.length
                     ? [{ label: "Заполнить вручную", value: "MANUAL_INPUT" }]
                     : [
-                        ...profileOrganizationsQuery?.data?.map((org) => ({
-                          value: org.id,
-                          label: org.short_title_organization,
-                        })),
+                      ...profileOrganizationsQuery?.data?.map((org) => ({
+                        value: org.id,
+                        label: org.short_title_organization,
+                      })),
 
-                        { label: "Заполнить вручную", value: "MANUAL_INPUT" },
-                      ]
+                      { label: "Заполнить вручную", value: "MANUAL_INPUT" },
+                    ]
                 }
                 value={formValue.organizer_id}
                 loading={profileOrganizationsQuery.isLoading}
@@ -723,15 +726,15 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 error={formError.procedure_section}
                 data={
                   organizerEmployeesQuery.isError ||
-                  !organizerEmployeesQuery?.data?.length
+                    !organizerEmployeesQuery?.data?.length
                     ? [{ label: "Заполнить вручную", value: "MANUAL_INPUT" }]
                     : [
-                        ...organizerEmployeesQuery?.data?.map((emp) => ({
-                          label: emp.user_name || "Сотрудник",
-                          value: emp.id,
-                        })),
-                        { label: "Заполнить вручную", value: "MANUAL_INPUT" },
-                      ]
+                      ...organizerEmployeesQuery?.data?.map((emp) => ({
+                        label: emp.user_name || "Сотрудник",
+                        value: emp.id,
+                      })),
+                      { label: "Заполнить вручную", value: "MANUAL_INPUT" },
+                    ]
                 }
                 loading={organizerEmployeesQuery.isLoading}
                 placeholder="Выберите"
@@ -791,10 +794,10 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             style={
               isOrganizerEqualsCustomer
                 ? {
-                    width: 0,
-                    height: 0,
-                    overflow: "hidden",
-                  }
+                  width: 0,
+                  height: 0,
+                  overflow: "hidden",
+                }
                 : {}
             }
           >
@@ -806,16 +809,16 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 error={formError.procedure_section}
                 data={
                   profileOrganizationsQuery.isError ||
-                  !profileOrganizationsQuery?.data?.length
+                    !profileOrganizationsQuery?.data?.length
                     ? [{ label: "Заполнить вручную", value: "MANUAL_INPUT" }]
                     : [
-                        ...profileOrganizationsQuery?.data?.map((org) => ({
-                          value: org.id,
-                          label: org.short_title_organization,
-                        })),
+                      ...profileOrganizationsQuery?.data?.map((org) => ({
+                        value: org.id,
+                        label: org.short_title_organization,
+                      })),
 
-                        { label: "Заполнить вручную", value: "MANUAL_INPUT" },
-                      ]
+                      { label: "Заполнить вручную", value: "MANUAL_INPUT" },
+                    ]
                 }
                 value={formValue.customer_id}
                 loading={profileOrganizationsQuery.isLoading}
@@ -886,15 +889,15 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 error={formError.procedure_section}
                 data={
                   customerEmployeesQuery.isError ||
-                  !customerEmployeesQuery?.data?.length
+                    !customerEmployeesQuery?.data?.length
                     ? [{ label: "Заполнить вручную", value: "MANUAL_INPUT" }]
                     : [
-                        ...customerEmployeesQuery?.data?.map((emp) => ({
-                          label: emp.user_name || "Сотрудник",
-                          value: emp.id,
-                        })),
-                        { label: "Заполнить вручную", value: "MANUAL_INPUT" },
-                      ]
+                      ...customerEmployeesQuery?.data?.map((emp) => ({
+                        label: emp.user_name || "Сотрудник",
+                        value: emp.id,
+                      })),
+                      { label: "Заполнить вручную", value: "MANUAL_INPUT" },
+                    ]
                 }
                 loading={customerEmployeesQuery.isLoading}
                 placeholder="Выберите"

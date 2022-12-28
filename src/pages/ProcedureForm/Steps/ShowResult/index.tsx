@@ -90,22 +90,23 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
   const cert_thumbprint = formGlobalServerData?.session?.cert_thumbprint;
 
   const purchasePlanPositionQuery = useQuery(
-    ["lotPositions"],
+    ["lotPositionss"],
     async () => {
       const lotId = formGlobalServerData?.lotId ?? null;
-      if (actionType === ProcedureFormActionVariants.EDIT && lotId) {
+      if (actionType === ProcedureFormActionVariants.EDIT || lotId) {
         const positions = await fetchLotPositions({ lotId });
+        console.log('posssss', positions)
         // console.log('positionssss', positions.map(pos => ({ ...pos, amount: `${pos?.price?.currency} ${pos?.price?.amount}` })))
-        if (positions?.length && !positionsTableData.length) {
-          setPositionsTableData(
-            positions.map((pos) => ({
-              ...pos,
-              amount: `${currency(parseDBAmount(pos?.price?.amount) / 100)}`,
-            }))
-          );
-          // return { positions: positions.map(pos => ({ ...pos, region: `${pos.region_name} ${pos.region_address}` })) }
-        }
+        // if (positions?.length && !positionsTableData.length) {
+        setPositionsTableData(
+          positions/* .map((pos) => ({
+            ...pos,
+            amount: `${currency(parseDBAmount(pos?.price?.amount) / 100)}`,
+          })) */
+        );
+        // return { positions: positions.map(pos => ({ ...pos, region: `${pos.region_name} ${pos.region_address}` })) }
       }
+      // }
     },
     {
       // refetchInterval: false,
