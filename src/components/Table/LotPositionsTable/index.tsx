@@ -50,7 +50,7 @@ const ActionCell = ({ rowData, dataKey, onClick, isViaPlan, ...props }) => {
           className="d-flex flex-column justify-content-center"
           style={{ fontSize: "0.8rem" }}
         >
-          {rowData.id === "null" && !isViaPlan ? (
+          {rowData.id === "null" && !rowData.number && !isViaPlan ? (
             <>
               <Button
                 appearance="primary"

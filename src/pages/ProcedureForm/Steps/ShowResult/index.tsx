@@ -757,8 +757,8 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                         purchasePlanPositionQuery?.data?.okato ||
                         null,
                       unit_name: position.unit_name,
-                      okpd_field: `${position.okpd_code}. ${position.okpd_name} `,
-                      okved_field: `${position.okved_code}. ${position.okved_name} `,
+                      okpd_field: `${position.okpd_code}. ${position.okpd_name}`,
+                      okved_field: `${position.okved_code}. ${position.okved_name}`,
                       qty_count: position?.qty_count
                         ? position.qty_count
                         : `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"

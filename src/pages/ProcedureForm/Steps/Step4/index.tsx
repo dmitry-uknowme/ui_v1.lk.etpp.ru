@@ -736,7 +736,7 @@ const Step4 = ({
             // tableType={ProcedureFormActionVariants.CREATE}
             data={
               positionsTableData?.length
-                ? positionsTableData.map((position) => ({
+                ? positionsTableData.sort((a, b) => parseInt(a) > parseInt(b) ? 1 : -1).map((position) => ({
                   ...position,
                   okato:
                     position?.region_okato ||
@@ -754,10 +754,10 @@ const Step4 = ({
                   region:
                     !position?.region && !position?.region_address
                       ? null
-                      : position?.region_address &&
+                      : (position?.region_address || position?.address) &&
                         (position?.region || position?.region_name)
-                        ? `${position?.region || position?.region_name} , ${position?.region_address
-                        } `
+                        ? `${position?.region || position?.region_name} , ${position?.region_address || position?.address
+                        }`
                         : position.region_address,
 
                   address: position?.region_address || "",
@@ -767,6 +767,7 @@ const Step4 = ({
             }
             isViaPlan={isViaPlan}
             addPositions={(positions) => {
+              console.log('ddddd', positions.id === 'null', isViaPlan, positions)
               if (positions.id === 'null') {
                 if (isViaPlan) {
                   setFormGlobalValues((state) => ({
@@ -780,7 +781,7 @@ const Step4 = ({
                           ...(state?.lots[0]?.plan_positions?.length
                             ? [...state?.lots[0]?.plan_positions]
                             : []),
-                          positions,
+                          { ...positions, number: state?.lots[0]?.plan_positions.length + 1 },
                         ],
                       },
                     ],
@@ -799,7 +800,7 @@ const Step4 = ({
 
                             ? [...state?.lots[0]?.positions]
                             : []),
-                          positions,
+                          { ...positions, number: state?.lots[0]?.positions.length + 1 },
                         ],
                       },
                     ],
@@ -849,33 +850,33 @@ const Step4 = ({
                 }
               }
               console.log("adddddddd", positions);
-              setFormGlobalValues((state) => ({
-                ...state,
-                lots: [
-                  {
-                    ...(formGlobalValues?.lots?.length
-                      ? formGlobalValues.lots[0]
-                      : {}),
-                    plan_positions: [
-                      ...(state?.lots[0]?.plan_positions?.length
-                        ? isViaPlan
-                          ? state?.lots[0]?.plan_positions?.filter(
-                            (pos) => pos.id !== positions.id
-                          )
-                          : []
-                        : []),
-                    ],
-                    positions: [
-                      ...(state?.lots[0]?.positions?.length
-                        ? !isViaPlan
-                          ? [...state?.lots[0]?.positions]
-                          : []
-                        : []),
-                      positions,
-                    ],
-                  },
-                ],
-              }));
+              // setFormGlobalValues((state) => ({
+              //   ...state,
+              //   lots: [
+              //     {
+              //       ...(formGlobalValues?.lots?.length
+              //         ? formGlobalValues.lots[0]
+              //         : {}),
+              //       plan_positions: [
+              //         ...(state?.lots[0]?.plan_positions?.length
+              //           ? isViaPlan
+              //             ? state?.lots[0]?.plan_positions?.filter(
+              //               (pos) => pos.id !== positions.id
+              //             )
+              //             : []
+              //           : []),
+              //       ],
+              //       positions: [
+              //         ...(state?.lots[0]?.positions?.length
+              //           ? !isViaPlan
+              //             ? [...state?.lots[0]?.positions]
+              //             : []
+              //           : []),
+              //         positions,
+              //       ],
+              //     },
+              //   ],
+              // }));
             }}
             setPositionsTableData={setPositionsTableData}
             options={formGlobalServerData.options}

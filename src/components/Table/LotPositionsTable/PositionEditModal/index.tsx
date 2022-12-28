@@ -130,7 +130,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
   const actionType = formGlobalServerData?.actionType;
   const isViaPlan = formGlobalServerData?.isViaPlan;
   const lotId = formGlobalServerData?.lotId;
-  const isAddType = position.id === "null" || !isViaPlan;
+  const isAddType = position.id === "null"
   // const isAddType = position.id === "null";
   const biddingPerPositionOption =
     options?.includes("bidding_per_position_option") ?? false;
@@ -196,12 +196,24 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
         ?.scrollIntoView();
       return;
     }
-    // if (!formValue.okpd_code) return;
     const selectedOkpd = formValue.okpd_code
+    const selectedOkved = formValue.okved_code
+    const errors = {}
+    if (!selectedOkpd) {
+      setFormError(state => ({ ...state, okpd_code: "Поле обязательно для заполнения" }))
+    }
+    if (!selectedOkved) {
+      setFormError(state => ({ ...state, okved_code: "Поле обязательно для заполнения" }))
+    }
+    if (Object.keys(errors).length) {
+      setFormError(state => ({ ...state, ...errors }))
+      return
+    }
+
     const selectedOkpdCode = selectedOkpd.split(';')[0]
     const selectedOkpdName = selectedOkpd.split(';')[1].trim()
 
-    const selectedOkved = formValue.okved_code
+
     const selectedOkvedCode = selectedOkved.split(';')[0]
     const selectedOkvedName = selectedOkved.split(';')[1].trim()
     // const okpdCodes = queryClient.getQueryData(["okpdCodes"]);
@@ -240,11 +252,10 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
       unit_name: position.unit_name,
       qty_count: `${position.qty}, ${position.unit_name}`,
     };
-    // console.log("new possss", newPosition);
     if (newPosition) {
       if (isAddType) {
         setData((state) => [
-          { ...newPosition, number: position.number, id: uuidv4() },
+          { ...newPosition, number: formGlobalServerData?.positionsTableData?.length + 1 },
           ...state,
         ]);
       } else {
@@ -278,22 +289,8 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
         }
       } else {
         if (isAddType) {
-          console.log("addd posss", {
-            unit_id: newPosition.unit_id,
-            info: newPosition.info,
-            name: newPosition.name,
-            okpd_name: newPosition.okpd_name,
-            okpd_code: newPosition.okpd_code,
-            okved_name: newPosition.okved_name,
-            okved_code: newPosition.okved_code,
-            region_name: newPosition.region_name,
-            region_okato: newPosition.okato,
-            region_address: newPosition.region_address,
-            qty: newPosition.qty,
-            type_item: newPosition.type_item,
-            amount: null,
-          });
           addPositions({
+            id: uuidv4(),
             unit_id: newPosition.unit_id,
             info: newPosition.info?.trim()?.length ? newPosition.info : null,
             name: newPosition.name,
