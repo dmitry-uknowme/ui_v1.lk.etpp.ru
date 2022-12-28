@@ -1,3 +1,4 @@
+import fetchPurchasePlanPosition from "../../../../services/api/fetchPurchasePlanPosition";
 import sendToast from "../../../../utils/sendToast";
 import { ProcedureMethodVariants, ProcedureSectionVariants } from "../../types";
 
@@ -70,7 +71,7 @@ export const initStep1Values = (
   };
 };
 
-export const checkStep1Values = (
+export const checkStep1Values = async (
   formValues: Step1InitFormValues,
   selectedPurchasePlan: any | null,
   selectedPurchasePlanPosition: any | null
@@ -78,11 +79,31 @@ export const checkStep1Values = (
   const displayErrors: Partial<Step1InitFormValues> = {};
   const isViaPlan = formValues.is_via_plan === "true";
   const planPositionId = formValues.purchase_method_id;
+  const planId = selectedPurchasePlan.id;
+
+  const planPosition = await fetchPurchasePlanPosition({
+    planId,
+    planPositionId,
+  });
+  let procedureMethod = null;
+
+  if (isViaPlan) {
+    procedureMethod = planPosition.procedure_system_type;
+    const purchaseMethodEisCode = planPosition.purchase_method_code;
+    if (!procedureMethod) {
+      sendToast(
+        "error",
+        `Не найдено сопоставление по выбранной позиции плана. Код: ${purchaseMethodEisCode}`
+      );
+      return { "": "" };
+    }
+  }
 
   if (isViaPlan && !planPositionId) {
     sendToast("error", "Вы не выбрали позицию из плана закупок");
     return { "": "" };
   }
+
   if (Object.keys(displayErrors)?.length) {
     return displayErrors;
   }
@@ -93,14 +114,30 @@ interface IDispatchedStep1Values {
   globalServerValues: Step1FinalGlobalServerValues;
 }
 
-export const dispatchStep1Values = (
+export const dispatchStep1Values = async (
   formValues: Step1InitFormValues,
   selectedPurchasePlan: any,
   selectedPurchasePlanPosition: any
 ): IDispatchedStep1Values => {
   const isViaPlan = formValues.is_via_plan === "true";
   const planPositionId = formValues.purchase_method_id;
-
+  const planId = selectedPurchasePlan.id;
+  const planPosition = await fetchPurchasePlanPosition({
+    planId,
+    planPositionId,
+  });
+  let procedureMethod = null;
+  if (isViaPlan) {
+    procedureMethod = planPosition.procedure_system_type;
+    const purchaseMethodEisCode = planPosition.purchase_method_code;
+    if (!procedureMethod) {
+      sendToast(
+        "error",
+        `Не найдено сопоставление по выбранной позиции плана. Код: ${purchaseMethodEisCode}`
+      );
+      return { "": "" };
+    }
+  }
   const requirementRNPOption = formValues.options.includes(
     "rnp_requirement_option"
   );
@@ -126,7 +163,9 @@ export const dispatchStep1Values = (
       planPositionNumber: isViaPlan
         ? (selectedPurchasePlanPosition?.number as number)
         : null,
-      procedureMethod: formValues.procedure_method,
+      procedureMethod: isViaPlan
+        ? procedureMethod
+        : formValues.procedure_method,
     },
   };
 };

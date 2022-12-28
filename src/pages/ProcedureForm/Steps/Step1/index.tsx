@@ -143,13 +143,14 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       return;
     }
 
-    const errors = checkStep1Values(formValue, currentPurchasePlan, selectedPlanPositions)
+    const errors = await checkStep1Values(formValue, currentPurchasePlan, selectedPlanPositions)
+    console.log('errrr', errors)
     if (errors) {
       setFormError(state => ({ ...state, ...errors }))
       return
     }
 
-    const { globalFormValues: finalGlobalFormValues, globalServerValues: finalGlobalServerValues } = dispatchStep1Values(formValue, currentPurchasePlan, selectedPlanPosition)
+    const { globalFormValues: finalGlobalFormValues, globalServerValues: finalGlobalServerValues } = await dispatchStep1Values(formValue, currentPurchasePlan, selectedPlanPosition)
 
     setFormGlobalValues(state => ({ ...state, ...finalGlobalFormValues }))
     setFormGlobalServerData(state => ({ ...state, ...finalGlobalServerValues }))

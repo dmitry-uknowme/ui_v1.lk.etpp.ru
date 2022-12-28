@@ -230,7 +230,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                 </tr>
                 <tr>
                   <td style={{ width: "50%" }}>Тип процедуры</td>
-                  <td style={{ width: "50%" }}>Конкурентный отбор</td>
+                  <td style={{ width: "50%" }}>{formGlobalServerData.procedureMethod}</td>
                 </tr>
                 <tr>
                   <td style={{ width: "50%" }}>
@@ -260,14 +260,14 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     <td style={{ width: "50%" }}>
                       {procedure.bidding_per_unit_amount
                         ? parseDBMoney(
-                            procedure.bidding_per_unit_amount
-                          ).localeFormat({
-                            style: "currency",
-                          })
+                          procedure.bidding_per_unit_amount
+                        ).localeFormat({
+                          style: "currency",
+                        })
                         : // ? currency(
-                          //   parseDBAmount(procedure.bidding_per_unit_amount)
-                          // ).toString()
-                          "Не предусмотрено"}
+                        //   parseDBAmount(procedure.bidding_per_unit_amount)
+                        // ).toString()
+                        "Не предусмотрено"}
                     </td>
                   </tr>
                 ) : null}
@@ -277,12 +277,12 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                     {procedure?.lots[0].nds_type === "NO_NDS"
                       ? "Без НДС"
                       : procedure?.lots[0].nds_type == "FIX_10"
-                      ? "10%"
-                      : procedure?.lots[0].nds_type === "FIX_18"
-                      ? "18%"
-                      : procedure?.lots[0].nds_type === "FIX_20"
-                      ? "20%"
-                      : procedure?.lots[0]?.nds_type}
+                        ? "10%"
+                        : procedure?.lots[0].nds_type === "FIX_18"
+                          ? "18%"
+                          : procedure?.lots[0].nds_type === "FIX_20"
+                            ? "20%"
+                            : procedure?.lots[0]?.nds_type}
                   </td>
                 </tr>
 
@@ -426,13 +426,13 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                         ? provisionBid.methods[0] === "PERCENTAGE_AMOUNT"
                           ? "Процент от НМЦ (с внесением д/с на эл. площадку или банковская гарантия на эл. площадку)"
                           : provisionBid.methods[0] === "FIXED_AMOUNT"
-                          ? "Фиксированная сумма (с внесением д/с на эл. площадку или банковская гарантия)"
-                          : provisionBid.methods[0] === "WITHOUT_COLLATERAL"
-                          ? "Без обеспечения"
-                          : provisionBid.methods[0] ===
-                            "ACCORDING_DOCUMENTATION"
-                          ? "В соответствии с документацией"
-                          : null
+                            ? "Фиксированная сумма (с внесением д/с на эл. площадку или банковская гарантия)"
+                            : provisionBid.methods[0] === "WITHOUT_COLLATERAL"
+                              ? "Без обеспечения"
+                              : provisionBid.methods[0] ===
+                                "ACCORDING_DOCUMENTATION"
+                                ? "В соответствии с документацией"
+                                : null
                         : null}
                     </td>
                   </tr>
@@ -468,10 +468,10 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                           "ACCORDING_PROCUREMENT_DOCUMENTS"
                           ? "В соответствии с закупочной документацией"
                           : provisionContract.type === "FROM_START_PRICE"
-                          ? "От начальной цены лота"
-                          : provisionContract.type === "FROM_CONTRACT_PRICE"
-                          ? "От цены договора"
-                          : null
+                            ? "От начальной цены лота"
+                            : provisionContract.type === "FROM_CONTRACT_PRICE"
+                              ? "От цены договора"
+                              : null
                         : null}
                     </td>
                   </tr>
@@ -750,32 +750,30 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                 data={
                   positionsTableData?.length
                     ? positionsTableData.map((position) => ({
-                        ...position,
-                        okato:
-                          position?.region_okato ||
-                          purchasePlanPositionQuery?.data?.okato ||
-                          null,
-                        unit_name: position.unit_name,
-                        okpd_field: `${position.okpd_code}. ${position.okpd_name} `,
-                        okved_field: `${position.okved_code}. ${position.okved_name} `,
-                        qty_count: position?.qty_count
-                          ? position.qty_count
-                          : `${position.qty || "Не определено"}, ${
-                              position.unit_name || "Не определено"
-                            } `,
-                        region:
-                          position?.region_address &&
+                      ...position,
+                      okato:
+                        position?.region_okato ||
+                        purchasePlanPositionQuery?.data?.okato ||
+                        null,
+                      unit_name: position.unit_name,
+                      okpd_field: `${position.okpd_code}. ${position.okpd_name} `,
+                      okved_field: `${position.okved_code}. ${position.okved_name} `,
+                      qty_count: position?.qty_count
+                        ? position.qty_count
+                        : `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
+                        } `,
+                      region:
+                        position?.region_address &&
                           (position?.region || position?.region_name)
-                            ? `${position?.region || position?.region_name} , ${
-                                position?.region_address
-                              }`
-                            : position.region_address,
-                        // full_region: `${position?.region || position?.region_name} , ${position?.region_address
-                        //   } `
-                        // ,
-                        address: position?.region_address,
-                        extra_info: position?.addition_info || position?.info,
-                      }))
+                          ? `${position?.region || position?.region_name} , ${position?.region_address
+                          }`
+                          : position.region_address,
+                      // full_region: `${position?.region || position?.region_name} , ${position?.region_address
+                      //   } `
+                      // ,
+                      address: position?.region_address,
+                      extra_info: position?.addition_info || position?.info,
+                    }))
                     : []
                 }
                 activeStep={activeStep}
@@ -817,7 +815,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
             className="d-none"
             id="eisProcessLink"
             href={`${LK_URL}/lot/notice/${noticeId}/process`}
-            // target="_blank"
+          // target="_blank"
           >
             Редактирование процедуры
           </a>
@@ -825,7 +823,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
             className="d-none"
             id="editProcedureLink"
             href={`${LK_URL}/procedure/edit/new/${procedure.id}`}
-            // target="_blank"
+          // target="_blank"
           >
             Процесс
           </a>

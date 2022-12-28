@@ -3,7 +3,7 @@ export enum ProcedureMethodVariants {
   REQUEST_OFFERS = "REQUEST_OFFERS",
   REQUEST_QUOTATIONS = "REQUEST_QUOTATIONS",
   CONTEST = "CONTEST",
-  AUCTION = "AUCTION",
+  AUCTION = "AUCTION_LOWER",
 }
 
 export enum ProcedureSectionVariants {

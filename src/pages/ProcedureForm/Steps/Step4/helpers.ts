@@ -308,6 +308,7 @@ export const dispatchStep4Values = (
   globalFormValues: any,
   globalServerValues: any
 ): IDispatchedStep4Values => {
+  const isViaPlan = globalFormValues.isViaPlan;
   const isBidProvisionSpecified =
     formValues.provision_bid_type !== "WITHOUT_COLLATERAL";
   const isContractProvisionSpecified =
@@ -344,6 +345,12 @@ export const dispatchStep4Values = (
           starting_price: `${"RUB"} ${
             currency(parseFloat(formValues.lot_start_price)).intValue
           } `,
+          positions: isViaPlan ? [] : [],
+          plan_positions: [
+            ...(globalFormValues?.lots[0]?.plan_positions?.length
+              ? globalFormValues?.lots[0]?.plan_positions
+              : []),
+          ],
         },
       ],
       provision_bid: {
@@ -384,7 +391,7 @@ export const dispatchStep4Values = (
       },
       original_price: `${"RUB"} ${
         currency(parseFloat(formValues.lot_start_price)).intValue
-      } `,
+      }`,
     },
     globalServerValues: {},
   };

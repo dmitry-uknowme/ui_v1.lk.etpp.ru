@@ -85,11 +85,12 @@ const Step4 = ({
   const [isBtnLoader, setBtnLoader] = useState<boolean>(false);
   const isBiddingPerUnitOption = !!formGlobalValues?.bidding_per_unit;
   const serverProcedure = formGlobalServerData.procedure;
+  // console.log('dddd', !isEditType && !isViaPlan)
   const [positionsTableData, setPositionsTableData] = useState(
     formGlobalServerData?.positionsTableData
       ? formGlobalServerData?.positionsTableData
-      : !isEditType
-      ? [
+      : !isEditType && !isViaPlan
+        ? [
           {
             id: "null",
             qty: "",
@@ -102,8 +103,10 @@ const Step4 = ({
             okved_name: "",
           },
         ]
-      : []
+        : []
   );
+
+  console.log('tableeeee', positionsTableData)
 
   useEffect(() => {
     setFormGlobalServerData((state) => ({ ...state, positionsTableData }));
@@ -734,34 +737,32 @@ const Step4 = ({
             data={
               positionsTableData?.length
                 ? positionsTableData.map((position) => ({
-                    ...position,
-                    okato:
-                      position?.region_okato ||
-                      purchasePlanPositionQuery?.data?.okato ||
-                      null,
-                    unit_name: position.unit_name,
-                    okpd_field: `${position.okpd_code}. ${position.okpd_name} `,
-                    okved_field: `${position.okved_code}. ${position.okved_name} `,
-                    qty_count: position?.qty_count
-                      ? position.qty_count
-                      : position.qty && position.unit_name
-                      ? `${position.qty || "Не определено"}, ${
-                          position.unit_name || "Не определено"
-                        }`
+                  ...position,
+                  okato:
+                    position?.region_okato ||
+                    purchasePlanPositionQuery?.data?.okato ||
+                    null,
+                  unit_name: position.unit_name,
+                  okpd_field: `${position.okpd_code}. ${position.okpd_name} `,
+                  okved_field: `${position.okved_code}. ${position.okved_name} `,
+                  qty_count: position?.qty_count
+                    ? position.qty_count
+                    : position.qty && position.unit_name
+                      ? `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
+                      }`
                       : null,
-                    region:
-                      !position?.region && !position?.region_address
-                        ? null
-                        : position?.region_address &&
-                          (position?.region || position?.region_name)
-                        ? `${position?.region || position?.region_name} , ${
-                            position?.region_address
-                          } `
+                  region:
+                    !position?.region && !position?.region_address
+                      ? null
+                      : position?.region_address &&
+                        (position?.region || position?.region_name)
+                        ? `${position?.region || position?.region_name} , ${position?.region_address
+                        } `
                         : position.region_address,
 
-                    address: position?.region_address || "",
-                    extra_info: position?.addition_info || position?.info || "",
-                  }))
+                  address: position?.region_address || "",
+                  extra_info: position?.addition_info || position?.info || "",
+                }))
                 : []
             }
             isViaPlan={isViaPlan}
@@ -778,8 +779,8 @@ const Step4 = ({
                       ...(state?.lots[0]?.plan_positions?.length
                         ? isViaPlan
                           ? state?.lots[0]?.plan_positions?.filter(
-                              (pos) => pos.id !== positions.id
-                            )
+                            (pos) => pos.id !== positions.id
+                          )
                           : []
                         : []),
                     ],

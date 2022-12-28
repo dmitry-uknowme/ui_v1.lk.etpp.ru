@@ -195,6 +195,9 @@ const MultiStepFormContextProvider: React.FC<
         },
         lots: [
           {
+            auctions: [{ min_step_percent: lot?.auctions?.length ? lot.auctions[0]?.min_step_percent : null, max_step_percent: lot?.auctions?.length ? lot.auctions[0]?.max_step_percent : null, wait_offer_time_minutes: lot?.auctions?.length ? lot.auctions[0]?.wait_offer_time_minutes : null }]
+          },
+          {
             nds_type: lot?.nds,
             plan_positions: [],
             positions: [],
@@ -229,14 +232,14 @@ const MultiStepFormContextProvider: React.FC<
         provision_contract: {
           amount:
             provisionContract?.is_specified &&
-            provisionContract?.type === "FROM_START_PRICE"
+              provisionContract?.type === "FROM_START_PRICE"
               ? `${provisionContract.amount.currency} ${provisionContract.amount.amount}`
               : null,
           is_specified: provisionContract.is_specified,
           // methods: provisionContract.methods,
           percent:
             provisionContract?.is_specified &&
-            provisionContract?.type === "FROM_CONTRACT_PRICE"
+              provisionContract?.type === "FROM_CONTRACT_PRICE"
               ? provisionContract.percent
               : null,
           type: provisionContract.type,
