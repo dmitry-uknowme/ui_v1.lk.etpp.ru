@@ -23,7 +23,12 @@ import { parseDBAmount } from "../../../../utils/newMoney";
 import { ProcedureFormActionVariants } from "../..";
 import fetchLotPositions from "../../../../services/api/fetchLotPositions";
 import sendToast from "../../../../utils/sendToast";
-import { checkStep4Values, dispatchStep4Values, initStep4Values } from "./helpers";
+import {
+  checkStep4Values,
+  dispatchStep4Values,
+  initStep4Values,
+} from "./helpers";
+import { ProcedureMethodVariants } from "../../types";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -71,6 +76,9 @@ const Step4 = ({
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
 
+  const isProcedureAuction =
+    formGlobalServerData.procedureMethod === ProcedureMethodVariants.AUCTION;
+
   const isViaPlan = formGlobalServerData.isViaPlan;
   const isEditType =
     formGlobalServerData.actionType === ProcedureFormActionVariants.EDIT;
@@ -81,7 +89,7 @@ const Step4 = ({
     formGlobalServerData?.positionsTableData
       ? formGlobalServerData?.positionsTableData
       : !isEditType
-        ? [
+      ? [
           {
             id: "null",
             qty: "",
@@ -94,7 +102,7 @@ const Step4 = ({
             okved_name: "",
           },
         ]
-        : []
+      : []
   );
 
   useEffect(() => {
@@ -103,7 +111,12 @@ const Step4 = ({
 
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
-  const [formValue, setFormValue] = React.useState(initStep4Values({ globalFormValues: formGlobalValues, globalServerValues: formGlobalServerData }));
+  const [formValue, setFormValue] = React.useState(
+    initStep4Values({
+      globalFormValues: formGlobalValues,
+      globalServerValues: formGlobalServerData,
+    })
+  );
 
   const isBidProvisionSpecified =
     formValue.provision_bid_type !== "WITHOUT_COLLATERAL";
@@ -191,22 +204,28 @@ const Step4 = ({
       return;
     }
 
-    const errors = checkStep4Values(formValue, formGlobalValues, formGlobalServerData)
+    const errors = checkStep4Values(
+      formValue,
+      formGlobalValues,
+      formGlobalServerData
+    );
     if (errors) {
-      setFormError(state => ({ ...state, ...errors }))
-      return
+      setFormError((state) => ({ ...state, ...errors }));
+      return;
     }
 
-    const { globalFormValues: finalGlobalFormValues, globalServerValues: finalGlobalServerValues } = dispatchStep4Values(formValue, formGlobalValues, formGlobalServerData)
+    const {
+      globalFormValues: finalGlobalFormValues,
+      globalServerValues: finalGlobalServerValues,
+    } = dispatchStep4Values(formValue, formGlobalValues, formGlobalServerData);
 
-    setFormGlobalValues(state => ({ ...state, ...finalGlobalFormValues }))
-    setFormGlobalServerData(state => ({ ...state, ...finalGlobalServerValues }))
+    setFormGlobalValues((state) => ({ ...state, ...finalGlobalFormValues }));
+    setFormGlobalServerData((state) => ({
+      ...state,
+      ...finalGlobalServerValues,
+    }));
 
-    nextStep()
-
-
-
-
+    nextStep();
 
     // if (biddingPerPositionOption) {
     //   const defaultPlanPositions = positionsTableData;
@@ -535,6 +554,7 @@ const Step4 = ({
               }))
             }
             accepter={CurrencyInput}
+            scrolling={false}
             error={formError.lot_start_price}
           />
           {isBiddingPerUnitOption ? (
@@ -714,32 +734,34 @@ const Step4 = ({
             data={
               positionsTableData?.length
                 ? positionsTableData.map((position) => ({
-                  ...position,
-                  okato:
-                    position?.region_okato ||
-                    purchasePlanPositionQuery?.data?.okato ||
-                    null,
-                  unit_name: position.unit_name,
-                  okpd_field: `${position.okpd_code}. ${position.okpd_name} `,
-                  okved_field: `${position.okved_code}. ${position.okved_name} `,
-                  qty_count: position?.qty_count
-                    ? position.qty_count
-                    : position.qty && position.unit_name
-                      ? `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
-                      }`
+                    ...position,
+                    okato:
+                      position?.region_okato ||
+                      purchasePlanPositionQuery?.data?.okato ||
+                      null,
+                    unit_name: position.unit_name,
+                    okpd_field: `${position.okpd_code}. ${position.okpd_name} `,
+                    okved_field: `${position.okved_code}. ${position.okved_name} `,
+                    qty_count: position?.qty_count
+                      ? position.qty_count
+                      : position.qty && position.unit_name
+                      ? `${position.qty || "Не определено"}, ${
+                          position.unit_name || "Не определено"
+                        }`
                       : null,
-                  region:
-                    !position?.region && !position?.region_address
-                      ? null
-                      : position?.region_address &&
-                        (position?.region || position?.region_name)
-                        ? `${position?.region || position?.region_name} , ${position?.region_address
-                        } `
+                    region:
+                      !position?.region && !position?.region_address
+                        ? null
+                        : position?.region_address &&
+                          (position?.region || position?.region_name)
+                        ? `${position?.region || position?.region_name} , ${
+                            position?.region_address
+                          } `
                         : position.region_address,
 
-                  address: position?.region_address || "",
-                  extra_info: position?.addition_info || position?.info || "",
-                }))
+                    address: position?.region_address || "",
+                    extra_info: position?.addition_info || position?.info || "",
+                  }))
                 : []
             }
             isViaPlan={isViaPlan}
@@ -756,8 +778,8 @@ const Step4 = ({
                       ...(state?.lots[0]?.plan_positions?.length
                         ? isViaPlan
                           ? state?.lots[0]?.plan_positions?.filter(
-                            (pos) => pos.id !== positions.id
-                          )
+                              (pos) => pos.id !== positions.id
+                            )
                           : []
                         : []),
                     ],

@@ -75,7 +75,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   // const procedure = formGlobalServerData?.procedure || formGlobalServerData?.procedureId;
   const cert_thumbprint = formGlobalServerData.session?.cert_thumbprint;
   if (!procedureId) {
-    sendToast("error", "Извещение не создано")
+    sendToast("error", "Извещение не создано");
     // toaster.push(<Message type="error">Извещение не создано</Message>);
     return prevStep();
   }
@@ -90,8 +90,6 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   });
 
   const noticeId = formGlobalServerData.noticeId;
-
-
 
   const initDocuments = async () => {
     const serverDocuments = await fetchNoticeDocuments({ noticeId });
@@ -116,11 +114,14 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         ),
       ]);
 
-      sendToast("success", "Документ успешно подписан")      // return toaster.push(
+      sendToast("success", "Документ успешно подписан"); // return toaster.push(
       //   <Message type="success">Документ успешно подписан</Message>
       // );
     } catch (err) {
-      sendToast("error", `Ошибка при подписании документа ${JSON.stringify(err)}`)
+      sendToast(
+        "error",
+        `Ошибка при подписании документа ${JSON.stringify(err)}`
+      );
       // return toaster.push(
       //   <Message type="error">
       //     Ошибка при подписании документа {JSON.stringify(err)}
@@ -139,7 +140,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       );
       setDocuments((state) => state.filter((doc) => doc.id !== documentId));
     } catch (err) {
-      sendToast("error", "Ошибка при удалении документа")
+      sendToast("error", "Ошибка при удалении документа");
       // toaster.push(
       //   <Message type="error">Ошибка при удалении документа</Message>
       // );
@@ -155,16 +156,16 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       documents.filter((doc) => doc.status === "STATUS_SIGNED").length ===
       documents.length;
     if (!isDocumentsExists) {
-      sendToast("error", "Не загружен документ извещения")
-      return
+      sendToast("error", "Не загружен документ извещения");
+      return;
       // return toaster.push(
       //   <Message type="error">Не загружен документ извещения</Message>
       // );
     }
 
     if (!isAllDocumentsSigned) {
-      sendToast("error", "Подписаны не все документы извещения")
-      return
+      sendToast("error", "Подписаны не все документы извещения");
+      return;
       // return toaster.push(
       //   <Message type="error">Подписаны не все документы извещения</Message>
       // );
@@ -185,7 +186,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   }, []);
 
   return (
-    <div className="col-md-9">
+    <div className="col-md-12">
       <Form
         ref={formRef}
         onChange={setFormValue}
@@ -220,82 +221,82 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               <tbody>
                 {documents?.length
                   ? documents.map((doc) => (
-                    <tr key={doc.id}>
-                      <td>
-                        <Checkbox
-                          value={doc.id}
-                          checked={
-                            !!selectedDocuments.find((d) => d.id === doc.id)
-                          }
-                          // checked={
-                          //   !!selectedDocuments.find((d) => d.id === doc.id)
-                          // }
-                          onChange={(value) => {
-                            const currentDocument = documents.find(
-                              (d) => d.id === value
-                            );
-                            const isChecked = !!selectedDocuments.find(
-                              (doc) => currentDocument.id === doc.id
-                            );
-
-                            if (isChecked) {
-                              setSelectedDocuments((state) => [
-                                ...state.filter(
-                                  (d) => d.id !== currentDocument.id
-                                ),
-                              ]);
-                            } else {
-                              setSelectedDocuments((state) => [
-                                ...state,
-                                currentDocument,
-                              ]);
+                      <tr key={doc.id}>
+                        <td>
+                          <Checkbox
+                            value={doc.id}
+                            checked={
+                              !!selectedDocuments.find((d) => d.id === doc.id)
                             }
-                          }}
-                        />
-                      </td>
-                      <td style={{ verticalAlign: "middle" }}>
-                        {doc.file_real_name}
-                      </td>
-                      <td style={{ verticalAlign: "middle" }}>
-                        {doc.status === "STATUS_NEW" ? (
-                          <Button
-                            appearance="primary"
-                            color="blue"
-                            size="xs"
-                            onClick={() => signDocument(doc)}
-                            loading={doc?.isLoading}
-                          >
-                            Подписать
-                          </Button>
-                        ) : (
-                          <Badge
-                            color="green"
-                            content={doc.status_localized}
+                            // checked={
+                            //   !!selectedDocuments.find((d) => d.id === doc.id)
+                            // }
+                            onChange={(value) => {
+                              const currentDocument = documents.find(
+                                (d) => d.id === value
+                              );
+                              const isChecked = !!selectedDocuments.find(
+                                (doc) => currentDocument.id === doc.id
+                              );
+
+                              if (isChecked) {
+                                setSelectedDocuments((state) => [
+                                  ...state.filter(
+                                    (d) => d.id !== currentDocument.id
+                                  ),
+                                ]);
+                              } else {
+                                setSelectedDocuments((state) => [
+                                  ...state,
+                                  currentDocument,
+                                ]);
+                              }
+                            }}
                           />
-                        )}
-                      </td>
-                      <td
-                        onClick={() => removeDocument(doc)}
-                        style={{ verticalAlign: "middle" }}
-                      >
-                        <IconButton
-                          size="sm"
-                          color="red"
-                          appearance="subtle"
-                          onClick={() => removeDocument(doc)}
-                          // appearance="subtle"
-                          icon={
-                            <TrashIcon
-                              color="red"
-                              onClick={() => removeDocument(doc)}
+                        </td>
+                        <td style={{ verticalAlign: "middle" }}>
+                          {doc.file_real_name}
+                        </td>
+                        <td style={{ verticalAlign: "middle" }}>
+                          {doc.status === "STATUS_NEW" ? (
+                            <Button
+                              appearance="primary"
+                              color="blue"
+                              size="xs"
+                              onClick={() => signDocument(doc)}
+                              loading={doc?.isLoading}
+                            >
+                              Подписать
+                            </Button>
+                          ) : (
+                            <Badge
+                              color="green"
+                              content={doc.status_localized}
                             />
-                          }
+                          )}
+                        </td>
+                        <td
+                          onClick={() => removeDocument(doc)}
+                          style={{ verticalAlign: "middle" }}
                         >
-                          Удалить
-                        </IconButton>
-                      </td>
-                    </tr>
-                  ))
+                          <IconButton
+                            size="sm"
+                            color="red"
+                            appearance="subtle"
+                            onClick={() => removeDocument(doc)}
+                            // appearance="subtle"
+                            icon={
+                              <TrashIcon
+                                color="red"
+                                onClick={() => removeDocument(doc)}
+                              />
+                            }
+                          >
+                            Удалить
+                          </IconButton>
+                        </td>
+                      </tr>
+                    ))
                   : null}
               </tbody>
             </table>
@@ -311,7 +312,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                       selectedDocuments.map((doc) => signDocument(doc))
                     );
                   } catch (err) {
-                    sendToast("error", "Ошибка при подписании документов")
+                    sendToast("error", "Ошибка при подписании документов");
                     // toaster.push(
                     //   <Message type="error">
                     //     Ошибка при подписании документов
@@ -341,7 +342,7 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                       selectedDocuments.map((doc) => removeDocument(doc))
                     );
                   } catch (err) {
-                    sendToast("error", "Ошибка при удалении документов")
+                    sendToast("error", "Ошибка при удалении документов");
                     // toaster.push(
                     //   <Message type="error">
                     //     Ошибка при удалении документов
@@ -386,11 +387,11 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                       const totalLength = progressEvent?.total
                         ? progressEvent.total
                         : progressEvent?.event.target.getResponseHeader(
-                          "content-length"
-                        ) ||
-                        progressEvent?.target.getResponseHeader(
-                          "x-decompressed-content-length"
-                        );
+                            "content-length"
+                          ) ||
+                          progressEvent?.target.getResponseHeader(
+                            "x-decompressed-content-length"
+                          );
                       console.log(
                         "progressss value",
                         Math.round((progressEvent.loaded * 100) / totalLength)
@@ -402,8 +403,8 @@ const Step6 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 setDocuments(data.files);
                 setFileList([]);
               } catch (err) {
-                sendToast("error", "Ошибка при загрузке документа")
-                return
+                sendToast("error", "Ошибка при загрузке документа");
+                return;
                 // return toaster.push(
                 //   <Message type="error">Ошибка при загрузке документа</Message>
                 // );

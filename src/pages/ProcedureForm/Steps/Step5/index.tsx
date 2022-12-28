@@ -176,6 +176,8 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       formGlobalValues?.organizer?.additional_phone || "",
   });
 
+  const procedureMethod = formGlobalServerData?.procedureMethod;
+
   const isErrorsExists = !!Object.keys(formError)?.length;
   const profileOrganizationsQuery = useQuery(
     "profileOrganizations",
@@ -252,7 +254,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     {
       enabled:
         formValue.organizer_id?.trim()?.length &&
-          formValue.organizer_id !== "MANUAL_INPUT"
+        formValue.organizer_id !== "MANUAL_INPUT"
           ? true
           : false,
       refetchInterval: false,
@@ -277,7 +279,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     {
       enabled:
         formValue.customer_id?.trim()?.length &&
-          formValue.customer_id !== "MANUAL_INPUT"
+        formValue.customer_id !== "MANUAL_INPUT"
           ? true
           : false,
       refetchInterval: false,
@@ -312,7 +314,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     {
       enabled:
         formValue?.organizer_representative_id?.trim()?.length &&
-          formValue?.organizer_representative_id !== "MANUAL_INPUT"
+        formValue?.organizer_representative_id !== "MANUAL_INPUT"
           ? true
           : false,
       refetchInterval: false,
@@ -341,7 +343,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     {
       enabled:
         formValue.customer_representative_id?.trim()?.length &&
-          formValue.customer_representative_id !== "MANUAL_INPUT"
+        formValue.customer_representative_id !== "MANUAL_INPUT"
           ? true
           : false,
       refetchInterval: false,
@@ -388,12 +390,11 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     const finalData = {
       lots: [
         {
-          ...(formGlobalValues?.lots?.length
-            ? formGlobalValues.lots[0]
-            : {}),
-          plan_positions: formGlobalValues?.lots[0]?.plan_positions?.length ? formGlobalValues?.lots[0]?.plan_positions : [],
+          ...(formGlobalValues?.lots?.length ? formGlobalValues.lots[0] : {}),
+          plan_positions: formGlobalValues?.lots[0]?.plan_positions?.length
+            ? formGlobalValues?.lots[0]?.plan_positions
+            : [],
         },
-
       ],
       customer: {
         ogrn: formValue.customer_org_ogrn,
@@ -452,7 +453,10 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     };
 
     if (!formRef.current.check()) {
-      sendToast("error", "Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг")
+      sendToast(
+        "error",
+        "Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг"
+      );
       // toaster.push(
       //   <Message type="error">
       //     Пожалуйста, исправьте ошибки перед тем, как перейте на следующий шаг
@@ -488,8 +492,11 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         procedureId,
         { ...finalData, ...formGlobalValues },
         (err) => {
-          sendToast("error", `Ошибка при обновлении процедуры ${JSON.stringify(err, null, 2)}`)
-          return
+          sendToast(
+            "error",
+            `Ошибка при обновлении процедуры ${JSON.stringify(err, null, 2)}`
+          );
+          return;
           // toaster.push(
           //   <Message type="error">
           //     Ошибка при создании процедуры {JSON.stringify(err, null, 2)}
@@ -516,10 +523,14 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       }
     } else {
       const procedureData = await createProcedure(
+        procedureMethod,
         { ...finalData, ...formGlobalValues },
         (err) => {
-          sendToast("error", `Ошибка при создании процедуры ${JSON.stringify(err, null, 2)}`)
-          return
+          sendToast(
+            "error",
+            `Ошибка при создании процедуры ${JSON.stringify(err, null, 2)}`
+          );
+          return;
           // toaster.push(
           //   <Message type="error">
           //     Ошибка при создании процедуры {JSON.stringify(err, null, 2)}
@@ -529,7 +540,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       );
       if (procedureData) {
         console.log("created procedureeeeee", procedureData.procedure);
-        sendToast("success", "Извещение успешно создано")
+        sendToast("success", "Извещение успешно создано");
 
         // toaster.push(
         //   <Message type="success">Извещение успешно создано</Message>
@@ -600,7 +611,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   }, [formValue.customer_id]);
 
   return (
-    <div className="col-md-9">
+    <div className="col-md-12">
       <Form
         ref={formRef}
         onChange={setFormValue}
@@ -620,8 +631,9 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         </Field>
         <div className="d-flex">
           <Panel
-            header={`Сведения об организаторе ${isOrganizerEqualsCustomer ? "и заказчике" : ""
-              }`}
+            header={`Сведения об организаторе ${
+              isOrganizerEqualsCustomer ? "и заказчике" : ""
+            }`}
           >
             <Panel>
               <Field
@@ -631,16 +643,16 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 error={formError.procedure_section}
                 data={
                   profileOrganizationsQuery.isError ||
-                    !profileOrganizationsQuery?.data?.length
+                  !profileOrganizationsQuery?.data?.length
                     ? [{ label: "Заполнить вручную", value: "MANUAL_INPUT" }]
                     : [
-                      ...profileOrganizationsQuery?.data?.map((org) => ({
-                        value: org.id,
-                        label: org.short_title_organization,
-                      })),
+                        ...profileOrganizationsQuery?.data?.map((org) => ({
+                          value: org.id,
+                          label: org.short_title_organization,
+                        })),
 
-                      { label: "Заполнить вручную", value: "MANUAL_INPUT" },
-                    ]
+                        { label: "Заполнить вручную", value: "MANUAL_INPUT" },
+                      ]
                 }
                 value={formValue.organizer_id}
                 loading={profileOrganizationsQuery.isLoading}
@@ -711,15 +723,15 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 error={formError.procedure_section}
                 data={
                   organizerEmployeesQuery.isError ||
-                    !organizerEmployeesQuery?.data?.length
+                  !organizerEmployeesQuery?.data?.length
                     ? [{ label: "Заполнить вручную", value: "MANUAL_INPUT" }]
                     : [
-                      ...organizerEmployeesQuery?.data?.map((emp) => ({
-                        label: emp.user_name || "Сотрудник",
-                        value: emp.id,
-                      })),
-                      { label: "Заполнить вручную", value: "MANUAL_INPUT" },
-                    ]
+                        ...organizerEmployeesQuery?.data?.map((emp) => ({
+                          label: emp.user_name || "Сотрудник",
+                          value: emp.id,
+                        })),
+                        { label: "Заполнить вручную", value: "MANUAL_INPUT" },
+                      ]
                 }
                 loading={organizerEmployeesQuery.isLoading}
                 placeholder="Выберите"
@@ -779,10 +791,10 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             style={
               isOrganizerEqualsCustomer
                 ? {
-                  width: 0,
-                  height: 0,
-                  overflow: "hidden",
-                }
+                    width: 0,
+                    height: 0,
+                    overflow: "hidden",
+                  }
                 : {}
             }
           >
@@ -794,16 +806,16 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 error={formError.procedure_section}
                 data={
                   profileOrganizationsQuery.isError ||
-                    !profileOrganizationsQuery?.data?.length
+                  !profileOrganizationsQuery?.data?.length
                     ? [{ label: "Заполнить вручную", value: "MANUAL_INPUT" }]
                     : [
-                      ...profileOrganizationsQuery?.data?.map((org) => ({
-                        value: org.id,
-                        label: org.short_title_organization,
-                      })),
+                        ...profileOrganizationsQuery?.data?.map((org) => ({
+                          value: org.id,
+                          label: org.short_title_organization,
+                        })),
 
-                      { label: "Заполнить вручную", value: "MANUAL_INPUT" },
-                    ]
+                        { label: "Заполнить вручную", value: "MANUAL_INPUT" },
+                      ]
                 }
                 value={formValue.customer_id}
                 loading={profileOrganizationsQuery.isLoading}
@@ -874,15 +886,15 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                 error={formError.procedure_section}
                 data={
                   customerEmployeesQuery.isError ||
-                    !customerEmployeesQuery?.data?.length
+                  !customerEmployeesQuery?.data?.length
                     ? [{ label: "Заполнить вручную", value: "MANUAL_INPUT" }]
                     : [
-                      ...customerEmployeesQuery?.data?.map((emp) => ({
-                        label: emp.user_name || "Сотрудник",
-                        value: emp.id,
-                      })),
-                      { label: "Заполнить вручную", value: "MANUAL_INPUT" },
-                    ]
+                        ...customerEmployeesQuery?.data?.map((emp) => ({
+                          label: emp.user_name || "Сотрудник",
+                          value: emp.id,
+                        })),
+                        { label: "Заполнить вручную", value: "MANUAL_INPUT" },
+                      ]
                 }
                 loading={customerEmployeesQuery.isLoading}
                 placeholder="Выберите"

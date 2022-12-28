@@ -17,7 +17,11 @@ import InfoRoundIcon from "@rsuite/icons/InfoRound";
 import React, { useContext, useEffect, useState } from "react";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
 import sendToast from "../../../../utils/sendToast";
-import { checkStep2Values, dispatchStep2Values, initStep2Values } from "./helpers";
+import {
+  checkStep2Values,
+  dispatchStep2Values,
+  initStep2Values,
+} from "./helpers";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -38,7 +42,6 @@ const Field = React.forwardRef((props, ref) => {
     </Form.Group>
   );
 });
-
 
 const { ArrayType, NumberType, StringType } = Schema.Types;
 const model = Schema.Model({
@@ -62,8 +65,12 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
-  const [formValue, setFormValue] = React.useState(initStep2Values({ globalFormValues: formGlobalValues, globalServerValues: formGlobalServerData }))
-
+  const [formValue, setFormValue] = React.useState(
+    initStep2Values({
+      globalFormValues: formGlobalValues,
+      globalServerValues: formGlobalServerData,
+    })
+  );
 
   const isViaPlan = formGlobalServerData.isViaPlan;
   const contractByAnyParticipantOption = formValue.options.includes(
@@ -89,24 +96,28 @@ const Step2 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
       return;
     }
 
-    const errors = checkStep2Values(formValue)
+    const errors = checkStep2Values(formValue);
     if (errors) {
-      setFormError(state => ({ ...state, ...errors }))
-      return
+      setFormError((state) => ({ ...state, ...errors }));
+      return;
     }
 
-    const { globalFormValues: finalGlobalFormValues, globalServerValues: finalGlobalServerValues } = dispatchStep2Values(formValue)
+    const {
+      globalFormValues: finalGlobalFormValues,
+      globalServerValues: finalGlobalServerValues,
+    } = dispatchStep2Values(formValue);
 
-    setFormGlobalValues(state => ({ ...state, ...finalGlobalFormValues }))
-    setFormGlobalServerData(state => ({ ...state, ...finalGlobalServerValues }))
+    setFormGlobalValues((state) => ({ ...state, ...finalGlobalFormValues }));
+    setFormGlobalServerData((state) => ({
+      ...state,
+      ...finalGlobalServerValues,
+    }));
 
     nextStep();
-
   };
 
-
   return (
-    <div className="col-md-8">
+    <div className="col-md-12">
       <Form
         ref={formRef}
         onChange={setFormValue}

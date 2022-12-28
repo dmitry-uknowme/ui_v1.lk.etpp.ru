@@ -1,15 +1,17 @@
 import axios from "axios";
 import { API_V1_URL } from ".";
+import { ProcedureMethodVariants } from "../../pages/ProcedureForm/types";
 
 // interface CreateProcedurePayload {}
 
 const createProcedure = async (
+  type: ProcedureMethodVariants,
   payload: any,
   onError: (...args: any) => any
 ) => {
   try {
     const { data } = await axios.post(
-      `${API_V1_URL}/procedure/COMPETITIVE_SELECTION`,
+      `${API_V1_URL}/procedure/${type}`,
       payload,
       {
         headers: {

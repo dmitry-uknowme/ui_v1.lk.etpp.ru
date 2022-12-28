@@ -1,5 +1,6 @@
 import React, { createContext } from "react";
 import { ProcedureFormActionVariants } from "../../pages/ProcedureForm";
+import { ProcedureMethodVariants } from "../../pages/ProcedureForm/types";
 import { IAuthSession } from "../../types/auth";
 import { IProcedure } from "../../types/procedure";
 
@@ -10,6 +11,7 @@ export interface IMultiStepForm {
     purchasePlan?: any;
     isViaPlan?: boolean;
     purchasePlanId?: string;
+    procedureMethod?: ProcedureMethodVariants;
     actionType?: ProcedureFormActionVariants;
     options?: {
       bidding_per_position_option?: boolean;

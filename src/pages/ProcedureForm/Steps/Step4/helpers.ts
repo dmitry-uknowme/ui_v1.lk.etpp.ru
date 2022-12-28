@@ -305,8 +305,8 @@ interface IDispatchedStep4Values {
 
 export const dispatchStep4Values = (
   formValues: Step4InitFormValues,
-  globalServerValues: any,
-  globalFormValues: any
+  globalFormValues: any,
+  globalServerValues: any
 ): IDispatchedStep4Values => {
   const isBidProvisionSpecified =
     formValues.provision_bid_type !== "WITHOUT_COLLATERAL";
@@ -341,6 +341,9 @@ export const dispatchStep4Values = (
           ...(globalFormValues?.lots?.length ? globalFormValues.lots[0] : {}),
           name: formValues.lot_title,
           nds_type: formValues.nds_type,
+          starting_price: `${"RUB"} ${
+            currency(parseFloat(formValues.lot_start_price)).intValue
+          } `,
         },
       ],
       provision_bid: {

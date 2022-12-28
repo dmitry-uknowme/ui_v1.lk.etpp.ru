@@ -16,7 +16,12 @@ import { useQuery } from "react-query";
 import fetchPurchasePlan from "../../../../services/api/fetchPurchasePlan";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
 import sendToast from "../../../../utils/sendToast";
-import { checkStep3Values, dispatchStep3Values, initStep3Values } from "./helpers";
+import {
+  checkStep3Values,
+  dispatchStep3Values,
+  initStep3Values,
+} from "./helpers";
+import { ProcedureMethodVariants } from "../../types";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -55,7 +60,12 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
-  const [formValue, setFormValue] = React.useState(initStep3Values({ globalFormValues: formGlobalValues, globalServerValues: formGlobalServerData }));
+  const [formValue, setFormValue] = React.useState(
+    initStep3Values({
+      globalFormValues: formGlobalValues,
+      globalServerValues: formGlobalServerData,
+    })
+  );
 
   const schema = {
     start_acceipting_bids_date: DateType().min(
@@ -90,27 +100,33 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   const model = Schema.Model(schema);
 
-  const handleSubmit = () => {
-    console.log('errrrrr', formError)
-    if (!formRef.current.check()) {
+  const isProcedureAuction =
+    formGlobalServerData.procedureMethod === ProcedureMethodVariants.AUCTION;
 
+  const handleSubmit = () => {
+    if (!formRef.current.check()) {
       sendToast("error", "Пожалуйста заполните необходимые поля формы");
       return;
     }
 
-    const errors = checkStep3Values(formValue)
-    // console.log('errrr', errors)
+    const errors = checkStep3Values(formValue, formGlobalServerData);
     if (errors) {
-      setFormError(state => ({ ...state, ...errors }))
-      return
+      setFormError((state) => ({ ...state, ...errors }));
+      return;
     }
 
-    const { globalFormValues: finalGlobalFormValues, globalServerValues: finalGlobalServerValues } = dispatchStep3Values(formValue, formGlobalValues)
+    const {
+      globalFormValues: finalGlobalFormValues,
+      globalServerValues: finalGlobalServerValues,
+    } = dispatchStep3Values(formValue, formGlobalValues, formGlobalServerData);
 
-    setFormGlobalValues(state => ({ ...state, ...finalGlobalFormValues }))
-    setFormGlobalServerData(state => ({ ...state, ...finalGlobalServerValues }))
+    setFormGlobalValues((state) => ({ ...state, ...finalGlobalFormValues }));
+    setFormGlobalServerData((state) => ({
+      ...state,
+      ...finalGlobalServerValues,
+    }));
 
-    nextStep()
+    nextStep();
     //   document
     //     .querySelector(".rs-form-group .rs-form-error-message")
     //     ?.parentNode?.parentNode?.scrollIntoView();
@@ -118,13 +134,11 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     //     .querySelector(".rs-form-error-message-inner")
     //     ?.parentNode?.parentNode?.parentNode?.parentNode?.scrollIntoView();
     //   return;
-  }
+  };
   // nextStep();
 
-
-
   return (
-    <div className="col-md-8">
+    <div className="col-md-12">
       <Form
         ref={formRef}
         onChange={setFormValue}
@@ -139,22 +153,31 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               name="start_acceipting_bids_date"
               label="Дата и время начала подачи заявок"
               format="yyyy-MM-dd HH:mm"
-              errorMessage={formError.createDate}
+              errorMessage={formError.start_acceipting_bids_date}
             />
             <Field
               accepter={DatePicker}
               name="end_acceipting_bids_date"
               label="Дата и время окончания подачи заявок"
               format="yyyy-MM-dd HH:mm"
-              errorMessage={formError.createDate}
+              errorMessage={formError.end_acceipting_bids_date}
             />
             <Field
               accepter={DatePicker}
               name="reviewing_bids_date"
-              label="Дата и время начала рассмотрения заявок"
+              label="Дата и время рассмотрения заявок"
               format="yyyy-MM-dd HH:mm"
-              errorMessage={formError.createDate}
+              errorMessage={formError.reviewing_bids_date}
             />
+            {isProcedureAuction ? (
+              <Field
+                accepter={DatePicker}
+                name="trading_start_date"
+                label="Дата и время начала торгов"
+                format="yyyy-MM-dd HH:mm"
+                errorMessage={formError.trading_start_date}
+              />
+            ) : null}
             <Field
               accepter={DatePicker}
               name="summing_up_bids_date"
@@ -164,7 +187,41 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
             />
           </Stack>
         </Panel>
-        <Panel>
+        {isProcedureAuction ? (
+          <Panel header="Параметры аукциона">
+            <>
+              <Stack spacing={10}>
+                <div>
+                  <Field
+                    name="auction_wait_offers_time"
+                    label="Время ожидания ценового предложения(мин)"
+                    accepter={Input}
+                    error={formError.auction_wait_offers_time}
+                  />
+                </div>
+                <div>
+                  <Field
+                    name="auction_min_step_percent"
+                    label="Минимальный шаг торгов, % (от НМЦ)"
+                    accepter={Input}
+                    error={formError.auction_min_step_percent}
+                  />
+                </div>
+
+                <div>
+                  <Field
+                    name="auction_max_step_percent"
+                    label="Максимальный шаг торгов, % (от НМЦ)"
+                    accepter={Input}
+                    error={formError.auction_max_step_percent}
+                  />
+                </div>
+                {/* </div> */}
+              </Stack>
+            </>
+          </Panel>
+        ) : null}
+        <Panel header="Порядок проведения">
           {/* <Stack wrap spacing={20}> */}
           <Field
             label="Порядок представления заявок на участие в закупке"
