@@ -252,7 +252,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
       amount: formValue.amount,
       unit_amount: formValue.unit_amount,
       unit_name: position.unit_name,
-      qty_count: `${position.qty}, ${position.unit_name}`,
+      qty_count: `${formValue.qty}, ${position.unit_name}`,
     };
 
     const lotId = formGlobalServerData?.lotId
@@ -283,12 +283,34 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
           );
         }
       } else {
-        addPositions({
-          name: newPosition.name,
-          amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
-          address: newPosition?.region_address || null,
-        });
-        setOpen(false);
+        if (isViaPlan) {
+          addPositions({
+            name: newPosition.name,
+            amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
+            address: newPosition?.region_address || null,
+          });
+          setOpen(false);
+        }
+        else {
+          addPositions({
+            name: newPosition.name,
+            amount: parseFloat(newPosition.amount),
+            // amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
+            region_address: newPosition?.region_address || null,
+            region_name: newPosition?.region_name,
+            region_okato: newPosition?.okato,
+            okpd_code: newPosition?.okpd_code,
+            okpd_name: newPosition?.okpd_name,
+            okved_code: newPosition?.okved_code,
+            okved_name: newPosition?.okved_name,
+            qty: parseFloat(newPosition.qty),
+            type_item: newPosition?.type_item,
+            unit_id: newPosition?.unit_id,
+            info: newPosition?.info,
+
+          });
+          setOpen(false);
+        }
       }
       setData((state) => [
         ...state?.filter((pos) => pos.id !== position.id),
