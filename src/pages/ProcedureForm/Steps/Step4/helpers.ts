@@ -401,6 +401,28 @@ export const dispatchStep4Values = (
         currency(parseFloat(formValues.lot_start_price)).intValue
       }`,
     },
-    globalServerValues: {},
+    globalServerValues: {
+      provision_bid: {
+        amount: isBidProvisionSpecified
+          ? `RUB ${
+              currency(parseFloat(formValues.provision_bid_amount)).intValue
+            }`
+          : null,
+        percent: isBidProvisionSpecified
+          ? parseFloat(bidProvisionPercent)
+          : null,
+      },
+      provision_contract: {
+        amount: isContractProvisionSpecified
+          ? `RUB ${
+              currency(parseFloat(formValues.provision_contract_amount))
+                .intValue
+            }`
+          : null,
+        percent: isContractProvisionSpecified
+          ? parseFloat(contractProvisionPercent)
+          : null,
+      },
+    },
   };
 };
