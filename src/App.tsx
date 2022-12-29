@@ -10,7 +10,6 @@ import ProcedureForm from "./pages/ProcedureForm";
 import { LK_URL } from "./services/api";
 
 window.signlib = signlib;
-console.log("lk urllll ", LK_URL);
 const App = () => {
   return (
     <BrowserRouter>

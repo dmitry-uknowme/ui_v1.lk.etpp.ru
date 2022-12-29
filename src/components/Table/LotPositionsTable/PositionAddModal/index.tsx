@@ -12,12 +12,17 @@ import {
   SelectPicker,
   toaster,
 } from "rsuite";
+import { v4 as uuidv4 } from "uuid";
 import CurrencyInput from "react-currency-masked-input";
 import fetchRegions from "../../../../services/api/fetchRegions";
 import MultiStepFormContext from "../../../../context/multiStepForm/context";
 import { ProcedureFormActionVariants } from "../../../../pages/ProcedureForm";
 import updateLotPosition from "../../../../services/api/updateLotPosition";
 import sendToast from "../../../../utils/sendToast";
+import PositionUnitPicker from "../../../SelectPicker/PositionUnitPicker";
+import PositionTypePicker from "../../../SelectPicker/PositionTypePicker";
+import OkpdCodePicker from "../../../SelectPicker/OkpdCodePicker";
+import OkvedCodePicker from "../../../SelectPicker/OkvedCodePicker";
 
 interface PositionEditModalProps {
   position: ILotPosition;
@@ -61,7 +66,15 @@ const Field = React.forwardRef((props, ref) => {
     >
       <Form.ControlLabel>{label} </Form.ControlLabel>
       {rest.as === "textarea" ? (
-        <Input as="textarea" name={name} {...rest} />
+        <>
+          <Input as="textarea" name={name} {...rest} />
+          {error ? (
+            <span className="rs-form-error-message rs-form-error-message-show">
+              <span className="rs-form-error-message-arrow"></span>
+              <span className="rs-form-error-message-inner">{error}</span>
+            </span>
+          ) : null}
+        </>
       ) : (
         <Form.Control
           name={name}
@@ -88,6 +101,16 @@ const model = Schema.Model({
   address: StringType().isRequired("Поле обязательно для заполнения"),
   name: StringType().isRequired("Поле обязательно для заполнения"),
 });
+const modelAddType = Schema.Model({
+  type_item: StringType().isRequired("Поле обязательно для заполнения"),
+  okpd_code: StringType().isRequired("Поле обязательно для заполнения"),
+  okved_code: StringType().isRequired("Поле обязательно для заполнения"),
+  region_okato: StringType().isRequired("Поле обязательно для заполнения"),
+  address: StringType().isRequired("Поле обязательно для заполнения"),
+  name: StringType().isRequired("Поле обязательно для заполнения"),
+  qty: NumberType().isRequired("Поле обязательно для заполнения"),
+  unit_code: StringType().isRequired("Поле обязательно для заполнения"),
+});
 
 const PositionAddModal: React.FC<PositionEditModalProps> = ({
   position,
@@ -103,12 +126,21 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
     serverData: formGlobalServerData,
     setServerData: setFormGlobalServerData,
   } = useContext(MultiStepFormContext);
-  const actionType = formGlobalServerData?.actionType;
-  const lotId = formGlobalServerData?.lotId;
 
+  const actionType = formGlobalServerData?.actionType;
+  const isViaPlan = formGlobalServerData?.isViaPlan;
+  const lotId = formGlobalServerData?.lotId;
+  const isAddType = true
   const biddingPerPositionOption =
     options?.includes("bidding_per_position_option") ?? false;
-  const [formValue, setFormValue] = useState<ILotPosition>(position);
+  const [formValue, setFormValue] = useState({
+    unit_code: "",
+    address: "",
+    extra_info: "",
+    ...position,
+    okpd_code: `${position.okpd_field?.split(". ")[0]}; ${position.okpd_field?.split('. ')[1]?.trim()}`,
+    okved_code: `${position.okved_field?.split(". ")[0]}; ${position.okved_field?.split('. ')[1]?.trim()}`,
+  });
   const [formError, setFormError] = useState<ILotPosition>({});
   const formRef = React.useRef();
   const queryClient = useQueryClient();
@@ -147,9 +179,9 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
   //     setFormValue(state => ({ ...state, region_name: regionsQuery.data.find(reg => reg.okato === formValue.region_okato).nameWithType }))
   //   }
   // }, [formValue])
-
   const handleSubmit = async () => {
     console.log("vvvvv", formValue);
+    // console.log("errr", formError);
     if (!formRef.current.check()) {
       sendToast("error", "Пожалуйста исправьте ошибки");
       // toaster.push(<Message type="error">Пожалуйста исправьте ошибки</Message>);
@@ -163,17 +195,51 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
         ?.scrollIntoView();
       return;
     }
+    const selectedOkpd = formValue.okpd_code
+    const selectedOkved = formValue.okved_code
+    const errors = {}
+    if (!selectedOkpd) {
+      setFormError(state => ({ ...state, okpd_code: "Поле обязательно для заполнения" }))
+    }
+    if (!selectedOkved) {
+      setFormError(state => ({ ...state, okved_code: "Поле обязательно для заполнения" }))
+    }
+    if (Object.keys(errors).length) {
+      setFormError(state => ({ ...state, ...errors }))
+      return
+    }
+
+    const selectedOkpdCode = selectedOkpd.split(';')[0]
+    const selectedOkpdName = selectedOkpd.split(';')[1].trim()
+
+
+    const selectedOkvedCode = selectedOkved.split(';')[0]
+    const selectedOkvedName = selectedOkved.split(';')[1].trim()
+    // const okpdCodes = queryClient.getQueryData(["okpdCodes"]);
+    // const selectedOkpd =
+    //   okpdCodes?.find((code) => code.value === formValue.okpd_code) || null;
+    // // if (!selectedOkpd) return;
+    // const selectedOkpdCode = selectedOkpd.label.split(":")[0];
+    // const selectedOkpdName = selectedOkpd.label.split(":")[1].trim();
+    // const okvedCodes = queryClient.getQueryData(["okvedCodes"]);
+    // const selectedOkved =
+    //   okpdCodes?.find((code) => code.value === formValue.okved_code) || null;
+    // // if (!selectedOkpd) return;
+    // const selectedOkvedCode = selectedOkved.label.split(":")[0];
+    // const selectedOkvedName = selectedOkved.label.split(":")[1].trim();
+
     const newPosition = {
+      id_legacy: position.id_legacy || null,
       id: position.id,
       name: formValue.name,
       unit_id: formValue.unit_code,
       info: formValue.extra_info,
-      okpd_name: formValue.okpd_name,
-      okpd_code: formValue.okpd_code,
-      okpd_field: `${formValue.okpd_code}. ${formValue.okpd_name}`,
-      okved_name: formValue.okved_name,
-      okved_code: formValue.okved_code,
-      okved_field: `${formValue.okved_code}. ${formValue.okved_name}`,
+      okpd_name: selectedOkpdName,
+      okpd_code: selectedOkpdCode,
+      okpd_field: `${selectedOkpdCode}. ${selectedOkpdName}`,
+      okved_name: selectedOkvedName,
+      okved_code: selectedOkvedCode,
+      okved_field: `${selectedOkvedCode}. ${selectedOkvedName}`,
       region_name: formValue.region_name,
       full_region: `${position.region_name} ${formValue.address}`,
       region_okato: formValue.region_okato,
@@ -184,47 +250,36 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
       amount: formValue.amount,
       unit_amount: formValue.unit_amount,
       unit_name: position.unit_name,
-      qty_count: `${position.qty}, ${position.unit_name}`,
+      qty_count: `${formValue.qty}, ${position.unit_name}`,
     };
-    console.log("new possss", newPosition);
+
+    const lotId = formGlobalServerData?.lotId
+
     if (newPosition) {
+      addPositions({
+        // id: uuidv4(),
+        // id: "null",
+        unit_id: newPosition.unit_id,
+        info: newPosition.info?.trim()?.length ? newPosition.info : null,
+        name: newPosition.name,
+        okpd_name: newPosition.okpd_name,
+        okpd_code: newPosition.okpd_code,
+        okved_name: newPosition.okved_name,
+        okved_code: newPosition.okved_code,
+        region_name: newPosition.region_name,
+        region_okato: newPosition.okato,
+        region_address: newPosition.region_address,
+        qty: parseFloat(newPosition.qty),
+        type_item: newPosition.type_item,
+        amount: null,
+      });
+
+
       setData((state) => [
-        ...state?.filter((pos) => pos.id !== position.id),
-        { ...newPosition, number: position.number },
+        { ...newPosition, number: formGlobalServerData?.positionsTableData?.length, id: uuidv4() },
+        ...state,
       ]);
-      if (actionType === ProcedureFormActionVariants.EDIT) {
-        try {
-          await updateLotPosition(position.id_legacy, {
-            amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
-            unit_price: `RUB ${
-              currency(parseFloat(newPosition.unit_amount)).intValue
-            }`,
-            info: formValue.extra_info,
-            region_address: newPosition.region_address,
-            unit_value: newPosition.unit_id,
-            okpd_code: newPosition.okpd_code,
-            okpd_name: newPosition.okpd_name,
-            okved_code: newPosition.okved_code,
-            okved_name: newPosition.okved_name,
-            qty: parseFloat(newPosition.qty),
-          });
-          sendToast("success", "Позиция лота успешно обновлена");
-          setOpen(false);
-        } catch (err) {
-          sendToast(
-            "error",
-            `Ошибка при обновлении позиции ${JSON.stringify(err)}`
-          );
-        }
-      } else {
-        addPositions({
-          id: newPosition.id,
-          amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
-          name: newPosition?.name || null,
-          address: newPosition?.region_address || null,
-        });
-        setOpen(false);
-      }
+      setOpen(false);
     }
   };
 
@@ -256,12 +311,28 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
     if (!isOpen) {
       setFormValue({});
     } else if (isOpen) {
-      setFormValue(position);
+      setFormValue({
+        unit_code: "",
+        address: "",
+        extra_info: "",
+        ...position,
+        okpd_code: `${position.okpd_field?.split(". ")[0]}; ${position.okpd_field?.split('. ')[1]?.trim()}`,
+        okved_code: `${position.okved_field?.split(". ")[0]}; ${position.okved_field?.split('. ')[1]?.trim()}`,
+      });
     }
     // else if (isOpen) {
     //   document.querySelector('.rs-modal-content')?.scrollIntoView
     // }
   }, [isOpen]);
+
+  //  const  = useQuery("okvedCodes", async () => {
+  //    const okpdCodes = await fetchOkvedCodes();
+  //    return okpdCodes.map((code) => ({
+  //      value: code.id,
+  //      label: `${code.key}: ${code.name}`,
+  //    }));
+  //  });
+
 
   return (
     <Modal
@@ -277,19 +348,25 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
         onCheck={setFormError}
         formValue={formValue}
         ref={formRef}
-        model={model}
+        model={isAddType ? modelAddType : model}
       >
         <Modal.Header>
-          <Modal.Title>Редактирование позиции №{position.number}</Modal.Title>
+          <Modal.Title>
+            {isAddType
+              ? "Добавить позицию"
+              : `Редактирование позиции №${position.number}`}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ height: 500 }}>
-          <Field
-            label="Номер позиции"
-            name="number"
-            accepter={Input}
-            error={formError.number}
-            disabled
-          />
+          {isAddType ? null : (
+            <Field
+              label="Номер позиции"
+              name="number"
+              accepter={Input}
+              error={formError.number}
+              disabled={!isAddType}
+            />
+          )}
           <Field
             label="Наименование"
             name="name"
@@ -299,18 +376,32 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
           <Field
             label="Вид продукции"
             name="type_item"
-            accepter={SelectPicker}
+            accepter={PositionTypePicker}
+            value={formValue.type_item}
+            initialValue={formValue.type_item}
+            setInitialValue={(value) => {
+              setFormValue((state) => ({ ...state, type_item: value }));
+              if (value) {
+                setFormError((state) => ({ ...state, type_item: null }));
+              }
+            }}
             error={formError.type_item}
-            data={[{ value: "TYPE_PRODUCT", label: "Поставка товара" }]}
-            disabled
+            disabled={!isAddType}
           />
           <Field
             label="Единица измерения"
             name="unit_code"
-            accepter={SelectPicker}
+            accepter={PositionUnitPicker}
+            value={formValue?.unit_code || formValue?.unit_id}
+            initialValue={formValue?.unit_code || formValue?.unit_id}
+            setInitialValue={(value) => {
+              setFormValue((state) => ({ ...state, unit_code: value }));
+              if (value) {
+                setFormError((state) => ({ ...state, unit_code: null }));
+              }
+            }}
             error={formError.unit_code}
-            data={[{ value: "616", label: "Бобина" }]}
-            disabled
+            disabled={!isAddType}
           />
           <Field
             label="Количество"
@@ -318,7 +409,38 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
             accepter={InputNumber}
             scrollable={false}
             error={formError.qty}
-            disabled
+            disabled={isViaPlan}
+          />
+          <Field
+            label="Код ОКПД 2"
+            name="okpd_code"
+            accepter={OkpdCodePicker}
+            value={formValue.okpd_code}
+            initialValue={`${formValue?.okpd_code?.split(';')[0]}; ${formValue?.okpd_code?.split(';')[1]?.trim()}`}
+            setInitialValue={(value) => {
+              setFormValue((state) => ({ ...state, okpd_code: value }));
+              if (value) {
+                setFormError((state) => ({ ...state, okpd_code: null }));
+              }
+            }}
+            error={formError.okpd_code}
+            disabled={!isAddType}
+          />
+          <Field
+            label="Код ОКВЭД 2"
+            name="okved_code"
+            accepter={OkvedCodePicker}
+            value={formValue.okved_code}
+            initialValue={`${formValue?.okved_code?.split(';')[0]}; ${formValue?.okved_code?.split(';')[1]?.trim()}`}
+            setInitialValue={(value) => {
+              setFormValue((state) => ({ ...state, okved_code: value }));
+              if (value) {
+                setFormError((state) => ({ ...state, okved_code: null }));
+              }
+            }}
+
+            error={formError.okved_code}
+            disabled={isViaPlan}
           />
           {biddingPerPositionOption ? (
             <>
@@ -353,13 +475,13 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
             data={
               regionsQuery?.data?.length
                 ? regionsQuery.data.map((region) => ({
-                    value: region.okato,
-                    label: region.nameWithType,
-                  }))
+                  value: region.okato,
+                  label: region.nameWithType,
+                }))
                 : []
             }
             loading={regionsQuery?.isLoading}
-            disabled
+            disabled={isViaPlan}
           />
           <Field
             label="Адрес"
@@ -367,19 +489,26 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
             accepter={Input}
             value={formValue.address}
             error={formError.address}
-            onChange={(value) =>
-              setFormValue((state) => ({ ...state, address: value }))
-            }
+            onChange={(value) => {
+              if (value) {
+                setFormValue((state) => ({ ...state, address: value }));
+                setFormError((state) => ({ ...state, address: null }));
+              }
+            }}
             as="textarea"
           />
           <Field
             label="Доп. информация"
             name="extra_info"
             accepter={Input}
-            value={formError.extra_info}
-            onChange={(value) =>
-              setFormValue((state) => ({ ...state, extra_info: value }))
-            }
+            value={formValue.extra_info}
+            error={formError.extra_info}
+            onChange={(value) => {
+              setFormValue((state) => ({ ...state, extra_info: value }));
+              if (value) {
+                setFormError((state) => ({ ...state, extra_info: null }));
+              }
+            }}
             as="textarea"
             style={{ width: "100%" }}
           />
@@ -399,4 +528,4 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
   );
 };
 
-export default PositionEditModal;
+export default PositionAddModal;

@@ -12,6 +12,7 @@ import {
   InputNumber,
 } from "rsuite";
 import CurrencyInput from "react-currency-masked-input";
+import { v4 as uuidv4 } from "uuid";
 import React, { useContext, useEffect, useState } from "react";
 import currency from "currency.js";
 import { useQuery } from "react-query";
@@ -89,7 +90,7 @@ const Step4 = ({
   const [positionsTableData, setPositionsTableData] = useState(
     formGlobalServerData?.positionsTableData
       ? formGlobalServerData?.positionsTableData
-      : !isEditType && !isViaPlan
+      : !isViaPlan
         ? [
           {
             id: "null",
@@ -147,13 +148,15 @@ const Step4 = ({
         // console.log('positionssss', positions.map(pos => ({ ...pos, amount: `${pos?.price?.currency} ${pos?.price?.amount}` })))
         // if (positions?.length && !positionsTableData.length) {
         setPositionsTableData(
-          positions.map((pos) => ({
+          [{ id: !isViaPlan ? "null" : null },
+          ...positions.map((pos) => ({
             ...pos,
             amount: pos?.price?.amount
               ? `${currency(parseDBAmount(pos?.price?.amount) / 100)}`
               : null,
-          }))
+          }))]
         );
+        // }
         // return { positions: positions.map(pos => ({ ...pos, region: `${pos.region_name} ${pos.region_address}` })) }
         // }
       } else {
@@ -182,9 +185,10 @@ const Step4 = ({
       }
     },
     {
-      enabled: isViaPlan,
-      // refetchInterval: false,
-      // refetchIntervalInBackground: false,
+      // enabled: isViaPlan,
+      refetchInterval: false,
+      refetchOnWindowFocus: false,
+      refetchIntervalInBackground: false,
       // refetchOnWindowFocus: false,
       // refetchOnMount: false,
     }
@@ -285,86 +289,7 @@ const Step4 = ({
     //   }
     // }
 
-    // setFormGlobalServerData((state) => ({
-    //   ...state,
-    //   positionsTableData: positionsTableData,
-    //   provision_bid: {
-    //     amount: isBidProvisionSpecified
-    //       ? `RUB ${currency(parseFloat(formValue.provision_bid_amount)).intValue
-    //       }`
-    //       : null,
-    //     percent: isBidProvisionSpecified
-    //       ? parseFloat(bidProvisionPercent)
-    //       : null,
-    //   },
-    //   provision_contract: {
-    //     amount: isContractProvisionSpecified
-    //       ? `RUB ${currency(parseFloat(formValue.provision_contract_amount)).intValue
-    //       }`
-    //       : null,
-    //     percent: isContractProvisionSpecified
-    //       ? parseFloat(contractProvisionPercent)
-    //       : null,
-    //   },
-    // }));
 
-    // setFormGlobalValues((state) => ({
-    //   ...state,
-    //   name: formValue.lot_title,
-    //   bidding_per_unit_amount: isBiddingPerUnitOption
-    //     ? `${"RUB"} ${currency(parseFloat(formValue.lot_unit_start_price)).intValue
-    //     } `
-    //     : null,
-    //   provision_bid: {
-    //     is_specified: isBidProvisionSpecified,
-    //     amount:
-    //       isBidProvisionSpecified && isBidProvisionFixed
-    //         ? `RUB ${currency(parseFloat(formValue.provision_bid_amount)).intValue
-    //         }`
-    //         : null,
-    //     methods: [formValue.provision_bid_type],
-    //     payment_return_deposit: formValue.provision_bid_payment_return_deposit,
-    //     percent:
-    //       isBidProvisionSpecified &&
-    //         (isBidProvisionPercent || isBidProvisionByDocumentation)
-    //         ? parseFloat(bidProvisionPercent)
-    //         : null,
-    //   },
-    //   provision_contract: {
-    //     is_specified: isContractProvisionSpecified,
-    //     type: isContractProvisionSpecified
-    //       ? contractProvisionType
-    //       : "FROM_START_PRICE",
-    //     amount:
-    //       isContractProvisionSpecified && isContractProvisionFromStartPrice
-    //         ? parseFloat(contractProvisionAmount)
-    //           ? `${"RUB"} ${currency(parseFloat(contractProvisionAmount)).intValue
-    //           } `
-    //           : "RUB 0"
-    //         : null,
-    //     percent:
-    //       isContractProvisionSpecified && isContractProvisionFromContractPrice
-    //         ? parseFloat(contractProvisionPercent)
-    //         : null,
-    //     payment_return_deposit:
-    //       formValue.provision_contract_payment_return_deposit,
-    //   },
-    //   original_price: `${"RUB"} ${currency(parseFloat(formValue.lot_start_price)).intValue
-    //     } `,
-    //   lots: [
-    //     {
-    //       ...(formGlobalValues?.lots?.length ? formGlobalValues?.lots[0] : {}),
-    //       name: formValue.lot_title,
-    //       starting_price: `${"RUB"} ${currency(parseFloat(formValue.lot_start_price)).intValue
-    //         } `,
-    //       // positions: isBiddingPerUnitOption ? [] : [],
-    //       nds_type: formValue.nds_type,
-    //       plan_positions: formGlobalValues?.lots[0]?.plan_positions?.length
-    //         ? formGlobalValues?.lots[0]?.plan_positions
-    //         : [],
-    //     },
-    //   ],
-    // }));
 
     // if (!formRef.current.check()) {
     //   sendToast(
@@ -736,39 +661,39 @@ const Step4 = ({
             // tableType={ProcedureFormActionVariants.CREATE}
             data={
               positionsTableData?.length
-                ? positionsTableData.sort((a, b) => parseInt(a) > parseInt(b) ? 1 : -1).map((position) => ({
+                ? positionsTableData.sort((a, b) => parseInt(a.number) || a.id === 'null' < parseInt(b.number) ? -1 : 1).map((position) => ({
                   ...position,
-                  okato:
+                  okato: position.id === "null" ? null :
                     position?.region_okato ||
                     purchasePlanPositionQuery?.data?.okato ||
                     null,
-                  unit_name: position.unit_name,
-                  okpd_field: `${position.okpd_code}. ${position.okpd_name} `,
-                  okved_field: `${position.okved_code}. ${position.okved_name} `,
-                  qty_count: position?.qty_count
+                  unit_name: position.id === "null" ? null : position.unit_name,
+                  okpd_field: position.id === "null" ? null : `${position.okpd_code}. ${position.okpd_name} `,
+                  okved_field: position.id === "null" ? null : `${position.okved_code}. ${position.okved_name} `,
+                  qty_count: position.id === "null" ? null : position?.qty_count
                     ? position.qty_count
                     : position.qty && position.unit_name
                       ? `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
                       }`
                       : null,
                   region:
-                    !position?.region && !position?.region_address
-                      ? null
-                      : (position?.region_address || position?.address) &&
+                    position.id === "null" ? null :
+                      (position?.region_address || position?.address) &&
                         (position?.region || position?.region_name)
                         ? `${position?.region || position?.region_name} , ${position?.region_address || position?.address
                         }`
                         : position.region_address,
 
-                  address: position?.region_address || "",
-                  extra_info: position?.addition_info || position?.info || "",
+                  address: position.id === "null" ? null : position?.region_address || "",
+                  extra_info: position.id === "null" ? null : position?.addition_info || position?.info || "",
                 }))
                 : []
             }
             isViaPlan={isViaPlan}
             addPositions={(positions) => {
-              console.log('ddddd', positions.id === 'null', isViaPlan, positions)
-              if (positions.id === 'null') {
+              console.log('posssssss', { positions, positionsTableData })
+              if (positions?.id === 'null') {
+                // if (positionsTableData?.length && positionsTableData[0]?.id === 'null') {
                 if (isViaPlan) {
                   setFormGlobalValues((state) => ({
                     ...state,
@@ -781,7 +706,7 @@ const Step4 = ({
                           ...(state?.lots[0]?.plan_positions?.length
                             ? [...state?.lots[0]?.plan_positions]
                             : []),
-                          { ...positions, number: state?.lots[0]?.plan_positions.length + 1 },
+                          { ...positions, },
                         ],
                       },
                     ],
@@ -800,7 +725,7 @@ const Step4 = ({
 
                             ? [...state?.lots[0]?.positions]
                             : []),
-                          { ...positions, number: state?.lots[0]?.positions.length + 1 },
+                          { ...positions, },
                         ],
                       },
                     ],
@@ -822,6 +747,7 @@ const Step4 = ({
                               (pos) => pos.id !== positions.id
                             )
                             : []),
+                          { ...positions, },
                         ],
 
                       },
@@ -842,6 +768,7 @@ const Step4 = ({
                               (pos) => pos.id !== positions.id
                             )
                             : []),
+                          { ...positions, },
                         ],
 
                       },

@@ -7,6 +7,7 @@ import { ProcedureFormActionVariants } from "../../../pages/ProcedureForm";
 import { useQuery } from "react-query";
 import PlusIcon from "@rsuite/icons/Plus";
 import fetchRegions from "../../../services/api/fetchRegions";
+import PositionAddModal from "./PositionAddModal";
 
 const { Cell, HeaderCell, Column } = Table;
 const dataColumns = [
@@ -37,45 +38,12 @@ const dataColumns = [
     width: 200,
   },
 ];
-const ActionCell = ({ rowData, dataKey, onClick, isViaPlan, ...props }) => {
-  return (
-    <Cell {...props} style={{ padding: "6px" }}>
-      <Button
-        appearance="link"
-        onClick={() => {
-          onClick(rowData.id);
-        }}
-      >
-        <div
-          className="d-flex flex-column justify-content-center"
-          style={{ fontSize: "0.8rem" }}
-        >
-          {rowData.id === "null" && !rowData.number && !isViaPlan ? (
-            <>
-              <Button
-                appearance="primary"
-                style={{ display: "flex", alignItems: "center" }}
-              >
-                <PlusIcon style={{ fontSize: "0.7rem" }} />
-                Добавить
-              </Button>
-            </>
-          ) : (
-            <>
-              <EditIcon style={{ display: "block", margin: "auto" }} />
-              Редактировать
-            </>
-          )}
-        </div>
-      </Button>
-    </Cell>
-  );
-};
+
 
 
 const RegionCell = ({ rowData, dataKey, regionsQuery, data, ...props }) => (
   <>
-    {rowData[dataKey]?.split(",")?.length === 2 ? (
+    {rowData.id === 'null' ? null : rowData[dataKey]?.split(",")?.length === 2 ? (
       <Cell {...props}>{rowData[dataKey]}</Cell>
     ) : (
       <Cell {...props}>
@@ -118,6 +86,39 @@ const EditableCell = ({ rowData, dataKey, onChange, ...props }) => {
   );
 };
 
+const ActionCell = ({ rowData, dataKey, onClick, isViaPlan, ...props }) => {
+  return (
+    <Cell {...props} style={{ padding: "6px" }}>
+      <Button
+        appearance="link" onClick={() => onClick(rowData.id)}
+
+      >
+        <div
+          className="d-flex flex-column justify-content-center"
+          style={{ fontSize: "0.8rem" }}
+        >
+          {rowData.id === "null" && !rowData.number && !isViaPlan ? (
+            <>
+              <Button
+                appearance="primary"
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                <PlusIcon style={{ fontSize: "0.7rem" }} />
+                Добавить
+              </Button>
+            </>
+          ) : (
+            <div >
+              <EditIcon style={{ display: "block", margin: "auto" }} />
+              Редактировать
+            </div>
+          )}
+        </div>
+      </Button>
+    </Cell>
+  );
+};
+
 const LotPositionsTable = ({
   data: defaultData,
   addPositions,
@@ -130,8 +131,11 @@ const LotPositionsTable = ({
     options?.includes("bidding_per_position_option") ?? false;
   const [data, setData] = useState(defaultData);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
-  const [editingPosition, setEditingPosition] = useState<any>(null);
+  const [isAddModalOpen, setAddModalOpen] = useState(false);
+  const [selectedPosition, setSelectedPosition] = useState<any>(null);
   const [currentRegionOkato, setCurrentRegionOkato] = useState("");
+
+
   useEffect(() => {
     setData(defaultData);
   }, [defaultData]);
@@ -150,9 +154,28 @@ const LotPositionsTable = ({
 
   const openEditModal = (positionId: any) => {
     const position = data.find((pos) => pos.id === positionId);
-    setEditingPosition(position);
+    setSelectedPosition(position);
     setEditModalOpen(true);
   };
+
+  const openAddModal = (positionId: any) => {
+    const position = data.find((pos) => pos.id === positionId);
+    setSelectedPosition(position);
+    setAddModalOpen(true);
+  };
+
+  const modalHandler = (positionId: string) => {
+    console.log('modal')
+    if (positionId === 'null') {
+      openAddModal(positionId)
+    }
+    else {
+      openEditModal(positionId)
+    }
+
+  }
+
+
 
   const regionsQuery = useQuery(
     "regions",
@@ -173,18 +196,27 @@ const LotPositionsTable = ({
     }
   );
 
+
+
   return (
     <>
-      {editingPosition ? (
+      {isEditModalOpen ? (
         <PositionEditModal
           isOpen={isEditModalOpen}
           setOpen={setEditModalOpen}
-          position={editingPosition}
+          position={selectedPosition}
           setData={setPositionsTableData}
           addPositions={addPositions}
           options={options}
         />
-      ) : null}
+      ) : isAddModalOpen ? (<PositionAddModal
+        isOpen={isAddModalOpen}
+        setOpen={setAddModalOpen}
+        position={selectedPosition}
+        setData={setPositionsTableData}
+        addPositions={addPositions}
+        options={options}
+      />) : null}
       <Table
         height={420}
         headerHeight={50}
@@ -197,7 +229,8 @@ const LotPositionsTable = ({
         {activeStep > 3 ? null : (
           <Column width={120}>
             <HeaderCell>Действия</HeaderCell>
-            <ActionCell dataKey="id" onClick={openEditModal} />
+            {/* <Button onClick={() => console.log('clickkkkkkk')}>fada</Button> */}
+            <ActionCell dataKey="id" onClick={modalHandler} />
           </Column>
         )}
         <Column width={60}>

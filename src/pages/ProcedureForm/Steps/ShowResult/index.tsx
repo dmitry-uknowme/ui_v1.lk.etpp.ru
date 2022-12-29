@@ -146,19 +146,32 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
         formData,
         { withCredentials: true }
       );
-      sendToast(
-        "success",
-        "Извещение успешно подписано и отправлено в очередь на загрузку в ЕИС"
-      );
+      const isViaPlan = formGlobalServerData?.isViaPlan
+      if (isViaPlan) {
+        sendToast(
+          "success",
+          "Извещение успешно подписано и отправлено в очередь на загрузку в ЕИС"
+        );
+        setTimeout(() => {
+          document.querySelector("#eisProcessLink")?.click();
+        }, 1500);
+      }
+      else {
+        sendToast(
+          "success",
+          "Извещение успешно подписано и опубликовано"
+        );
+        setTimeout(() => {
+          document.querySelector("#showPlatformProcedureLink")?.click();
+        }, 1500);
+      }
 
       // toaster.push(
       //   <Message type="success">
       //     Извещение успешно подписано и отправлено в очередь на загрузку в ЕИС
       //   </Message>
       // );
-      setTimeout(() => {
-        document.querySelector("#eisProcessLink")?.click();
-      }, 1500);
+
     } catch (err) {
       sendToast("error", "Ошибка при подписании извещения");
       // return toaster.push(
@@ -231,7 +244,7 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
                 </tr>
                 <tr>
                   <td style={{ width: "50%" }}>Тип процедуры</td>
-                  <td style={{ width: "50%" }}>{formGlobalServerData.procedureMethod}</td>
+                  <td style={{ width: "50%" }}>{formGlobalServerData.procedureMethod === 'AUCTION_LOWER' ? "Аукцион" : formGlobalServerData.procedureMethod === 'REQUEST_OFFERS' ? 'Запрос предложений' : formGlobalServerData.procedureMethod === 'REQUEST_QUOTATIONS' ? 'Запрос котировок' : "Конкурентный отбор"}</td>
                 </tr>
                 <tr>
                   <td style={{ width: "50%" }}>
@@ -819,6 +832,14 @@ const ShowResultModal: React.FC<ShowResultModalProps> = ({
           // target="_blank"
           >
             Редактирование процедуры
+          </a>
+          <a
+            className="d-none"
+            id="showPlatformProcedureLink"
+            href={`${LK_URL}/procedure/${procedureId}`}
+          // target="_blank"
+          >
+            Просмотр процедуры
           </a>
           <a
             className="d-none"

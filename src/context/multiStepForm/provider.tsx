@@ -96,6 +96,7 @@ const MultiStepFormContextProvider: React.FC<
     async () => await fetchProcedure({ procedureId }),
     {
       refetchInterval: false,
+      refetchOnWindowFocus: false,
       enabled: !!(
         procedureId && actionType === ProcedureFormActionVariants.EDIT
       ),

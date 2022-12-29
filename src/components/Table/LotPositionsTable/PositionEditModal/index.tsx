@@ -130,7 +130,8 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
   const actionType = formGlobalServerData?.actionType;
   const isViaPlan = formGlobalServerData?.isViaPlan;
   const lotId = formGlobalServerData?.lotId;
-  const isAddType = position.id === "null"
+  const isAddType = false
+  // const isAddType = position.id === "null"
   // const isAddType = position.id === "null";
   const biddingPerPositionOption =
     options?.includes("bidding_per_position_option") ?? false;
@@ -230,6 +231,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
     // const selectedOkvedName = selectedOkved.label.split(":")[1].trim();
 
     const newPosition = {
+      id_legacy: position.id_legacy || null,
       id: position.id,
       name: formValue.name,
       unit_id: formValue.unit_code,
@@ -252,21 +254,14 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
       unit_name: position.unit_name,
       qty_count: `${position.qty}, ${position.unit_name}`,
     };
+
+    const lotId = formGlobalServerData?.lotId
+
     if (newPosition) {
-      if (isAddType) {
-        setData((state) => [
-          { ...newPosition, number: formGlobalServerData?.positionsTableData?.length + 1 },
-          ...state,
-        ]);
-      } else {
-        setData((state) => [
-          ...state?.filter((pos) => pos.id !== position.id),
-          { ...newPosition, number: position.number },
-        ]);
-      }
-      if (actionType === ProcedureFormActionVariants.EDIT) {
+      if (actionType === ProcedureFormActionVariants.EDIT || lotId) {
         try {
           await updateLotPosition(position.id_legacy, {
+            name: newPosition.name,
             amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
             unit_price: `RUB ${currency(parseFloat(newPosition.unit_amount)).intValue
               }`,
@@ -288,33 +283,17 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
           );
         }
       } else {
-        if (isAddType) {
-          addPositions({
-            id: uuidv4(),
-            unit_id: newPosition.unit_id,
-            info: newPosition.info?.trim()?.length ? newPosition.info : null,
-            name: newPosition.name,
-            okpd_name: newPosition.okpd_name,
-            okpd_code: newPosition.okpd_code,
-            okved_name: newPosition.okved_name,
-            okved_code: newPosition.okved_code,
-            region_name: newPosition.region_name,
-            region_okato: newPosition.okato,
-            region_address: newPosition.region_address,
-            qty: parseFloat(newPosition.qty),
-            type_item: newPosition.type_item,
-            amount: null,
-          });
-          setOpen(false);
-        } else {
-          addPositions({
-            name: newPosition.name,
-            amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
-            address: newPosition?.region_address || null,
-          });
-          setOpen(false);
-        }
+        addPositions({
+          name: newPosition.name,
+          amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
+          address: newPosition?.region_address || null,
+        });
+        setOpen(false);
       }
+      setData((state) => [
+        ...state?.filter((pos) => pos.id !== position.id),
+        { ...newPosition, number: position.number },
+      ]);
     }
   };
 
@@ -368,7 +347,6 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
   //    }));
   //  });
 
-  console.log('possssssssssssss', formValue)
 
   return (
     <Modal

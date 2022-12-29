@@ -19,7 +19,8 @@ const updateLotPosition = async (
 ) => {
   const { data } = await axios.patch(
     `${API_V1_URL}/procedure/lot/position/${positionId}`,
-    payload
+    payload,
+    { withCredentials: true }
   );
 };
 
