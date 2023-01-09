@@ -34,6 +34,13 @@ const OkpdCodePicker: React.FC<PositionUnitPickerProps> = ({
     setInitialValue(value)
   }, [value])
 
+  useEffect(() => {
+    console.log('ffff', value)
+    if (!foundData?.map(data => (data.value))?.includes(value) && searchString?.trim().length === 0) {
+      // setSearchString(value.split('; ')[1])
+    }
+  }, [foundData, searchString])
+
   return (
     <SelectPicker
       data={foundData}
@@ -42,6 +49,7 @@ const OkpdCodePicker: React.FC<PositionUnitPickerProps> = ({
         setValue(value)
       }}
       onSearch={(value) => {
+        console.log('sssss', value)
         setSearchString(value)
       }}
       loading={isLoading}

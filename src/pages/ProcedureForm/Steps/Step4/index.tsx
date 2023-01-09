@@ -93,7 +93,7 @@ const Step4 = ({
     formGlobalServerData?.positionsTableData
       ? formGlobalServerData?.positionsTableData
       : !isViaPlan
-      ? [
+        ? [
           {
             id: "null",
             qty: "",
@@ -106,7 +106,7 @@ const Step4 = ({
             okved_name: "",
           },
         ]
-      : []
+        : []
   );
 
   useEffect(() => {
@@ -662,58 +662,56 @@ const Step4 = ({
             data={
               positionsTableData?.length
                 ? positionsTableData
-                    .sort((a, b) =>
-                      parseInt(a.number) || a.id === "null" < parseInt(b.number)
-                        ? -1
-                        : 1
-                    )
-                    .map((position) => ({
-                      ...position,
-                      okato:
-                        position.id === "null"
-                          ? null
-                          : position?.region_okato ||
-                            purchasePlanPositionQuery?.data?.okato ||
-                            null,
-                      unit_name:
-                        position.id === "null" ? null : position.unit_name,
-                      okpd_field:
-                        position.id === "null"
-                          ? null
-                          : `${position.okpd_code}. ${position.okpd_name} `,
-                      okved_field:
-                        position.id === "null"
-                          ? null
-                          : `${position.okved_code}. ${position.okved_name} `,
-                      qty_count:
-                        position.id === "null"
-                          ? null
-                          : position?.qty_count
+                  .sort((a, b) =>
+                    parseInt(a.number) || a.id === "null" < parseInt(b.number)
+                      ? -1
+                      : 1
+                  )
+                  .map((position) => ({
+                    ...position,
+                    okato:
+                      position.id === "null"
+                        ? null
+                        : position?.region_okato ||
+                        purchasePlanPositionQuery?.data?.okato ||
+                        null,
+                    unit_name:
+                      position.id === "null" ? null : position.unit_name,
+                    okpd_field:
+                      position.id === "null"
+                        ? null
+                        : `${position.okpd_code}. ${position.okpd_name}`,
+                    okved_field:
+                      position.id === "null"
+                        ? null
+                        : `${position.okved_code}. ${position.okved_name}`,
+                    qty_count:
+                      position.id === "null"
+                        ? null
+                        : position?.qty_count
                           ? position.qty_count
                           : position.qty && position.unit_name
-                          ? `${position.qty || "Не определено"}, ${
-                              position.unit_name || "Не определено"
+                            ? `${position.qty || "Не определено"}, ${position.unit_name || "Не определено"
                             }`
-                          : null,
-                      region:
-                        position.id === "null"
-                          ? null
-                          : (position?.region_address || position?.address) &&
-                            (position?.region || position?.region_name)
-                          ? `${position?.region || position?.region_name} , ${
-                              position?.region_address || position?.address
-                            }`
+                            : null,
+                    region:
+                      position.id === "null"
+                        ? null
+                        : (position?.region_address || position?.address) &&
+                          (position?.region || position?.region_name)
+                          ? `${position?.region || position?.region_name} , ${position?.region_address || position?.address
+                          }`
                           : position.region_address,
 
-                      address:
-                        position.id === "null"
-                          ? null
-                          : position?.region_address || "",
-                      extra_info:
-                        position.id === "null"
-                          ? null
-                          : position?.addition_info || position?.info || "",
-                    }))
+                    address:
+                      position.id === "null"
+                        ? null
+                        : position?.region_address || "",
+                    extra_info:
+                      position.id === "null"
+                        ? null
+                        : position?.addition_info || position?.info || "",
+                  }))
                 : []
             }
             isViaPlan={isViaPlan}
@@ -768,8 +766,8 @@ const Step4 = ({
                         plan_positions: [
                           ...(state?.lots[0]?.plan_positions?.length
                             ? state?.lots[0]?.plan_positions?.filter(
-                                (pos) => pos.id !== positions.id
-                              )
+                              (pos) => pos.id !== positions.id
+                            )
                             : []),
                           { ...positions },
                         ],
@@ -787,8 +785,8 @@ const Step4 = ({
                         positions: [
                           ...(state?.lots[0]?.positions?.length
                             ? state?.lots[0]?.positions?.filter(
-                                (pos) => pos.id !== positions.id
-                              )
+                              (pos) => pos.id !== positions.id
+                            )
                             : []),
                           { ...positions },
                         ],

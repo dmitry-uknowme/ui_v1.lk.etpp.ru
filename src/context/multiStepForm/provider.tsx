@@ -57,7 +57,7 @@ const MultiStepFormContextProvider: React.FC<
             setServerData(savedServerData);
           }
 
-          if (savedSession.profile_id !== session.profile_id) {
+          if (savedSession?.profile_id !== session?.profile_id) {
             setServerData((state) => ({ ...state, session }));
           }
         }
