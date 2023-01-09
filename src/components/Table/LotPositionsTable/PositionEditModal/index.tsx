@@ -130,7 +130,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
   const actionType = formGlobalServerData?.actionType;
   const isViaPlan = formGlobalServerData?.isViaPlan;
   const lotId = formGlobalServerData?.lotId;
-  const isAddType = false
+  const isAddType = false;
   // const isAddType = position.id === "null"
   // const isAddType = position.id === "null";
   const biddingPerPositionOption =
@@ -140,8 +140,12 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
     address: "",
     extra_info: "",
     ...position,
-    okpd_code: `${position.okpd_field?.split(". ")[0]}; ${position.okpd_field?.split('. ')[1]?.trim()}`,
-    okved_code: `${position.okved_field?.split(". ")[0]}; ${position.okved_field?.split('. ')[1]?.trim()}`,
+    okpd_code: `${position.okpd_field?.split(". ")[0]}; ${position.okpd_field
+      ?.split(". ")[1]
+      ?.trim()}`,
+    okved_code: `${position.okved_field?.split(". ")[0]}; ${position.okved_field
+      ?.split(". ")[1]
+      ?.trim()}`,
   });
   const [formError, setFormError] = useState<ILotPosition>({});
   const formRef = React.useRef();
@@ -197,26 +201,31 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
         ?.scrollIntoView();
       return;
     }
-    const selectedOkpd = formValue.okpd_code
-    const selectedOkved = formValue.okved_code
-    const errors = {}
+    const selectedOkpd = formValue.okpd_code;
+    const selectedOkved = formValue.okved_code;
+    const errors = {};
     if (!selectedOkpd) {
-      setFormError(state => ({ ...state, okpd_code: "Поле обязательно для заполнения" }))
+      setFormError((state) => ({
+        ...state,
+        okpd_code: "Поле обязательно для заполнения",
+      }));
     }
     if (!selectedOkved) {
-      setFormError(state => ({ ...state, okved_code: "Поле обязательно для заполнения" }))
+      setFormError((state) => ({
+        ...state,
+        okved_code: "Поле обязательно для заполнения",
+      }));
     }
     if (Object.keys(errors).length) {
-      setFormError(state => ({ ...state, ...errors }))
-      return
+      setFormError((state) => ({ ...state, ...errors }));
+      return;
     }
 
-    const selectedOkpdCode = selectedOkpd.split(';')[0]
-    const selectedOkpdName = selectedOkpd.split(';')[1].trim()
+    const selectedOkpdCode = selectedOkpd.split(";")[0];
+    const selectedOkpdName = selectedOkpd.split(";")[1].trim();
 
-
-    const selectedOkvedCode = selectedOkved.split(';')[0]
-    const selectedOkvedName = selectedOkved.split(';')[1].trim()
+    const selectedOkvedCode = selectedOkved.split(";")[0];
+    const selectedOkvedName = selectedOkved.split(";")[1].trim();
     // const okpdCodes = queryClient.getQueryData(["okpdCodes"]);
     // const selectedOkpd =
     //   okpdCodes?.find((code) => code.value === formValue.okpd_code) || null;
@@ -255,7 +264,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
       qty_count: `${formValue.qty}, ${position.unit_name}`,
     };
 
-    const lotId = formGlobalServerData?.lotId
+    const lotId = formGlobalServerData?.lotId;
 
     if (newPosition) {
       if (actionType === ProcedureFormActionVariants.EDIT || lotId) {
@@ -263,8 +272,9 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
           await updateLotPosition(position.id_legacy, {
             name: newPosition.name,
             amount: `RUB ${currency(parseFloat(newPosition.amount)).intValue}`,
-            unit_price: `RUB ${currency(parseFloat(newPosition.unit_amount)).intValue
-              }`,
+            unit_price: `RUB ${
+              currency(parseFloat(newPosition.unit_amount)).intValue
+            }`,
             info: formValue.extra_info,
             region_address: newPosition.region_address,
             unit_value: newPosition.unit_id,
@@ -290,8 +300,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
             address: newPosition?.region_address || null,
           });
           setOpen(false);
-        }
-        else {
+        } else {
           addPositions({
             name: newPosition.name,
             amount: parseFloat(newPosition.amount),
@@ -307,7 +316,6 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
             type_item: newPosition?.type_item,
             unit_id: newPosition?.unit_id,
             info: newPosition?.info,
-
           });
           setOpen(false);
         }
@@ -352,8 +360,12 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
         address: "",
         extra_info: "",
         ...position,
-        okpd_code: `${position.okpd_field?.split(". ")[0]}; ${position.okpd_field?.split('. ')[1]?.trim()}`,
-        okved_code: `${position.okved_field?.split(". ")[0]}; ${position.okved_field?.split('. ')[1]?.trim()}`,
+        okpd_code: `${
+          position.okpd_field?.split(". ")[0]
+        }; ${position.okpd_field?.split(". ")[1]?.trim()}`,
+        okved_code: `${
+          position.okved_field?.split(". ")[0]
+        }; ${position.okved_field?.split(". ")[1]?.trim()}`,
       });
     }
     // else if (isOpen) {
@@ -369,7 +381,6 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
   //    }));
   //  });
 
-
   return (
     <Modal
       size="md"
@@ -381,7 +392,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
     >
       <Form
         onChange={setFormValue}
-        onCheck={setFormError}
+        // onCheck={setFormError}
         formValue={formValue}
         ref={formRef}
         model={isAddType ? modelAddType : model}
@@ -452,7 +463,9 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
             name="okpd_code"
             accepter={OkpdCodePicker}
             value={formValue.okpd_code}
-            initialValue={`${formValue?.okpd_code?.split(';')[0]}; ${formValue?.okpd_code?.split(';')[1]?.trim()}`}
+            initialValue={`${
+              formValue?.okpd_code?.split(";")[0]
+            }; ${formValue?.okpd_code?.split(";")[1]?.trim()}`}
             setInitialValue={(value) => {
               setFormValue((state) => ({ ...state, okpd_code: value }));
               if (value) {
@@ -467,14 +480,15 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
             name="okved_code"
             accepter={OkvedCodePicker}
             value={formValue.okved_code}
-            initialValue={`${formValue?.okved_code?.split(';')[0]}; ${formValue?.okved_code?.split(';')[1]?.trim()}`}
+            initialValue={`${
+              formValue?.okved_code?.split(";")[0]
+            }; ${formValue?.okved_code?.split(";")[1]?.trim()}`}
             setInitialValue={(value) => {
               setFormValue((state) => ({ ...state, okved_code: value }));
               if (value) {
                 setFormError((state) => ({ ...state, okved_code: null }));
               }
             }}
-
             error={formError.okved_code}
             disabled={isViaPlan}
           />
@@ -511,9 +525,9 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
             data={
               regionsQuery?.data?.length
                 ? regionsQuery.data.map((region) => ({
-                  value: region.okato,
-                  label: region.nameWithType,
-                }))
+                    value: region.okato,
+                    label: region.nameWithType,
+                  }))
                 : []
             }
             loading={regionsQuery?.isLoading}

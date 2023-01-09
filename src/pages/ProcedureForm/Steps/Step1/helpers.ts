@@ -98,11 +98,10 @@ export const checkStep1Values = async (
       );
       return { "": "" };
     }
-  }
-
-  if (isViaPlan && !planPositionId) {
-    sendToast("error", "Вы не выбрали позицию из плана закупок");
-    return { "": "" };
+    if (!planPositionId) {
+      sendToast("error", "Вы не выбрали позицию из плана закупок");
+      return { "": "" };
+    }
   }
 
   if (Object.keys(displayErrors)?.length) {
@@ -123,8 +122,8 @@ export const dispatchStep1Values = async (
   const isViaPlan = formValues.is_via_plan === "true";
 
   let procedureMethod = null;
+  const planPositionId = formValues.purchase_method_id || null;
   if (isViaPlan) {
-    const planPositionId = formValues.purchase_method_id;
     const planId = selectedPurchasePlan.id;
     const planPosition = await fetchPurchasePlanPosition({
       planId,

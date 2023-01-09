@@ -26,7 +26,11 @@ import createProcedureViaPurchasePlan from "../../../../services/api/createProce
 import Money, { parseCurrency } from "../../../../utils/money";
 import { ProcedureFormActionVariants } from "../..";
 import sendToast from "../../../../utils/sendToast";
-import { checkStep1Values, dispatchStep1Values, initStep1Values } from "./helpers";
+import {
+  checkStep1Values,
+  dispatchStep1Values,
+  initStep1Values,
+} from "./helpers";
 import { ProcedureMethodVariants, ProcedureSectionVariants } from "../../types";
 
 const Field = React.forwardRef((props, ref) => {
@@ -67,9 +71,12 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
-  const [formValue, setFormValue] = React.useState(initStep1Values({ globalFormValues: formGlobalValues, globalServerValues: formGlobalServerData }));
-
-
+  const [formValue, setFormValue] = React.useState(
+    initStep1Values({
+      globalFormValues: formGlobalValues,
+      globalServerValues: formGlobalServerData,
+    })
+  );
 
   const planPositionId = formValue.purchase_method_id;
   const procedureTitle = formValue.procedure_title;
@@ -80,8 +87,6 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const subcontractorOption = formValue.options.includes(
     "subcontractor_option"
   );
-
-
 
   const isViaPlan = formValue.is_via_plan === "true";
   const isEditType =
@@ -100,7 +105,11 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
       return result;
     },
-    { refetchInterval: false, refetchOnMount: false, refetchIntervalInBackground: false }
+    {
+      refetchInterval: false,
+      refetchOnMount: false,
+      refetchIntervalInBackground: false,
+    }
     // { enabled: !!isViaPlan }
   );
 
@@ -122,23 +131,36 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const [selectedPlanPositions, setSelectedPlanPositions] = useState([]);
 
   const handleSubmit = async () => {
-
     if (!formRef.current.check()) {
       sendToast("error", "Пожалуйста заполните необходимые поля формы");
       return;
     }
 
-    const errors = await checkStep1Values(formValue, currentPurchasePlan, selectedPlanPositions)
-    console.log('errrr', errors)
+    const errors = await checkStep1Values(
+      formValue,
+      currentPurchasePlan,
+      selectedPlanPositions
+    );
+    console.log("errrr", errors);
     if (errors) {
-      setFormError(state => ({ ...state, ...errors }))
-      return
+      setFormError((state) => ({ ...state, ...errors }));
+      return;
     }
-    const selectedPlanPosition = formGlobalServerData?.selectedPlanPosition
-    const { globalFormValues: finalGlobalFormValues, globalServerValues: finalGlobalServerValues } = await dispatchStep1Values(formValue, currentPurchasePlan, selectedPlanPosition)
+    const selectedPlanPosition = formGlobalServerData?.selectedPlanPosition;
+    const {
+      globalFormValues: finalGlobalFormValues,
+      globalServerValues: finalGlobalServerValues,
+    } = await dispatchStep1Values(
+      formValue,
+      currentPurchasePlan,
+      selectedPlanPosition
+    );
 
-    setFormGlobalValues(state => ({ ...state, ...finalGlobalFormValues }))
-    setFormGlobalServerData(state => ({ ...state, ...finalGlobalServerValues }))
+    setFormGlobalValues((state) => ({ ...state, ...finalGlobalFormValues }));
+    setFormGlobalServerData((state) => ({
+      ...state,
+      ...finalGlobalServerValues,
+    }));
 
     // setFormGlobalValues((state) => ({
     //   ...state,
@@ -163,7 +185,7 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   };
 
   useEffect(() => {
-    const selectedPlanPosition = formGlobalServerData?.selectedPlanPosition
+    const selectedPlanPosition = formGlobalServerData?.selectedPlanPosition;
     if (selectedPlanPosition) {
       setFormValue((state) => ({
         ...state,
@@ -171,19 +193,23 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
         purchase_method_id: selectedPlanPosition.id,
       }));
     }
-
   }, [formGlobalServerData.selectedPlanPosition]);
 
-
   useEffect(() => {
-    console.log('selelelel', formValue.purchase_method_id)
+    console.log("selelelel", formValue.purchase_method_id);
 
-    const selectedPlanPosition = isViaPlan && formValue.purchase_method_id && purchasePlanQuery.data?.positions?.length ? purchasePlanQuery.data?.positions.find(pos => pos.id === formValue.purchase_method_id) : formGlobalServerData?.selectedPlanPosition
+    const selectedPlanPosition =
+      isViaPlan &&
+      formValue.purchase_method_id &&
+      purchasePlanQuery.data?.positions?.length
+        ? purchasePlanQuery.data?.positions.find(
+            (pos) => pos.id === formValue.purchase_method_id
+          )
+        : formGlobalServerData?.selectedPlanPosition;
     if (!formGlobalServerData?.selectedPlanPosition && isViaPlan) {
-      setFormGlobalServerData(state => ({ ...state, selectedPlanPosition }))
+      setFormGlobalServerData((state) => ({ ...state, selectedPlanPosition }));
     }
-
-  }, [purchasePlanQuery.data])
+  }, [purchasePlanQuery.data]);
 
   return (
     <div className="col-md-12">
@@ -216,7 +242,10 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               accepter={SelectPicker}
               error={formError.procedure_section}
               data={[
-                { value: ProcedureSectionVariants.SECTION_223_FZ, label: "223-ФЗ" },
+                {
+                  value: ProcedureSectionVariants.SECTION_223_FZ,
+                  label: "223-ФЗ",
+                },
                 {
                   value: ProcedureSectionVariants.SECTION_COMMERCIAL_PROCEDURES,
                   label: "Коммерческие процедуры",
@@ -231,10 +260,34 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               accepter={SelectPicker}
               error={formError.procedure_section}
               data={[
-                { value: ProcedureMethodVariants.AUCTION, label: "Аукцион" },
-                { value: ProcedureMethodVariants.COMPETITIVE_SELECTION, label: "Конкурентный отбор" },
-                { value: ProcedureMethodVariants.REQUEST_OFFERS, label: "Запрос предложений" },
-                { value: ProcedureMethodVariants.REQUEST_QUOTATIONS, label: "Запрос котировок" },
+                {
+                  value: ProcedureMethodVariants.AUCTION_LOWER,
+                  label: "Аукцион",
+                },
+                {
+                  value: ProcedureMethodVariants.AUCTION_DOWN,
+                  label: "Редукцион",
+                },
+                {
+                  value: ProcedureMethodVariants.AUCTION,
+                  label: "Аукцион на повышение",
+                },
+                {
+                  value: ProcedureMethodVariants.AUCTION_LOWER,
+                  label: "Аукцион (заявка в двух частях)",
+                },
+                {
+                  value: ProcedureMethodVariants.COMPETITIVE_SELECTION,
+                  label: "Конкурентный отбор",
+                },
+                {
+                  value: ProcedureMethodVariants.REQUEST_OFFERS,
+                  label: "Запрос предложений",
+                },
+                {
+                  value: ProcedureMethodVariants.REQUEST_QUOTATIONS,
+                  label: "Запрос котировок",
+                },
               ]}
               placeholder="Выберите"
               disabled={isEditType}
@@ -252,9 +305,9 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               data={
                 purchasePlansQuery?.data?.length
                   ? purchasePlansQuery.data.map((plan) => ({
-                    value: plan.id,
-                    label: `План закупки №${plan.registration_number} (${plan.reporting_year})`,
-                  }))
+                      value: plan.id,
+                      label: `План закупки №${plan.registration_number} (${plan.reporting_year})`,
+                    }))
                   : []
               }
               loading={purchasePlansQuery.isLoading}
@@ -270,23 +323,23 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                   ...position,
                   maximum_contract_price: position.maximum_contract_price
                     ? new Money(
-                      parseInt(
-                        position.maximum_contract_price.replaceAll(
-                          parseCurrency(position.maximum_contract_price),
-                          ""
-                        )
-                      ),
-                      parseCurrency(position.maximum_contract_price)
-                    ).localeFormat({ style: "currency" })
+                        parseInt(
+                          position.maximum_contract_price.replaceAll(
+                            parseCurrency(position.maximum_contract_price),
+                            ""
+                          )
+                        ),
+                        parseCurrency(position.maximum_contract_price)
+                      ).localeFormat({ style: "currency" })
                     : "Не предусмотрено",
                   status_localized:
                     position.status === "STATUS_WAIT"
                       ? "Формируется"
                       : position.status === "STATUS_POSTED"
-                        ? "Размещена"
-                        : position.status === "STATUS_ANNULLED"
-                          ? "Аннулирована"
-                          : "Редактируется",
+                      ? "Размещена"
+                      : position.status === "STATUS_ANNULLED"
+                      ? "Аннулирована"
+                      : "Редактируется",
                 }))
                 .reverse()}
               isLoading={purchasePlanQuery?.isLoading}

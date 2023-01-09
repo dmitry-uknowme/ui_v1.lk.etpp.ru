@@ -1,5 +1,6 @@
 import { add } from "date-fns";
 import formatDate from "../../../../utils/formatDate";
+import isProcedureAnyAuction from "../../../../utils/isProcedureAnyAuction";
 import sendToast from "../../../../utils/sendToast";
 import { ProcedureMethodVariants, ProcedureSectionVariants } from "../../types";
 
@@ -74,8 +75,9 @@ export const initStep3Values = (
   payload: InitStep3ValuesPayload
 ): Step3InitFormValues => {
   const { globalFormValues, globalServerValues } = payload;
-  const isProcedureAuction =
-    globalServerValues.procedureMethod === ProcedureMethodVariants.AUCTION;
+  const isProcedureAuction = isProcedureAnyAuction(
+    globalServerValues.procedureMethod
+  );
   return {
     start_acceipting_bids_date:
       globalFormValues?.lots?.length &&
@@ -215,8 +217,9 @@ export const dispatchStep3Values = (
   formGlobalValues: Step3InitGlobalFormValues,
   globalServerValues: Step3InitGlobalServerValues
 ): IDispatchedStep2Values => {
-  const isProcedureAuction =
-    globalServerValues.procedureMethod === ProcedureMethodVariants.AUCTION;
+  const isProcedureAuction = isProcedureAnyAuction(
+    globalServerValues.procedureMethod
+  );
 
   const isBidPartTypeTwo = formGlobalValues.bid_part === "SECOND";
   return {
