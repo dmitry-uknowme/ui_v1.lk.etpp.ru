@@ -14,8 +14,8 @@ EXPOSE 3010
 # CMD ["yarn", "prod"]
 
 FROM base as dev
-RUN yarn 
+# RUN yarn 
 ENV NODE_ENV=development
-# RUN yarn
+RUN yarn
 COPY . /
 CMD ["yarn", "dev"]

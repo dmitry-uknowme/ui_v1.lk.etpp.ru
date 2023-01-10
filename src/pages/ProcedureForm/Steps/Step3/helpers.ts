@@ -160,8 +160,9 @@ export const checkStep3Values = (
 ) => {
   const displayErrors: any = {};
 
-  const isProcedureAuction =
-    globalServerValues.procedureMethod === ProcedureMethodVariants.AUCTION;
+  const isProcedureAuction = isProcedureAnyAuction(
+    globalServerValues.procedureMethod
+  );
 
   if (isProcedureAuction) {
     const auctionStartDate = formValues.trading_start_date as Date;
