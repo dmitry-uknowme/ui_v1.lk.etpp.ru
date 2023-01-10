@@ -22,6 +22,7 @@ import {
   initStep3Values,
 } from "./helpers";
 import { ProcedureMethodVariants } from "../../types";
+import isProcedureAnyAuction from "../../../../utils/isProcedureAnyAuction";
 
 const Field = React.forwardRef((props, ref) => {
   const { name, message, label, accepter, error, ...rest } = props;
@@ -100,8 +101,9 @@ const Step3 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
   const model = Schema.Model(schema);
 
-  const isProcedureAuction =
-    formGlobalServerData.procedureMethod === ProcedureMethodVariants.AUCTION;
+  const isProcedureAuction = isProcedureAnyAuction(
+    formGlobalServerData.procedureMethod
+  );
 
   const handleSubmit = () => {
     if (!formRef.current.check()) {
