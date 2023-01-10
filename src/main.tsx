@@ -11,7 +11,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "rsuite/dist/rsuite.min.css";
 import { ToastContainer } from "react-toastify";
 window.Money = Money;
+import { createCtx, connectLogger } from '@reatom/framework'
+import { reatomContext } from '@reatom/npm-react'
+
+
 const queryClient = new QueryClient();
+
+const ctx = createCtx()
+connectLogger(ctx)
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
@@ -19,7 +26,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
       <CustomProvider locale={ru_RU}>
-        <App />
+        <reatomContext.Provider value={ctx}>
+          <App />
+        </reatomContext.Provider>
       </CustomProvider>
     </QueryClientProvider>
   </React.StrictMode>

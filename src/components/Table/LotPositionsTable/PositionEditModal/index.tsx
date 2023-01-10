@@ -414,7 +414,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
               name="number"
               accepter={Input}
               error={formError.number}
-              disabled={!isAddType}
+              disabled
             />
           )}
           <Field
@@ -436,22 +436,26 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
               }
             }}
             error={formError.type_item}
-            disabled={!isAddType}
+            disabled={isViaPlan}
           />
           <Field
             label="Единица измерения"
             name="unit_code"
             accepter={PositionUnitPicker}
             value={formValue?.unit_code || formValue?.unit_id}
-            initialValue={formValue?.unit_code || formValue?.unit_id}
+            initialValue={formValue.unit_code}
             setInitialValue={(value) => {
               setFormValue((state) => ({ ...state, unit_code: value }));
               if (value) {
                 setFormError((state) => ({ ...state, unit_code: null }));
               }
             }}
+            initialData={[{
+              value: formValue.unit_code,
+              label: formValue.unit_name
+            }]}
             error={formError.unit_code}
-            disabled={!isAddType}
+            disabled={isViaPlan}
           />
           <Field
             label="Количество"
@@ -474,8 +478,14 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
                 setFormError((state) => ({ ...state, okpd_code: null }));
               }
             }}
+            initialData={[{
+              value: `${formValue?.okpd_code?.split(";")[0]
+                }; ${formValue?.okpd_code?.split(";")[1]?.trim()}`,
+              label: `${formValue?.okpd_code?.split(";")[0]
+                }: ${formValue?.okpd_code?.split(";")[1]?.trim()}`
+            }]}
             error={formError.okpd_code}
-            disabled={!isAddType}
+            disabled={isViaPlan}
           />
           <Field
             label="Код ОКВЭД 2"
@@ -490,6 +500,12 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
                 setFormError((state) => ({ ...state, okved_code: null }));
               }
             }}
+            initialData={[{
+              value: `${formValue?.okved_code?.split(";")[0]
+                }; ${formValue?.okved_code?.split(";")[1]?.trim()}`,
+              label: `${formValue?.okved_code?.split(";")[0]
+                }: ${formValue?.okved_code?.split(";")[1]?.trim()}`
+            }]}
             error={formError.okved_code}
             disabled={isViaPlan}
           />

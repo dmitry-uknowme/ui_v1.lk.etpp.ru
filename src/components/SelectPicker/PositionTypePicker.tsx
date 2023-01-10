@@ -17,6 +17,7 @@ const PositionTypePicker: React.FC<PositionUnitPickerProps> = ({
   initialData,
   initialValue,
   setInitialValue,
+  disabled
 }) => {
   return (
     <SelectPicker
@@ -25,6 +26,7 @@ const PositionTypePicker: React.FC<PositionUnitPickerProps> = ({
       onChange={(value) => {
         setInitialValue(value);
       }}
+      disabled={disabled}
     />
   );
 };
