@@ -27,9 +27,6 @@ const OkvedCodePicker: React.FC<PositionUnitPickerProps> = ({
     }))];
   }, { refetchInterval: false, refetchOnWindowFocus: false, refetchIntervalInBackground: false, });
 
-
-
-
   return (
     <SelectPicker
       data={data}

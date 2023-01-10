@@ -358,15 +358,13 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ height: 500 }}>
-          {isAddType ? null : (
-            <Field
-              label="Номер позиции"
-              name="number"
-              accepter={Input}
-              error={formError.number}
-              disabled={!isAddType}
-            />
-          )}
+          <Field
+            label="Номер позиции"
+            name="number"
+            accepter={Input}
+            error={formError.number}
+            disabled
+          />
           <Field
             label="Наименование"
             name="name"
@@ -386,14 +384,14 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
               }
             }}
             error={formError.type_item}
-            disabled={!isAddType}
+            disabled={isViaPlan}
           />
           <Field
             label="Единица измерения"
             name="unit_code"
             accepter={PositionUnitPicker}
-            value={formValue?.unit_code || formValue?.unit_id}
-            initialValue={formValue?.unit_code || formValue?.unit_id}
+            value={formValue?.unit_code}
+            // initialValue={formValue.unit_code}
             setInitialValue={(value) => {
               setFormValue((state) => ({ ...state, unit_code: value }));
               if (value) {
@@ -401,7 +399,7 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
               }
             }}
             error={formError.unit_code}
-            disabled={!isAddType}
+            disabled={isViaPlan}
           />
           <Field
             label="Количество"
@@ -416,7 +414,8 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
             name="okpd_code"
             accepter={OkpdCodePicker}
             value={formValue.okpd_code}
-            initialValue={`${formValue?.okpd_code?.split(';')[0]}; ${formValue?.okpd_code?.split(';')[1]?.trim()}`}
+            // initialValue={`${formValue?.okpd_code?.split(";")[0]
+            //   }; ${formValue?.okpd_code?.split(";")[1]?.trim()}`}
             setInitialValue={(value) => {
               setFormValue((state) => ({ ...state, okpd_code: value }));
               if (value) {
@@ -424,21 +423,27 @@ const PositionAddModal: React.FC<PositionEditModalProps> = ({
               }
             }}
             error={formError.okpd_code}
-            disabled={!isAddType}
+            disabled={isViaPlan}
           />
           <Field
             label="Код ОКВЭД 2"
             name="okved_code"
             accepter={OkvedCodePicker}
             value={formValue.okved_code}
-            initialValue={`${formValue?.okved_code?.split(';')[0]}; ${formValue?.okved_code?.split(';')[1]?.trim()}`}
+            // initialValue={`${formValue?.okved_code?.split(";")[0]
+            //   }; ${formValue?.okved_code?.split(";")[1]?.trim()}`}
             setInitialValue={(value) => {
               setFormValue((state) => ({ ...state, okved_code: value }));
               if (value) {
                 setFormError((state) => ({ ...state, okved_code: null }));
               }
             }}
-
+            // initialData={[{
+            //   value: `${formValue?.okved_code?.split(";")[0]
+            //     }; ${formValue?.okved_code?.split(";")[1]?.trim()}`,
+            //   label: `${formValue?.okved_code?.split(";")[0]
+            //     }: ${formValue?.okved_code?.split(";")[1]?.trim()}`
+            // }]}
             error={formError.okved_code}
             disabled={isViaPlan}
           />

@@ -24,7 +24,7 @@ const OkpdCodePicker: React.FC<PositionUnitPickerProps> = ({
       label: `${code.key}: ${code.name}`,
     }))];
   }, { refetchInterval: false, refetchOnWindowFocus: false, refetchIntervalInBackground: false, });
-  console.log('ssssss', searchString)
+
   return (
     <SelectPicker
       data={data}

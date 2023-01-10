@@ -20,10 +20,6 @@ const PositionUnitPicker: React.FC<PositionUnitPickerProps> = ({
     const units = await fetchLotPositionUnits(searchString);
     return [...(initialData?.length ? initialData : []), units.map((unit) => ({ value: unit.id, label: unit.name }))];
   }, { refetchInterval: false });
-
-
-
-
   return (
     <SelectPicker
       data={data}
