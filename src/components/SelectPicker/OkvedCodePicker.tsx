@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { SelectPicker } from "rsuite";
+import fetchLotPositionUnits from "../../services/api/fetchLotPositionUnits";
 import fetchOkvedCodes from "../../services/api/fetchOkvedCodes";
 
 interface PositionUnitPickerProps {
@@ -13,41 +14,37 @@ const OkvedCodePicker: React.FC<PositionUnitPickerProps> = ({
   initialData,
   initialValue,
   setInitialValue,
+  disabled
 }) => {
-  const [value, setValue] = useState<string>("")
+  const [isInitialized, setInitialized] = useState<boolean>(false)
   const [searchString, setSearchString] = useState<string>("")
   const [foundData, setFoundData] = useState([])
-  const { data, isLoading, refetch } = useQuery(["okvedCodes", searchString], async () => {
-    const okpdCodes = await fetchOkvedCodes(searchString);
-    return okpdCodes.map((code) => ({
+  const { data, isLoading } = useQuery(["okvedCodes", searchString], async () => {
+    const okvedCodes = await fetchOkvedCodes(searchString);
+    return [...(initialData?.length ? initialData : []), ...okvedCodes.map((code) => ({
       value: `${code.key}; ${code.name}`,
       label: `${code.key}: ${code.name}`,
-    }));
-  }, { refetchInterval: false });
+    }))];
+  }, { refetchInterval: false, refetchOnWindowFocus: false, refetchIntervalInBackground: false, });
 
-  useEffect(() => {
-    setFoundData(data)
-  }, [data])
 
-  useEffect(() => {
-    setInitialValue(value)
-  }, [value])
 
 
   return (
     <SelectPicker
-      data={foundData}
-      value={initialValue || value}
+      data={data}
+      value={initialValue}
       onChange={(value) => {
-        setValue(value)
+        if (setInitialValue && value) {
+          setInitialValue(value)
+        }
+
       }}
       onSearch={(value) => {
         setSearchString(value)
       }}
-      // onChange={(value) => {
-      //   setInitialValue(value);
-      // }}
       loading={isLoading}
+      disabled={disabled}
     />
   );
 };

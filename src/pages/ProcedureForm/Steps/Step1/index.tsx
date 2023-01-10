@@ -200,11 +200,11 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
 
     const selectedPlanPosition =
       isViaPlan &&
-      formValue.purchase_method_id &&
-      purchasePlanQuery.data?.positions?.length
+        formValue.purchase_method_id &&
+        purchasePlanQuery.data?.positions?.length
         ? purchasePlanQuery.data?.positions.find(
-            (pos) => pos.id === formValue.purchase_method_id
-          )
+          (pos) => pos.id === formValue.purchase_method_id
+        )
         : formGlobalServerData?.selectedPlanPosition;
     if (!formGlobalServerData?.selectedPlanPosition && isViaPlan) {
       setFormGlobalServerData((state) => ({ ...state, selectedPlanPosition }));
@@ -305,9 +305,9 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
               data={
                 purchasePlansQuery?.data?.length
                   ? purchasePlansQuery.data.map((plan) => ({
-                      value: plan.id,
-                      label: `План закупки №${plan.registration_number} (${plan.reporting_year})`,
-                    }))
+                    value: plan.id,
+                    label: `План закупки №${plan.registration_number} (${plan.reporting_year})`,
+                  }))
                   : []
               }
               loading={purchasePlansQuery.isLoading}
@@ -323,23 +323,23 @@ const Step1 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
                   ...position,
                   maximum_contract_price: position.maximum_contract_price
                     ? new Money(
-                        parseInt(
-                          position.maximum_contract_price.replaceAll(
-                            parseCurrency(position.maximum_contract_price),
-                            ""
-                          )
-                        ),
-                        parseCurrency(position.maximum_contract_price)
-                      ).localeFormat({ style: "currency" })
+                      parseInt(
+                        position.maximum_contract_price.replaceAll(
+                          parseCurrency(position.maximum_contract_price),
+                          ""
+                        )
+                      ),
+                      parseCurrency(position.maximum_contract_price)
+                    ).localeFormat({ style: "currency" })
                     : "Не предусмотрено",
                   status_localized:
                     position.status === "STATUS_WAIT"
                       ? "Формируется"
                       : position.status === "STATUS_POSTED"
-                      ? "Размещена"
-                      : position.status === "STATUS_ANNULLED"
-                      ? "Аннулирована"
-                      : "Редактируется",
+                        ? "Размещена"
+                        : position.status === "STATUS_ANNULLED"
+                          ? "Аннулирована"
+                          : "Редактируется",
                 }))
                 .reverse()}
               isLoading={purchasePlanQuery?.isLoading}

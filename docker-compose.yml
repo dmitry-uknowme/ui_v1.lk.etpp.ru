@@ -12,5 +12,4 @@ services:
     environment:
       NODE_ENV: development
       DEBUG: nodejs-docker-express:*
-  
-  
+    restart: always

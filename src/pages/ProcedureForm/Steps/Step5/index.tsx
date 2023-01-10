@@ -35,13 +35,26 @@ const Field = React.forwardRef((props, ref) => {
       className={error ? "has-error" : ""}
     >
       <Form.ControlLabel>{label} </Form.ControlLabel>
-      <Form.Control
-        name={name}
-        accepter={accepter}
-        errorMessage={error}
-        {...rest}
-      />
-      {message ? <Form.HelpText>{message}</Form.HelpText> : null}
+      {rest.as === "textarea" ? (
+        <>
+          <Input as="textarea" name={name} {...rest} />
+          {error ? (
+            <span className="rs-form-error-message rs-form-error-message-show">
+              <span className="rs-form-error-message-arrow"></span>
+              <span className="rs-form-error-message-inner">{error}</span>
+            </span>
+          ) : null}
+        </>
+      ) : (
+        <Form.Control
+          name={name}
+          accepter={accepter}
+          errorMessage={error}
+          {...rest}
+        />
+      )}
+
+      <Form.HelpText>{message}</Form.HelpText>
     </Form.Group>
   );
 });
@@ -130,6 +143,7 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
   const [formValue, setFormValue] = React.useState({
+    invite_participant: [],
     isOrganizerEqualsCustomer: [],
     organizer_id: formGlobalServerData?.organizerId || "",
     organizer_org_full_name: formGlobalValues?.organizer?.full_title || "",
@@ -175,6 +189,8 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
     customer_representative_phone_extra:
       formGlobalValues?.organizer?.additional_phone || "",
   });
+
+  const isInviteParticipant = formValue.invite_participant.includes("ON")
 
   const procedureMethod = formGlobalServerData?.procedureMethod;
 
@@ -967,15 +983,20 @@ const Step5 = ({ currentStep, setCurrentStep, nextStep, prevStep }) => {
           </Panel>
         </div>
 
-        {/* <Panel header="Приглашение участников">
+        <Panel header="Приглашение участников">
           <Field
-            name="provision_contract_option"
+            name="invite_participant"
             accepter={CheckboxGroup}
             error={formError.provision_contract_option}
           >
-            <Checkbox value={"ON"}>Установлено</Checkbox>
+            <Checkbox value={"ON"}>Выбрать участников для приглашения</Checkbox>
           </Field>
-        </Panel> */}
+          <Animation.Collapse in={isInviteParticipant}>
+            <div>
+              <Field label="Введите e-mail адреса через запятую" message={"Приглашения будут направлены на почты после публикации процедуры"} accepter={Input} as="textarea" />
+            </div>
+          </Animation.Collapse>
+        </Panel>
 
         <Form.Group>
           <Button onClick={prevStep}>Назад</Button>
