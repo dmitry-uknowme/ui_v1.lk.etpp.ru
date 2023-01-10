@@ -658,7 +658,6 @@ const Step4 = ({
 
           <Header>Перечень товаров, работ, услуг</Header>
           <LotPositionsTable
-            // tableType={ProcedureFormActionVariants.CREATE}
             data={
               positionsTableData?.length
                 ? positionsTableData

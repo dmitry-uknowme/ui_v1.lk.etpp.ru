@@ -24,10 +24,7 @@ const OkpdCodePicker: React.FC<PositionUnitPickerProps> = ({
       label: `${code.key}: ${code.name}`,
     }))];
   }, { refetchInterval: false, refetchOnWindowFocus: false, refetchIntervalInBackground: false, });
-
-
-
-
+  console.log('ssssss', searchString)
   return (
     <SelectPicker
       data={data}
@@ -39,7 +36,9 @@ const OkpdCodePicker: React.FC<PositionUnitPickerProps> = ({
 
       }}
       onSearch={(value) => {
-        setSearchString(value)
+        if (value) {
+          setSearchString(value)
+        }
       }}
       loading={isLoading}
       disabled={disabled}

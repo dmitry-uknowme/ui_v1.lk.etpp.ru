@@ -149,9 +149,10 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
       ?.trim()}`,
   });
 
-  console.log('vvvvv', formValue)
+
 
   const [formError, setFormError] = useState<ILotPosition>({});
+  console.log('vvvvv', formValue, formError)
   const formRef = React.useRef();
   const queryClient = useQueryClient();
 
@@ -193,6 +194,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
     // console.log("vvvvv", formValue);
     // console.log("errr", formError);
     if (!formRef.current.check()) {
+      console.log('eerrrrr', formError)
       sendToast("error", "Пожалуйста исправьте ошибки");
       // toaster.push(<Message type="error">Пожалуйста исправьте ошибки</Message>);
       document
@@ -395,7 +397,7 @@ const PositionEditModal: React.FC<PositionEditModalProps> = ({
     >
       <Form
         onChange={setFormValue}
-        // onCheck={setFormError}
+        onCheck={setFormError}
         formValue={formValue}
         ref={formRef}
         model={isAddType ? modelAddType : model}

@@ -35,7 +35,9 @@ const PositionUnitPicker: React.FC<PositionUnitPickerProps> = ({
 
       }}
       onSearch={(value) => {
-        setSearchString(value)
+        if (value) {
+          setSearchString(value)
+        }
       }}
       loading={isLoading}
       disabled={disabled}
