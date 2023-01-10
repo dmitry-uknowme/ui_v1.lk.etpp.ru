@@ -44,8 +44,8 @@ const MultiStepFormContextProvider: React.FC<
       const savedSession = savedServerData?.session;
       if (actionType !== ProcedureFormActionVariants.EDIT) {
         if (
-          (savedFormType && savedFormType === actionType) ||
-          (savedProcedureId && savedProcedureId === procedureId)
+          (savedFormType && (savedFormType === actionType)) ||
+          (savedProcedureId && (savedProcedureId === procedureId))
         ) {
           if (savedFormValues) {
             setFormValues(savedFormValues);
